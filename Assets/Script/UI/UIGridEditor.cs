@@ -64,7 +64,9 @@ public class UIGridEditor : MonoBehaviour
     void HandleInput()
     {
         GameTile currentTile = grid.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
-        EditTile(currentTile);
+        if (currentTile) {
+            EditTile(currentTile);
+        }
     }
 
     void ValidateDrag(GameTile currentGameTile)

@@ -8,12 +8,13 @@ public class GameTile : MonoBehaviour
     public GameTile nextOnPath;
     public Vector2Int tileCoordinate { get; private set; }
 
-    [SerializeField] SpriteRenderer spriteRenderer;
-    [SerializeField] SpriteRenderer railSpriteRenderer;
-    [SerializeField] SpriteRenderer buildingSpriteRenderer;
-    [SerializeField] SpriteRenderer stationSpriteRenderer;
+    [SerializeField]GameObject ground;
+    [SerializeField] Material groundMat;
+    GameObject rail;
+    GameObject buildingPrefab;
+    GameObject stationPrefab;
 
-    [SerializeField] Transform rail;
+    Transform railTransform;
 
     int distance = int.MaxValue;
 
@@ -46,9 +47,13 @@ public class GameTile : MonoBehaviour
         {
             if (value != hasIndustry)
             {
-                hasIndustry = value;
-                if (value) buildingSpriteRenderer.sprite = GameManager.Instance.industrySprite;
-                else buildingSpriteRenderer.sprite = null;
+                if(value && CanBuild())
+                    hasIndustry = value;
+                if (hasIndustry)
+                {
+                    SpawnFactory();
+                }
+                else DestroyFactory();
             }
         }
     }
@@ -62,21 +67,25 @@ public class GameTile : MonoBehaviour
         {
             if (value != hasStation)
             {
-                hasStation = value;
-                HasRail = value;
-                if (hasStation)
-                {
-                    station = Instantiate(GameManager.Instance.station, this.transform).GetComponent<Station>();
-                    station.SetTile(this);
+                if(value && CanBuild())
+                    hasStation = value;
+                HasRail = hasStation;
+                if (hasStation) {
+                    SpawnStation();
                 }
-                else
-                    Destroy(station);
-                if (value) stationSpriteRenderer.sprite = GameManager.Instance.stationSprite;
-                else stationSpriteRenderer.sprite = null;
+                else DestroyStation();
             }
         }
     }
-
+    //couvrir le cas spéciaux des rails et stations
+    bool CanBuild()
+    {
+        return !(hasStation || hasIndustry);
+    }
+    private void Start()
+    {
+        groundMat = ground.GetComponent<MeshRenderer>().material;
+    }
     public void SetCoordinate(Vector2Int newCoord)
     {
         tileCoordinate = newCoord;
@@ -161,18 +170,21 @@ public class GameTile : MonoBehaviour
 
     void UpdateSpriteRail()
     {
+        Destroy(rail);
+        rail = null;
         float rotation;
         switch (nbRailNeighbor)
         {
             case 1:
                 {
-                    railSpriteRenderer.sprite = GameManager.Instance.railSprites[4];
+                    rail = Instantiate(GameManager.Instance.railPrefabs[4], transform);
+                    railTransform = rail.transform;
                     rotation = 180f;
                     for (int i = 0; i < neighbor.Length; i++)
                     {
                         if (neighbor[i] && neighbor[i].hasRail)
-                            rail.rotation = Quaternion.Euler(0f, 0f, rotation);
-                        rotation -= 90f;
+                            railTransform.rotation = Quaternion.Euler(0f, rotation, 0f);
+                        rotation += 90f;
                     }
                     break;
                 }
@@ -184,49 +196,78 @@ public class GameTile : MonoBehaviour
                         if (neighbor[i] && neighbor[(i + 2) % 4] &&
                         i < 2 && neighbor[i].hasRail && neighbor[(i + 2) % 4].hasRail)
                         {
-                            railSpriteRenderer.sprite = GameManager.Instance.railSprites[0];
-                            rail.rotation = Quaternion.Euler(0f, 0f, rotation);
+                            rail = Instantiate(GameManager.Instance.railPrefabs[0], transform);
+                            railTransform = rail.transform;
+                            railTransform.rotation = Quaternion.Euler(0f, rotation, 0f);
                         }
                         if (neighbor[i] && neighbor[(i + 1) % 4] &&
                         neighbor[i].hasRail && neighbor[(i + 1) % 4].hasRail)
                         {
-                            railSpriteRenderer.sprite = GameManager.Instance.railSprites[1];
-                            rail.rotation = Quaternion.Euler(0f, 0f, rotation);
+                            rail = Instantiate(GameManager.Instance.railPrefabs[1], transform);
+                            railTransform = rail.transform;
+                            railTransform.rotation = Quaternion.Euler(0f, rotation, 0f);
                         }
-                        rotation -= 90f;
+                        rotation += 90f;
                     }
                     break;
                 }
             case 3:
                 {
                     rotation = 0f;
-                    railSpriteRenderer.sprite = GameManager.Instance.railSprites[2];
+                    rail = Instantiate(GameManager.Instance.railPrefabs[2], transform);
+                    railTransform = rail.transform;
                     for (int i = 0; i < neighbor.Length; i++)
                     {
                         if ((neighbor[i] && !neighbor[i].hasRail) || neighbor[i] == null)
                         {
-                            rail.rotation = Quaternion.Euler(0f, 0f, rotation);
+                            railTransform.rotation = Quaternion.Euler(0f, rotation, 0f);
                         }
-                        rotation -= 90f;
+                        rotation += 90f;
                     }
                     break;
                 }
             case 4:
                 {
-                    rail.rotation = Quaternion.Euler(0f, 0f, 0f);
-                    railSpriteRenderer.sprite = GameManager.Instance.railSprites[3];
+                    rail = Instantiate(GameManager.Instance.railPrefabs[3], transform);
+                    railTransform = rail.transform;
+                    railTransform.rotation = Quaternion.Euler(0f, 0f, 0f);
                     break;
                 }
             default:
-                railSpriteRenderer.sprite = GameManager.Instance.railSprites[5];
+                rail = Instantiate(GameManager.Instance.railPrefabs[5], transform);
+                railTransform = rail.transform;
                 break;
         }
         if (!HasRail)
-            railSpriteRenderer.sprite = null;
+        {
+            Destroy(rail);
+            rail = null;
+        }
+    }
+
+    void SpawnStation()
+    {
+        stationPrefab = Instantiate(GameManager.Instance.stationPrefab, transform);
+        station = stationPrefab.GetComponent<Station>();
+        station.SetTile(this);
+    }
+    void DestroyStation()
+    {
+        Destroy(stationPrefab);
+        stationPrefab = null;
+    }
+    void SpawnFactory()
+    {
+        buildingPrefab = Instantiate(GameManager.Instance.factoryPrefab, transform);
+    }
+    void DestroyFactory()
+    {
+        Destroy(buildingPrefab); 
+        buildingPrefab = null;
     }
 
     public void Paint(Color color)
     {
-        spriteRenderer.color = color;
+        if (groundMat) groundMat.color = color;
     }
 }

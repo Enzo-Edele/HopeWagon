@@ -7,10 +7,9 @@ public class GameManager : MonoBehaviour
     GameObject player;
     public GridBoard gridBoard;
     Vector2Int size = new Vector2Int(10, 10);
-    public Sprite[] railSprites;
-    public Sprite industrySprite; //to remove
-    public Sprite stationSprite; //to remove
-    public GameObject station; //faire une factory pour faire propre
+    public GameObject[] railPrefabs;
+    public GameObject factoryPrefab; //to remove
+    public GameObject stationPrefab; //to remove merge avec l'ancien object station
 
     public InGameUI gameUI;
     public GameTile selectedTile;

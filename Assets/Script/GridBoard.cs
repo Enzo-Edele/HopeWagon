@@ -19,24 +19,21 @@ public class GridBoard : MonoBehaviour
     public void Initialize(Vector2Int size)
     {
         this.size = size;
-        ground.localScale = new Vector2(size.x, size.y);
+        ground.localScale = new Vector3(size.x, 0.05f ,size.y);
 
         Vector2 offset = new Vector2((size.x - 1) * 0.5f, (size.y - 1) * 0.5f);
         tiles = new GameTile[size.x * size.y];
-        for (int i = 0, y = 0; y < size.y; y++)
-        {
-            for (int x = 0; x < size.x; x++, i++)
-            {
+        for (int i = 0, z = 0; z < size.y; z++) {
+            for (int x = 0; x < size.x; x++, i++) {
                 GameTile tile = tiles[i] = Instantiate(tilePrefab);
                 tile.transform.SetParent(transform, false);
-                tile.transform.localPosition = new Vector2(x - offset.x, y - offset.y);
-                tile.SetCoordinate(new Vector2Int(x, y));
-                if (x > 0)
-                {
+                tile.transform.localPosition = new Vector3(x - offset.x, 0, z - offset.y);
+                tile.name = "Tile : " + x + ", " + z;
+                tile.SetCoordinate(new Vector2Int(x, z));
+                if (x > 0) {
                     tile.MakeEastWestNeighbor(tile, tiles[i - 1]);
                 }
-                if (y > 0)
-                {
+                if (z > 0) {
                     tile.MakeNorthSouthNeighbor(tile, tiles[i - size.x]);
                 }
             }
@@ -81,11 +78,13 @@ public class GridBoard : MonoBehaviour
                 tile.Paint(Color.green);
             }
         }
+        //remplacer par UI
         string debbug;
         debbug = "Stattion : ";
         for (int i = 0; i < arrivalStation.Count; i++)
             debbug += arrivalStation[i].name + ", ";
         Debug.Log(debbug);
+        //
         return arrivalStation;
     }
 
@@ -146,7 +145,7 @@ public class GridBoard : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             int x = (int)(hit.point.x + size.x * 0.5f);
-            int y = (int)(hit.point.y + size.y * 0.5f);
+            int y = (int)(hit.point.z + size.y * 0.5f);
             //Debug.Log("coord hit : " + x + ", " + y);
             if (x >= 0 && x < size.x && y >= 0 && y < size.y)
                 return tiles[x + y * size.x];
@@ -156,7 +155,7 @@ public class GridBoard : MonoBehaviour
     public GameTile GetTile(Vector3 position)
     {
         //position = transform.InverseTransformPoint(position);
-        Vector2Int coordinates = new Vector2Int((int)position.x / offset, (int)position.y / offset);
+        Vector2Int coordinates = new Vector2Int((int)position.x / offset, (int)position.z / offset);
         return GetTile(coordinates);
     }
     public GameTile GetTile(Vector2Int coordinates)

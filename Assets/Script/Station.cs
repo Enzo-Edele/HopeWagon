@@ -20,7 +20,7 @@ public class Station : MonoBehaviour
     {
         name = GameManager.Instance.StationNameGenerator[GameManager.Instance.nameIndex];
         GameManager.Instance.nameIndex += 1;
-        if (GameManager.Instance.nameIndex > GameManager.Instance.StationNameGenerator.Length)
+        if (GameManager.Instance.nameIndex > GameManager.Instance.StationNameGenerator.Length - 1)
         {
             GameManager.Instance.nameIndex = 0;
             GameManager.Instance.NameLooped += 1;
