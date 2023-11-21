@@ -10,6 +10,7 @@ public class Station : MonoBehaviour
     //fonction to check and add valid stations as destination
 
     public List<Station> destinations = new List<Station>();
+    public List<string> destinationsName = new List<string>();
 
     public void SetTile(GameTile newTile)
     {
@@ -26,11 +27,13 @@ public class Station : MonoBehaviour
             GameManager.Instance.NameLooped += 1;
         }
         destinations = GameManager.Instance.gridBoard.GetStationInNetwork(tile);
+        //destinationsName = GameManager.Instance.gridBoard.GetStationInNetwork(tile);
     }
 
     public void AddDestination(Station station)
     {
         destinations.Add(station);
+        destinationsName.Add(station.name);
     }
 
     public void RemoveDestination(Station station)
@@ -40,6 +43,7 @@ public class Station : MonoBehaviour
             if (destinations[i] == station)
             {
                 destinations.RemoveAt(i);
+                destinationsName.RemoveAt(i);
             }
         }
     }

@@ -1,12 +1,16 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using TMPro;
 
 public class InGameUI : MonoBehaviour
 {
     public GridBoard grid;
 
     GameTile currentTile;
+    [SerializeField] GameObject stationMenu;
+    [SerializeField] TMP_Text stationStartText;
+    [SerializeField] TMP_Dropdown destinationList;
 
     //Unit
 
@@ -14,9 +18,9 @@ public class InGameUI : MonoBehaviour
     {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            /*if (Input.GetMouseButton(0))
-                DoSelection();
-            else if (selectedUnit)
+            if (Input.GetMouseButtonDown(0))
+                HandleInput();
+            /*else if (selectedUnit)
             {
                 if (Input.GetMouseButtonDown(1))
                     //DoMove();
@@ -26,26 +30,29 @@ public class InGameUI : MonoBehaviour
         }
     }
 
-    bool UpdateCurrentTile()
+    void HandleInput()
     {
-        //GameTile tile = grid.GetTile(Input.mousePosition);
-        GameTile tile = GameManager.Instance.selectedTile;
-        if (!currentTile) currentTile = tile; currentTile.Paint(Color.green);
-        if (currentTile && tile != currentTile)
+        GameTile currentTile = grid.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
+        if (currentTile)
         {
-            currentTile.Paint(Color.white);
-            currentTile = tile;
-            currentTile.Paint(Color.green);
-            return true;
+            DoSelection(currentTile);
         }
-        return false;
     }
-
-    public void DoSelection()
+    void DoSelection(GameTile tile)
     {
-        //grid.ClearPath();
-        //UpdateCurrentTile();
-        //if (currentTile)
-        //selectedUnit = currentTile.Unit;
+        if (tile)
+        {
+            if(tile.station != null) {
+                stationMenu.SetActive(true);
+                stationStartText.text = tile.station.name;
+                destinationList.options.Clear();
+                foreach(string option in tile.station.destinationsName) {
+                    destinationList.options.Add(new TMP_Dropdown.OptionData() { text = option });
+                }
+            }
+            else {
+                stationMenu.SetActive(false);
+            }
+        }
     }
 }

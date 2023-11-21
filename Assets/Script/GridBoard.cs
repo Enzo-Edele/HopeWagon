@@ -83,8 +83,7 @@ public class GridBoard : MonoBehaviour
         debbug = "Stattion : ";
         for (int i = 0; i < arrivalStation.Count; i++)
             debbug += arrivalStation[i].name + ", ";
-        Debug.Log(debbug);
-        //
+        //Debug.Log(debbug);
         return arrivalStation;
     }
 
