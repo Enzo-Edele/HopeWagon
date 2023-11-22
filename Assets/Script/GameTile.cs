@@ -34,7 +34,6 @@ public class GameTile : MonoBehaviour
                 for (int i = 0; i < neighbor.Length; i++)
                     if (neighbor[i]) neighbor[i].UpdateRailNeighbor(value);
                 UpdateSpriteRail();
-                //Debug.Log("change rail");
             }
         }
     }
@@ -69,6 +68,8 @@ public class GameTile : MonoBehaviour
             {
                 if(value && CanBuild())
                     hasStation = value;
+                /*else
+                    display can't "build here"*/
                 HasRail = hasStation;
                 if (hasStation) {
                     SpawnStation();
@@ -94,6 +95,16 @@ public class GameTile : MonoBehaviour
     public GameTile GetNeighbor(TileDirection direction)
     {
         return neighbor[(int)direction];
+    }
+
+    public TileDirection GetNeighborDirection(GameTile tile)
+    {
+        for(int i = 0; i < 4; i++)
+        {
+            if (tile == neighbor[i])  //maybe checker le nom si toutes les cases sont "égaless"
+                return (TileDirection)i;
+        }
+        return 0;
     }
 
     public void MakeEastWestNeighbor(GameTile east, GameTile west)

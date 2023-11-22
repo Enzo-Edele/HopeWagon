@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Station : MonoBehaviour
 {
     public string nameStation = "Montparnasse";
+    [SerializeField] TMP_Text nameDisplay;
     public GameTile tile { get; private set; }
     //the interraction with station will be using the gameUI and it's assigned tile
     //fonction to check and add valid stations as destination
 
-    public List<Station> destinations = new List<Station>();
-    public List<string> destinationsName = new List<string>();
+    public List<Station> destinationList = new List<Station>(); //[SerializeField]
+    public List<string> destinationNameList = new List<string>();
+    //value that index last used path destinationIndex
 
     public void SetTile(GameTile newTile)
     {
@@ -19,38 +22,39 @@ public class Station : MonoBehaviour
 
     private void Start()
     {
-        name = GameManager.Instance.StationNameGenerator[GameManager.Instance.nameIndex];
-        GameManager.Instance.nameIndex += 1;
-        if (GameManager.Instance.nameIndex > GameManager.Instance.StationNameGenerator.Length - 1)
-        {
-            GameManager.Instance.nameIndex = 0;
-            GameManager.Instance.NameLooped += 1;
-        }
-        destinations = GameManager.Instance.gridBoard.GetStationInNetwork(tile);
-        //destinationsName = GameManager.Instance.gridBoard.GetStationInNetwork(tile);
+        name = GameManager.Instance.GiveStationName();
+        nameStation = name;
+        nameDisplay.text = nameStation;
+        destinationList = GameManager.Instance.gridBoard.GetStationInNetwork(tile);
+        for (int i = 0; i < destinationList.Count; i++)
+            destinationNameList.Add(destinationList[i].name);
+        GameManager.Instance.gridBoard.stationList.Add(this);
     }
 
     public void AddDestination(Station station)
     {
-        destinations.Add(station);
-        destinationsName.Add(station.name);
+        destinationList.Add(station);
+        destinationNameList.Add(station.name);
     }
 
     public void RemoveDestination(Station station)
     {
-        for (int i = 0; i < destinations.Count; i++)
+        for (int i = 0; i < destinationList.Count; i++)
         {
-            if (destinations[i] == station)
+            if (destinationList[i] == station)
             {
-                destinations.RemoveAt(i);
-                destinationsName.RemoveAt(i);
+                destinationList.RemoveAt(i);
+                destinationNameList.RemoveAt(i);
             }
         }
     }
 
-    public void DeployTrain(/*Train train, */Station destination)
+    public void DeployTrain(Station destination)
     {
         Queue<GameTile> path = new Queue<GameTile>();
         path = GameManager.Instance.gridBoard.Pathfinding(destination.tile, tile);
+        Train train = Instantiate(GameManager.Instance.trainPrefab).GetComponent<Train>();
+        train.SetPath(path);
+        train.Spawn();
     }
 }

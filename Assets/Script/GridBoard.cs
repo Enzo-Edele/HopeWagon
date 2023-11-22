@@ -13,6 +13,22 @@ public class GridBoard : MonoBehaviour
     [SerializeField] GameTile tilePrefab = default;
 
     GameTile[] tiles;
+    public List<Station> stationList = new List<Station>(); //[SerializeField]
+
+    //créer une classe network 
+    //creation au moment ou on pose une station et add case de la station
+    //fonction add 
+    //  on ajoute le nouveau et si station on l'ajoute a une liste de station du network
+    //et oncheck si voisin sans network ou network diff (pour chaque voisin)
+    //      voisin vide : on l'ajoute et répéte opération
+    //      network voisin : on copie le voisin, sa liste de station
+    //          pour chaque station de n1 on ajoute toutes les dest n2 et ajoute les dest de n2 a celle de n1
+    //          pour chaque station de n2 on ajoute toutes les dest de n1
+    //          on supprime n2
+    //          on ajoute les voisin de rail vide au network
+    //fonction merge
+    //
+    List<List<GameTile>> networkList = new List<List<GameTile>>();
 
     Queue<GameTile> searchFrontier = new Queue<GameTile>();
 
@@ -39,7 +55,7 @@ public class GridBoard : MonoBehaviour
             }
         }
     }
-
+    //Get all station connected to startStation
     public List<Station> GetStationInNetwork(GameTile startStation)
     {
         foreach (GameTile tile in tiles)
@@ -63,16 +79,17 @@ public class GridBoard : MonoBehaviour
         foreach (GameTile tile in tiles)
         {
             tile.HidePath();
+            if (!tile.HasRail)
+                tile.Paint(new Color(0.1f, 7.3f, 0.1f));
         }
 
         foreach (GameTile tile in tiles)
         {
             if (tile.hasPath)
-            {
                 tile.ShowPath();
-            }
-            if (tile != startStation && tile.hasPath && tile.HasStation)
-            {
+            else if(tile.HasRail)
+                tile.Paint(new Color(25, 180, 25));
+            if (tile != startStation && tile.hasPath && tile.HasStation) {
                 arrivalStation.Add(tile.station);
                 tile.station.AddDestination(startStation.station);
                 tile.Paint(Color.green);
@@ -87,13 +104,15 @@ public class GridBoard : MonoBehaviour
         return arrivalStation;
     }
 
+    //créer une copie des gametile chemin qui conserve leur valeur de pathfind
     public Queue<GameTile> Pathfinding(GameTile destination, GameTile start)
     {
         Queue<GameTile> path = new Queue<GameTile>();
         foreach (GameTile tile in tiles)
         {
             tile.ClearPath();
-            tile.HidePath();
+            if(tile.HasRail)
+                tile.HidePath();
         }
         searchFrontier.Enqueue(destination);
         destination.BecomeDestination();
@@ -115,29 +134,14 @@ public class GridBoard : MonoBehaviour
             tilePath = tilePath.nextOnPath;
             path.Enqueue(tilePath);
         }
-        while (path.Count > 0)
-        {
-            path.Dequeue().ShowPath();
-        }
+        //Queue<GameTile> copyPath = path;
+        //while (copyPath.Count > 0)
+        //{
+        //    copyPath.Dequeue().ShowPath();
+        //}
         return path;
 
     }
-    //pathfinding returning bool
-    //add the destinations tile(s) in list searchfrontier
-    //verif searchfrontier > 0
-
-    //tant que searchfrontier > 0
-    //dequeu
-    //si tile pas null : call fonction in tile to check if tile is good
-    //faire les tiles et les isalternative
-    //for each tile with no path do nothing
-    //showpath for tile with path
-    //return true
-
-    //faire une version qui renvoie les stations atteintes
-    //add la station 
-    //grow path depuis la station
-    //renvoyer les stations atteintes
 
     public GameTile GetTile(Ray ray)
     {

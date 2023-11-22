@@ -10,14 +10,15 @@ public class GameManager : MonoBehaviour
     public GameObject[] railPrefabs;
     public GameObject factoryPrefab; //to remove
     public GameObject stationPrefab; //to remove merge avec l'ancien object station
+    public GameObject trainPrefab;
 
     public InGameUI gameUI;
     public GameTile selectedTile;
 
-    public string[] StationNameGenerator = {"Montparnasse", "St Jean", "Du Sud", "De l'Ouest",
+    public string[] StationNameGeneratorPull = {"Montparnasse", "St Jean", "Du Sud", "De l'Ouest",
         "Austerlitz", "Stalingrad", "Lavoisier" };
-    public int nameIndex = 0;
-    public int NameLooped = 1;
+    [SerializeField]int nameIndex = 0; //private
+    [SerializeField] public int NameLooped = 1; //private
 
     public static GameManager Instance { get; private set; }
 
@@ -52,5 +53,17 @@ public class GameManager : MonoBehaviour
             case GameState.pause:
                 break;
         }
+    }
+
+    public string GiveStationName()
+    {
+        string stationName = StationNameGeneratorPull[nameIndex];
+        nameIndex += 1;
+        if (nameIndex > StationNameGeneratorPull.Length - 1)
+        {
+            nameIndex = 0;
+            NameLooped += 1;
+        }
+        return stationName;
     }
 }

@@ -10,7 +10,7 @@ public class InGameUI : MonoBehaviour
     GameTile currentTile;
     [SerializeField] GameObject stationMenu;
     [SerializeField] TMP_Text stationStartText;
-    [SerializeField] TMP_Dropdown destinationList;
+    [SerializeField] TMP_Dropdown destinationDropdown;
 
     //Unit
 
@@ -32,7 +32,7 @@ public class InGameUI : MonoBehaviour
 
     void HandleInput()
     {
-        GameTile currentTile = grid.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
+        currentTile = grid.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
         if (currentTile)
         {
             DoSelection(currentTile);
@@ -45,14 +45,25 @@ public class InGameUI : MonoBehaviour
             if(tile.station != null) {
                 stationMenu.SetActive(true);
                 stationStartText.text = tile.station.name;
-                destinationList.options.Clear();
-                foreach(string option in tile.station.destinationsName) {
-                    destinationList.options.Add(new TMP_Dropdown.OptionData() { text = option });
+                destinationDropdown.options.Clear();
+                foreach(string option in tile.station.destinationNameList) {
+                    destinationDropdown.options.Add(new TMP_Dropdown.OptionData() { text = option });
                 }
             }
             else {
                 stationMenu.SetActive(false);
             }
         }
+    }
+    public void SelectDestination()
+    {
+        int menuIndex = destinationDropdown.value;
+        string nameDestination = destinationDropdown.options[menuIndex].text;
+        Station destination = null;
+        for (int i = 0; i < GameManager.Instance.gridBoard.stationList.Count; i++)
+            if (nameDestination == GameManager.Instance.gridBoard.stationList[i].nameStation)
+                destination = GameManager.Instance.gridBoard.stationList[i];
+        if(destination)
+            currentTile.station.DeployTrain(destination);
     }
 }

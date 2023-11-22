@@ -39,7 +39,7 @@ public class UIGridEditor : MonoBehaviour
             {
                 GameTile currentTile = grid.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
                 if (currentTile.station != null)
-                    currentTile.station.DeployTrain(currentTile.station.destinations[0]);
+                    currentTile.station.DeployTrain(currentTile.station.destinationList[0]);
             }
             //other input here
         }
