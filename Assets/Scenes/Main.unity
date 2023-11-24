@@ -511,9 +511,10 @@ MonoBehaviour:
   factoryPrefab: {fileID: 4734410359617960295, guid: 44a16b7de60fcd041971de80660ab1fa, type: 3}
   stationPrefab: {fileID: 5779885202010144196, guid: 7bdcd11bd18a3584691f39a1cc8a8896, type: 3}
   trainPrefab: {fileID: 5256344182360432218, guid: 2831a3501e33c4444a6b256cbdcb2021, type: 3}
+  tileCopy: {fileID: 7580604537484570353, guid: f7e1c062318b3ac4c9231b887ea87077, type: 3}
   gameUI: {fileID: 0}
   selectedTile: {fileID: 0}
-  StationNameGeneratorPull:
+  stationNameGeneratorPull:
   - Montparnasse
   - St Jean
   - Du Sud
@@ -523,6 +524,11 @@ MonoBehaviour:
   - Lavoisier
   nameIndex: 0
   NameLooped: 1
+  colorArray:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0, b: 1, a: 1}
+  networkNumber: 0
 --- !u!4 &135473648
 Transform:
   m_ObjectHideFlags: 0
@@ -902,6 +908,7 @@ MonoBehaviour:
   ground: {fileID: 915199607}
   tilePrefab: {fileID: 61423269486513320, guid: cc400e2da25cd0b4093b48f938e6f5c8, type: 3}
   stationList: []
+  network: {fileID: 3995944593281373564, guid: cf7c5a5400d50bb47961ae112dde594d, type: 3}
 --- !u!4 &639811395
 Transform:
   m_ObjectHideFlags: 0
@@ -3965,7 +3972,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6969c6be14127fc429a0552974fd2ca1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grid: {fileID: 639811394}
   stationMenu: {fileID: 172676890}
   stationStartText: {fileID: 1577338535}
   destinationDropdown: {fileID: 761672244}

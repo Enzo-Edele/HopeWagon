@@ -5,8 +5,6 @@ using TMPro;
 
 public class InGameUI : MonoBehaviour
 {
-    public GridBoard grid;
-
     GameTile currentTile;
     [SerializeField] GameObject stationMenu;
     [SerializeField] TMP_Text stationStartText;
@@ -32,7 +30,7 @@ public class InGameUI : MonoBehaviour
 
     void HandleInput()
     {
-        currentTile = grid.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
+        currentTile = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
         if (currentTile)
         {
             DoSelection(currentTile);
@@ -60,9 +58,9 @@ public class InGameUI : MonoBehaviour
         int menuIndex = destinationDropdown.value;
         string nameDestination = destinationDropdown.options[menuIndex].text;
         Station destination = null;
-        for (int i = 0; i < GameManager.Instance.gridBoard.stationList.Count; i++)
-            if (nameDestination == GameManager.Instance.gridBoard.stationList[i].nameStation)
-                destination = GameManager.Instance.gridBoard.stationList[i];
+        for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
+            if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
+                destination = GridBoard.Instance.stationList[i];
         if(destination)
             currentTile.station.DeployTrain(destination);
     }

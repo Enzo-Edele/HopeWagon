@@ -28,9 +28,18 @@ public class GridBoard : MonoBehaviour
     //          on ajoute les voisin de rail vide au network
     //fonction merge
     //
-    List<List<GameTile>> networkList = new List<List<GameTile>>();
+    List<Network> networkList = new List<Network>();
+
+    public GameObject network;
 
     Queue<GameTile> searchFrontier = new Queue<GameTile>();
+
+    public static GridBoard Instance { get; private set; }
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     public void Initialize(Vector2Int size)
     {
@@ -54,6 +63,15 @@ public class GridBoard : MonoBehaviour
                 }
             }
         }
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.N))
+            foreach (GameTile tile in tiles)
+                tile.ShowNetwork();
+        if (Input.GetKeyDown(KeyCode.B))
+            foreach (GameTile tile in tiles)
+                tile.HideNetwork();
     }
     //Get all station connected to startStation
     public List<Station> GetStationInNetwork(GameTile startStation)
@@ -80,7 +98,7 @@ public class GridBoard : MonoBehaviour
         {
             tile.HidePath();
             if (!tile.HasRail)
-                tile.Paint(new Color(0.1f, 7.3f, 0.1f));
+                tile.Paint(new Color(26/255f, 180/255f, 27/255f));
         }
 
         foreach (GameTile tile in tiles)
@@ -88,19 +106,13 @@ public class GridBoard : MonoBehaviour
             if (tile.hasPath)
                 tile.ShowPath();
             else if(tile.HasRail)
-                tile.Paint(new Color(25, 180, 25));
+            tile.Paint(new Color(26/255f, 180/255f, 27/255f));
             if (tile != startStation && tile.hasPath && tile.HasStation) {
                 arrivalStation.Add(tile.station);
                 tile.station.AddDestination(startStation.station);
                 tile.Paint(Color.green);
             }
         }
-        //remplacer par UI
-        string debbug;
-        debbug = "Stattion : ";
-        for (int i = 0; i < arrivalStation.Count; i++)
-            debbug += arrivalStation[i].name + ", ";
-        //Debug.Log(debbug);
         return arrivalStation;
     }
 
@@ -131,14 +143,10 @@ public class GridBoard : MonoBehaviour
         GameTile tilePath = start;
         while (tilePath != destination)
         {
+            tilePath.ShowPath();
             tilePath = tilePath.nextOnPath;
             path.Enqueue(tilePath);
         }
-        //Queue<GameTile> copyPath = path;
-        //while (copyPath.Count > 0)
-        //{
-        //    copyPath.Dequeue().ShowPath();
-        //}
         return path;
 
     }
@@ -168,5 +176,19 @@ public class GridBoard : MonoBehaviour
     public GameTile GetTile(GameTile tile)
     {
         return tile;
+    }
+    public Network AddNetwork(Network network)
+    {
+        for (int i = 0; i < networkList.Count; i++)
+            if (networkList[i] == network)
+                return null;
+        networkList.Add(network);
+        return network;
+    }
+    public void RemoveNetwork(Network network)
+    {
+        for (int i = 0; i < networkList.Count; i++)
+            if (network == networkList[i])
+                networkList.RemoveAt(i);
     }
 }

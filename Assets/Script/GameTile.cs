@@ -5,8 +5,12 @@ using UnityEngine;
 public class GameTile : MonoBehaviour
 {
     public GameTile[] neighbor = new GameTile[4];
-    public GameTile nextOnPath;
     public Vector2Int tileCoordinate { get; private set; }
+    public int distance = int.MaxValue;
+    public bool hasPath => distance != int.MaxValue;
+    public Vector3 exitPoint { get; private set; }
+    public TileDirection pathDirection { get; private set; }
+    public GameTile nextOnPath;
 
     [SerializeField]GameObject ground;
     [SerializeField] Material groundMat;
@@ -15,11 +19,7 @@ public class GameTile : MonoBehaviour
     GameObject stationPrefab;
 
     Transform railTransform;
-
-    int distance = int.MaxValue;
-
-    public bool hasPath => distance != int.MaxValue;
-    public TileDirection pathDirection { get; private set; }
+    Material railMat;
 
     int nbRailNeighbor;
     bool hasRail;
@@ -33,30 +33,23 @@ public class GameTile : MonoBehaviour
                 hasRail = value;
                 for (int i = 0; i < neighbor.Length; i++)
                     if (neighbor[i]) neighbor[i].UpdateRailNeighbor(value);
-                UpdateSpriteRail();
+                UpdateRail();
+                //check network
             }
         }
     }
-
-    bool hasIndustry;
-    public bool HasIndustry
-    {
-        get { return hasIndustry; }
-        set
-        {
-            if (value != hasIndustry)
-            {
-                if(value && CanBuild())
-                    hasIndustry = value;
-                if (hasIndustry)
-                {
-                    SpawnFactory();
+    Network network;
+    public Network Network { 
+        get { return network; }
+        set { 
+            if (value != network) {
+                network = value;
+                if(network != null) {
+                    SetNetworkNeighbor(network);
                 }
-                else DestroyFactory();
             }
         }
     }
-
     public Station station;
     bool hasStation;
     public bool HasStation
@@ -78,6 +71,26 @@ public class GameTile : MonoBehaviour
             }
         }
     }
+
+    bool hasIndustry;
+    public bool HasIndustry
+    {
+        get { return hasIndustry; }
+        set
+        {
+            if (value != hasIndustry)
+            {
+                if (value && CanBuild())
+                    hasIndustry = value;
+                if (hasIndustry)
+                {
+                    SpawnFactory();
+                }
+                else DestroyFactory();
+            }
+        }
+    }
+
     //couvrir le cas spéciaux des rails et stations
     bool CanBuild()
     {
@@ -136,7 +149,7 @@ public class GameTile : MonoBehaviour
         if (neighbor == null || !neighbor.hasRail || neighbor.hasPath)
             return null;
         neighbor.distance = distance + 1;
-        return neighbor;
+        return neighbor.hasRail == true ? neighbor : null;
     }
     public GameTile GrowPathToAllRailNorth() => GrowPathToAllRail(neighbor[0]);
     public GameTile GrowPathToAllRailEast() => GrowPathToAllRail(neighbor[1]);
@@ -149,23 +162,44 @@ public class GameTile : MonoBehaviour
             return null;
         neighbor.distance = distance + 1;
         neighbor.nextOnPath = this;
+        neighbor.exitPoint = neighbor.transform.localPosition + direction.GetHalfVector();
         neighbor.pathDirection = direction;
-        return neighbor;
+        return neighbor.hasRail == true ? neighbor : null;
     }
     public GameTile GrowPathToPathfindingNorth() => GrowPathToPathfinding(neighbor[0], TileDirection.south);
     public GameTile GrowPathToPathfindingEast() => GrowPathToPathfinding(neighbor[1], TileDirection.west);
     public GameTile GrowPathToPathfindingSouth() => GrowPathToPathfinding(neighbor[2], TileDirection.north);
     public GameTile GrowPathToPathfindingWest() => GrowPathToPathfinding(neighbor[3], TileDirection.east);
 
-    //use for debbug only
-    public void ShowPath()
+    public void CheckNeighborNetwork()
     {
-        if (distance != int.MaxValue)
-            Paint(Color.blue);
+        List<Network> networkClose = new List<Network>();
+        for (int i = 0; i < 4; i++)
+            if (neighbor[i] != null)
+                if (neighbor[i].Network != null)
+                    networkClose.Add(neighbor[i].Network);
+        //check if different if not add network to tile + add to neighbor
+        //if several merge
     }
-    public void HidePath()
+
+    public void SetNetworkNeighbor(Network networkToCheck)
     {
-        Paint(Color.white);
+        for (int i = 0; i < 4; i++)
+            if(neighbor[i] != null)
+                if(neighbor[i].HasRail)
+                    neighbor[i].AddNetwork(networkToCheck);
+    }
+    public void AddNetwork(Network networkToCheck)
+    {
+        if (network == null) {
+            Network = networkToCheck;
+            if (hasStation)
+                network.AddStation(station);
+        }
+        else if(network != networkToCheck)
+        {
+            //merge both network
+        }
     }
 
     public void UpdateRailNeighbor(bool hasRail)
@@ -176,10 +210,11 @@ public class GameTile : MonoBehaviour
             nbRailNeighbor--;
 
         if (HasRail)
-            UpdateSpriteRail();
+            UpdateRail();
+        //update network
     }
 
-    void UpdateSpriteRail()
+    void UpdateRail()
     {
         Destroy(rail);
         rail = null;
@@ -249,6 +284,7 @@ public class GameTile : MonoBehaviour
                 railTransform = rail.transform;
                 break;
         }
+        railMat = rail.GetComponentInChildren<Renderer>().material;
         if (!HasRail)
         {
             Destroy(rail);
@@ -277,8 +313,28 @@ public class GameTile : MonoBehaviour
         buildingPrefab = null;
     }
 
+    public void ShowNetwork()
+    {
+        if (railMat != null)
+            railMat.color = network.colorNetwork;
+    }
+    public void HideNetwork()
+    {
+        if(railMat != null)
+            railMat.color = new Color(70 / 255f, 35 / 255f, 27 / 255f);
+    }
     public void Paint(Color color)
     {
         if (groundMat) groundMat.color = color;
+    }
+    //use for debbug
+    public void ShowPath()
+    {
+        if (distance != int.MaxValue)
+            Paint(Color.blue);
+    }
+    public void HidePath()
+    {
+        Paint(Color.white);
     }
 }

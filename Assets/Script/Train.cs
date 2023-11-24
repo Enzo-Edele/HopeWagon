@@ -6,8 +6,8 @@ public class Train : MonoBehaviour
 {
     //float speed = 0.2f; to use later to modify progress factor
     int wagonCap;
-    Queue<GameTile> path = new Queue<GameTile>();
-    GameTile currentTile, nextTile, orientationTile;
+    [SerializeField] List<GameTileCopy> path = new List<GameTileCopy>();
+    GameTileCopy currentTile, nextTile;
     Vector3 positionTile, positionNextTile;
     TileDirection direction;
     DirectionChange directionChange;
@@ -21,30 +21,24 @@ public class Train : MonoBehaviour
 
     //make a factory
 
-    void Start() {
-        //Spawn();
-    }
-
-    public void Spawn() {
-        currentTile = path.Dequeue();
-        nextTile = path.Dequeue();
-        orientationTile = path.Dequeue();
+    public void Spawn(GameTileCopy tile) {
+        currentTile = tile;
+        nextTile = tile.nextOnPath;
         progress = 0f;
         PrepareDepart();
     }
 
     void PrepareDepart()
     {
-        positionTile = currentTile.transform.position;
-        direction = nextTile.GetNeighborDirection(orientationTile); //
-        positionNextTile = nextTile.transform.localPosition + direction.GetHalfVector();
+        positionTile = currentTile.tilePosition;
+        positionNextTile = currentTile.exitPoint;
+        direction = currentTile.pathDirection; 
         directionChange = DirectionChange.None;
         directionAngleTile = directionAangleNextTile = direction.GetAngle();
         transform.localRotation = direction.GetRotation();
-        transform.position = currentTile.transform.position; //added
         progressFactor = 1f;
 
-        nextTile.Paint(Color.blue);
+        //nextTile.Paint(Color.blue); //ref les tile grid dans leur copy???
     }
 
     void Update()
@@ -57,6 +51,10 @@ public class Train : MonoBehaviour
         progress += Time.deltaTime * progressFactor;
         while(progress >= 1f) {
             if(nextTile == null) {
+                for (int i = 0; i < path.Count; i++) //faire une copy factory
+                {
+                    Destroy(path[i].gameObject);
+                }
                 Destroy(gameObject); //make a factory and replace with a reclaim method
                 return false;
             }
@@ -78,20 +76,16 @@ public class Train : MonoBehaviour
     void PrepareNextTile()
     {
         currentTile = nextTile;
-        nextTile = orientationTile;
-        if (!(path.Count > 0))
-            orientationTile = null;
-        else
-            orientationTile = path.Dequeue();
+        nextTile = nextTile.nextOnPath;
         positionTile = positionNextTile;
-        if (orientationTile == null)
+        if(nextTile == null)
         {
             PrepareArrival();
             return;
         }
-        direction = nextTile.GetNeighborDirection(orientationTile);
-        directionChange = direction.GetDirectionChangeTo(nextTile.GetNeighborDirection(orientationTile));
-        positionNextTile = nextTile.transform.localPosition + direction.GetHalfVector();
+        positionNextTile = currentTile.exitPoint;
+        directionChange = direction.GetDirectionChangeTo(currentTile.pathDirection);
+        direction = currentTile.pathDirection;
         directionAngleTile = directionAangleNextTile;
         switch (directionChange)
         {
@@ -100,8 +94,8 @@ public class Train : MonoBehaviour
             case DirectionChange.Left: PrepareLeft(); break;
             //cas de défaut turn around serait une erreur
         }
-        currentTile.HidePath();
-        nextTile.ShowPath();
+        //currentTile.HidePath();
+        //nextTile.ShowPath();
     }
     void PrepareForward()
     {
@@ -109,7 +103,6 @@ public class Train : MonoBehaviour
         directionAangleNextTile = direction.GetAngle();
         model.localPosition = Vector3.zero;
         progressFactor = 1f;
-        Debug.Log("prep forward");
     }
     void PrepareRight()
     {
@@ -117,7 +110,6 @@ public class Train : MonoBehaviour
         model.localPosition = new Vector3(-0.5f, 0f);
         transform.localPosition = positionTile + direction.GetHalfVector();
         progressFactor = 1f / (Mathf.PI * 0.25f);
-        Debug.Log("prep right");
     }
     void PrepareLeft()
     {
@@ -125,12 +117,11 @@ public class Train : MonoBehaviour
         model.localPosition = new Vector3(0.5f, 0f);
         transform.localPosition = positionTile + direction.GetHalfVector();
         progressFactor = 1f / (Mathf.PI * 0.25f);
-        Debug.Log("prep left");
     }
     //turn around not use here
     void PrepareArrival()
     {
-        positionNextTile = currentTile.transform.localPosition;
+        positionNextTile = currentTile.tilePosition;
         directionChange = DirectionChange.None;
         directionAangleNextTile = direction.GetAngle();
         model.localPosition = Vector3.zero;
@@ -138,7 +129,7 @@ public class Train : MonoBehaviour
         progressFactor = 2f;
     }
     //on créer une copie des tile pour conserver les infos du bon pathfind (passer par une fake class qui prend seulement le nécesaire)
-    public void SetPath(Queue<GameTile> newPath)
+    public void SetPath(List<GameTileCopy> newPath)
     {
         path = newPath;
     }

@@ -12,13 +12,18 @@ public class GameManager : MonoBehaviour
     public GameObject stationPrefab; //to remove merge avec l'ancien object station
     public GameObject trainPrefab;
 
+    public GameObject tileCopy;
+
     public InGameUI gameUI;
     public GameTile selectedTile;
 
-    public string[] StationNameGeneratorPull = {"Montparnasse", "St Jean", "Du Sud", "De l'Ouest",
+    public string[] stationNameGeneratorPull = {"Montparnasse", "St Jean", "Du Sud", "De l'Ouest",
         "Austerlitz", "Stalingrad", "Lavoisier" };
-    [SerializeField]int nameIndex = 0; //private
-    [SerializeField] public int NameLooped = 1; //private
+    [SerializeField]int nameIndex = 0; 
+    [SerializeField]int NameLooped = 1; 
+
+    public Color[] colorArray = { Color.red, Color.green, Color.blue };
+    public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
 
     public static GameManager Instance { get; private set; }
 
@@ -57,9 +62,9 @@ public class GameManager : MonoBehaviour
 
     public string GiveStationName()
     {
-        string stationName = StationNameGeneratorPull[nameIndex];
+        string stationName = stationNameGeneratorPull[nameIndex];
         nameIndex += 1;
-        if (nameIndex > StationNameGeneratorPull.Length - 1)
+        if (nameIndex > stationNameGeneratorPull.Length - 1)
         {
             nameIndex = 0;
             NameLooped += 1;

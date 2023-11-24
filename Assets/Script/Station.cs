@@ -18,6 +18,14 @@ public class Station : MonoBehaviour
     public void SetTile(GameTile newTile)
     {
         tile = newTile;
+        if(tile.Network != null)
+            tile.Network.AddStation(this);
+        else {
+            Network newNetwork = GridBoard.Instance.AddNetwork(Instantiate(GridBoard.Instance.network).GetComponent<Network>());
+            newNetwork.Initialize();
+            newNetwork.AddStation(this);
+            newNetwork.ClaimTile(tile);
+        }
     }
 
     private void Start()
@@ -25,10 +33,10 @@ public class Station : MonoBehaviour
         name = GameManager.Instance.GiveStationName();
         nameStation = name;
         nameDisplay.text = nameStation;
-        destinationList = GameManager.Instance.gridBoard.GetStationInNetwork(tile);
+        destinationList = GridBoard.Instance.GetStationInNetwork(tile);
         for (int i = 0; i < destinationList.Count; i++)
             destinationNameList.Add(destinationList[i].name);
-        GameManager.Instance.gridBoard.stationList.Add(this);
+        GridBoard.Instance.stationList.Add(this);
     }
 
     public void AddDestination(Station station)
@@ -51,10 +59,24 @@ public class Station : MonoBehaviour
 
     public void DeployTrain(Station destination)
     {
-        Queue<GameTile> path = new Queue<GameTile>();
-        path = GameManager.Instance.gridBoard.Pathfinding(destination.tile, tile);
+        List<GameTileCopy> path = new List<GameTileCopy>();
+        Queue<GameTile> pathToCopy = GridBoard.Instance.Pathfinding(destination.tile, tile);
+
+        GameTile tileToCopy = pathToCopy.Dequeue();
+        path.Add(Instantiate(GameManager.Instance.tileCopy).GetComponent<GameTileCopy>());
+        path[0].SetUpTileCopy(tileToCopy.tileCoordinate, tileToCopy.transform.position, tileToCopy.distance, tileToCopy.pathDirection, tileToCopy.exitPoint);
+        int i = 0;
+        while(pathToCopy.Count > 0)
+        {
+            i++;
+            GameTile tileTC = pathToCopy.Dequeue();
+            path.Add(Instantiate(GameManager.Instance.tileCopy).GetComponent<GameTileCopy>()); //referencé la gametilecopy dans une factory
+                                                                                               //et virer le get component TRANSFORM ???
+            path[i].SetUpTileCopy(tileTC.tileCoordinate, tileTC.transform.position, tileTC.distance, tileTC.pathDirection, tileTC.exitPoint);
+            path[i - 1].SetUpTileCopyNext(path[i]);
+        }
         Train train = Instantiate(GameManager.Instance.trainPrefab).GetComponent<Train>();
         train.SetPath(path);
-        train.Spawn();
+        train.Spawn(path[0]); //donner la premiére tile
     }
 }

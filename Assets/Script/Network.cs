@@ -4,12 +4,30 @@ using UnityEngine;
 
 public class Network : MonoBehaviour
 {
-    Color networkColor;
+    [SerializeField] int indexNetwork;
+    [SerializeField] string nameNetwork;
+    public Color colorNetwork;
 
-    List<Station> networkStationList = new List<Station>();
+    [SerializeField] List<Station> networkStationList = new List<Station>();
 
+    //touche pour display le network
+
+    public void Initialize()
+    {
+        indexNetwork = GameManager.Instance.networkNumber++;
+        nameNetwork = "Network" + indexNetwork;
+        colorNetwork = GameManager.Instance.colorArray[Random.Range(0, GameManager.Instance.colorArray.Length)];
+    }
+
+    public void ClaimTile(GameTile tile)
+    {
+        tile.Network = this;
+    }
     public void AddStation(Station station)
     {
+        for(int i = 0; i < networkStationList.Count; i++)
+            if (networkStationList[i] == station)
+                return;
         networkStationList.Add(station);
     }
     public void RemoveStation(Station station)
@@ -26,4 +44,7 @@ public class Network : MonoBehaviour
         for (int i = 0; i < stationsToAbsorb.Count; i++)
             networkStationList.Add(stationsToAbsorb[i]);
     }
+    //CAS SPLIT
+    //quand suppresion de rail prendre les voisins avec rail ET faire pathfinding depuis un vérifier si les autre ont hasPath == true
+    //  SINON créer un network depuis le rail orphelin;
 }
