@@ -34,7 +34,7 @@ public class GameTile : MonoBehaviour
                 for (int i = 0; i < neighbor.Length; i++)
                     if (neighbor[i]) neighbor[i].UpdateRailNeighbor(value);
                 UpdateRail();
-                //check network
+                CheckNeighborNetwork();
             }
         }
     }
@@ -173,13 +173,34 @@ public class GameTile : MonoBehaviour
 
     public void CheckNeighborNetwork()
     {
+        bool hasNetworkNeighbor = false;
+        Debug.Log("check neighbor net");
         List<Network> networkClose = new List<Network>();
-        for (int i = 0; i < 4; i++)
-            if (neighbor[i] != null)
-                if (neighbor[i].Network != null)
+        for (int i = 0; i < 4; i++) { 
+            if (neighbor[i] != null) { 
+                if (neighbor[i].Network != null) {
                     networkClose.Add(neighbor[i].Network);
-        //check if different if not add network to tile + add to neighbor
+                    hasNetworkNeighbor = true;
+                }
+            }
+        }
+        bool doMerge = false;
+        for(int i = 1; i < networkClose.Count; i++)
+        {
+            if(networkClose[i] != networkClose[0]) {
+                doMerge = true;
+            }
+        }
+        if(hasNetworkNeighbor)
+        {
+            AddNetwork(networkClose[0]);
+            SetNetworkNeighbor(networkClose[0]);
+        }
         //if several merge
+        if (doMerge)
+        {
+
+        }
     }
 
     public void SetNetworkNeighbor(Network networkToCheck)
@@ -315,7 +336,7 @@ public class GameTile : MonoBehaviour
 
     public void ShowNetwork()
     {
-        if (railMat != null)
+        if (railMat != null && network != null)
             railMat.color = network.colorNetwork;
     }
     public void HideNetwork()
