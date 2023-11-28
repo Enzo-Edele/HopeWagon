@@ -7,6 +7,7 @@ public class UIGridEditor : MonoBehaviour
     public GridBoard grid;
 
     bool applyStation, applyFactory;
+    bool applyCaptor, applyPlate;
 
     enum OptionalToggle
     {
@@ -35,12 +36,12 @@ public class UIGridEditor : MonoBehaviour
                 //mettre un objet tile selector qui s'attache a la tile select
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.T))
+            /*if (Input.GetKeyDown(KeyCode.T))
             {
                 GameTile currentTile = grid.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
                 if (currentTile.station != null)
                     currentTile.station.DeployTrain(currentTile.station.destinationList[0]);
-            }
+            }*/
             //other input here
         }
         previousTile = null;
@@ -101,19 +102,25 @@ public class UIGridEditor : MonoBehaviour
             }
         }
     }
-    void EditTile(GameTile tile)
-    {
-        if (tile)
-        {
-            if (applyStation)
-            {
+    void EditTile(GameTile tile) {
+        if (tile) {
+            if (applyStation) {
                 tile.HasStation = !tile.HasStation;
                 return;
             }
-            if (applyFactory)
-            {
+            if (applyFactory) {
                 tile.HasIndustry = !tile.HasIndustry;
                 return;
+            }
+            if (tile.HasIndustry) {
+                if (applyCaptor) { 
+                    tile.industry.type = GameManager.Instance.captor;
+                    tile.industry.model.GetComponent<Renderer>().material = GameManager.Instance.Industrymats[0];
+                }
+                if (applyPlate) {
+                    tile.industry.type = GameManager.Instance.plate;
+                    tile.industry.model.GetComponent<Renderer>().material = GameManager.Instance.Industrymats[1];
+                }
             }
         }
     }
@@ -131,5 +138,15 @@ public class UIGridEditor : MonoBehaviour
     public void SetApplyFactory(bool toggle)
     {
         applyFactory = toggle;
+    }
+
+    public void SetApplyCaptor(bool toggle)
+    {
+        applyCaptor = toggle;
+    }
+
+    public void SetApplyPlate(bool toggle)
+    {
+        applyPlate = toggle;
     }
 }

@@ -5,15 +5,22 @@ using TMPro;
 
 public class Station : MonoBehaviour
 {
-    public string nameStation = "Montparnasse";
-    [SerializeField] TMP_Text nameDisplay;
+    public string nameStation = "Name_Station";
     public GameTile tile { get; private set; }
-    //the interraction with station will be using the gameUI and it's assigned tile
-    //fonction to check and add valid stations as destination
 
-    public List<Station> destinationList = new List<Station>(); //[SerializeField]
+    [SerializeField] List<Station> destinationList = new List<Station>();
     public List<string> destinationNameList = new List<string>();
-    //value that index last used path destinationIndex
+
+    [SerializeField] List<Industry> linkedIndustries = new List<Industry>();
+    int storage = 50;
+    [SerializeField] int inStock;
+
+    int requestTime = 2;
+    float requestTimer;
+
+    //toScrap
+    [SerializeField] TMP_Text nameDisplay;
+    [SerializeField] TMP_Text stockDisplay;
 
     public void SetTile(GameTile newTile)
     {
@@ -28,23 +35,14 @@ public class Station : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        name = GameManager.Instance.GiveStationName();
-        nameStation = name;
-        nameDisplay.text = nameStation;
-        destinationList = GridBoard.Instance.GetStationInNetwork(tile);
-        for (int i = 0; i < destinationList.Count; i++)
-            destinationNameList.Add(destinationList[i].name);
-        GridBoard.Instance.stationList.Add(this);
-    }
-
     public void AddDestination(Station station)
     {
+        for (int i = 0; i < destinationList.Count; i++)
+            if (destinationList[i] == station)
+                return;
         destinationList.Add(station);
         destinationNameList.Add(station.name);
     }
-
     public void RemoveDestination(Station station)
     {
         for (int i = 0; i < destinationList.Count; i++)
@@ -55,6 +53,33 @@ public class Station : MonoBehaviour
                 destinationNameList.RemoveAt(i);
             }
         }
+    }
+
+    public void AddIndustry(Industry industry)
+    {
+        for (int i = 0; i < linkedIndustries.Count; i++)
+            if (linkedIndustries[i] == industry)
+                return;
+        linkedIndustries.Add(industry);
+    }
+    public void RemoveIndustry(Industry industry)
+    {
+        for (int i = 0; i < linkedIndustries.Count; i++)
+            if (industry == linkedIndustries[i])
+                linkedIndustries.RemoveAt(i);
+    }
+
+    private void Start()
+    {
+        name = GameManager.Instance.GiveStationName();
+        nameStation = name;
+        nameDisplay.text = nameStation;
+        destinationList = GridBoard.Instance.GetStationInNetwork(tile);
+        for (int i = 0; i < destinationList.Count; i++)
+            destinationNameList.Add(destinationList[i].name);
+        GridBoard.Instance.stationList.Add(this);
+        inStock = 0;
+        stockDisplay.text = "" + inStock;
     }
 
     public void DeployTrain(Station destination)
@@ -78,5 +103,58 @@ public class Station : MonoBehaviour
         Train train = Instantiate(GameManager.Instance.trainPrefab).GetComponent<Train>();
         train.SetPath(path);
         train.Spawn(path[0]); //donner la premiére tile
+        train.SetWagons(GameManager.Instance.wagonTemplate);
+        SetStock(train.Load(inStock));
+    }
+
+    private void Update() {
+        if(requestTimer < 0) {
+            requestTimer = requestTime;
+            if(inStock < storage) { 
+                for(int i = 0; i < linkedIndustries.Count; i++) {
+                    linkedIndustries[i].SetStock(ChangeStorage(linkedIndustries[i].stock)); //ajouté des sécurité pour éviter dupli
+                }
+            }
+        }
+        else
+        {
+            requestTimer -= Time.deltaTime;
+        }
+    }
+
+    int ChangeStorage(int changeValue)
+    {
+        int leftover = 0;
+
+        inStock += changeValue;
+        if (inStock < 0)
+        {
+            leftover = inStock;
+            inStock = 0;
+        }
+        else if (inStock > storage)
+        {
+            leftover = inStock - storage;
+            inStock = storage;
+        }
+        stockDisplay.text = "" + inStock;
+
+        return leftover;
+    }
+    public void SetStock(int newStock)
+    {
+        inStock = newStock;
+        if (inStock < 0)
+            inStock = 0;
+        else if (inStock > storage)
+            inStock = storage;
+        stockDisplay.text = "" + inStock;
+    }
+
+    public int Unload(int toUnload)
+    {
+        int leftover = ChangeStorage(toUnload);
+
+        return leftover;
     }
 }

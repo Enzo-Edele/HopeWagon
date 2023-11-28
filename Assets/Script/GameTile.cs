@@ -12,7 +12,7 @@ public class GameTile : MonoBehaviour
     public TileDirection pathDirection { get; private set; }
     public GameTile nextOnPath;
 
-    [SerializeField]GameObject ground;
+    [SerializeField] GameObject ground;
     [SerializeField] Material groundMat;
     GameObject rail;
     GameObject buildingPrefab;
@@ -33,12 +33,14 @@ public class GameTile : MonoBehaviour
                 hasRail = value;
                 for (int i = 0; i < neighbor.Length; i++)
                     if (neighbor[i]) neighbor[i].UpdateRailNeighbor(value);
+                if (HasStation)
+                    hasRail = true;
                 UpdateRail();
                 CheckNeighborNetwork();
             }
         }
     }
-    Network network;
+    [SerializeField] Network network;
     public Network Network { 
         get { return network; }
         set { 
@@ -59,19 +61,22 @@ public class GameTile : MonoBehaviour
         {
             if (value != hasStation)
             {
-                if(value && CanBuild())
+                if(value && CanBuild()) {
                     hasStation = value;
-                /*else
-                    display can't "build here"*/
-                HasRail = hasStation;
-                if (hasStation) {
+                    HasRail = hasStation;
                     SpawnStation();
                 }
-                else DestroyStation();
+                else if (!value) {
+                    hasStation = value;
+                    //HasRail = hasStation;
+                    network.RemoveStation(station);
+                    DestroyStation();
+                }
             }
         }
     }
 
+    public Industry industry { get; private set; }
     bool hasIndustry;
     public bool HasIndustry
     {
@@ -80,13 +85,14 @@ public class GameTile : MonoBehaviour
         {
             if (value != hasIndustry)
             {
-                if (value && CanBuild())
+                if (value && CanBuild()) {
                     hasIndustry = value;
-                if (hasIndustry)
-                {
                     SpawnFactory();
                 }
-                else DestroyFactory();
+                else if (!value) {
+                    hasIndustry = value;
+                    DestroyFactory();
+                }
             }
         }
     }
@@ -114,7 +120,7 @@ public class GameTile : MonoBehaviour
     {
         for(int i = 0; i < 4; i++)
         {
-            if (tile == neighbor[i])  //maybe checker le nom si toutes les cases sont "égaless"
+            if (tile == neighbor[i])  //maybe checker le nom si toutes les cases sont "égales"
                 return (TileDirection)i;
         }
         return 0;
@@ -171,10 +177,10 @@ public class GameTile : MonoBehaviour
     public GameTile GrowPathToPathfindingSouth() => GrowPathToPathfinding(neighbor[2], TileDirection.north);
     public GameTile GrowPathToPathfindingWest() => GrowPathToPathfinding(neighbor[3], TileDirection.east);
 
+    //ca delete pas les old network
     public void CheckNeighborNetwork()
     {
         bool hasNetworkNeighbor = false;
-        Debug.Log("check neighbor net");
         List<Network> networkClose = new List<Network>();
         for (int i = 0; i < 4; i++) { 
             if (neighbor[i] != null) { 
@@ -185,21 +191,26 @@ public class GameTile : MonoBehaviour
             }
         }
         bool doMerge = false;
-        for(int i = 1; i < networkClose.Count; i++)
-        {
+        for(int i = 1; i < networkClose.Count; i++) {
             if(networkClose[i] != networkClose[0]) {
                 doMerge = true;
             }
         }
-        if(hasNetworkNeighbor)
-        {
+        if(hasNetworkNeighbor && !doMerge) {
             AddNetwork(networkClose[0]);
             SetNetworkNeighbor(networkClose[0]);
+            networkClose[0].RelinkStation();
         }
-        //if several merge
-        if (doMerge)
-        {
-
+        if (doMerge) {
+            for (int i = 1; i < 4; i++) {
+                if (networkClose[0] != neighbor[i].network) {
+                    //if(neighbor[i].network != null)
+                        //networkClose[0].MergeNetwork(neighbor[i].network.networkStationList);
+                    neighbor[i].RemoveNetwork();
+                    neighbor[i].SetNetworkNeighbor(networkClose[0]);
+                }
+            }
+            networkClose[0].RelinkStation();
         }
     }
 
@@ -212,14 +223,21 @@ public class GameTile : MonoBehaviour
     }
     public void AddNetwork(Network networkToCheck)
     {
-        if (network == null) {
+        if(Network != networkToCheck) { 
             Network = networkToCheck;
             if (hasStation)
-                network.AddStation(station);
+                    network.AddStation(station);
         }
-        else if(network != networkToCheck)
-        {
+        else if(network != networkToCheck) {
             //merge both network
+        }
+    }
+    public void RemoveNetwork()
+    {
+        if (Network != null)
+        {
+            Debug.Log("remove network");
+            network.Delete();
         }
     }
 
@@ -318,6 +336,11 @@ public class GameTile : MonoBehaviour
         stationPrefab = Instantiate(GameManager.Instance.stationPrefab, transform);
         station = stationPrefab.GetComponent<Station>();
         station.SetTile(this);
+        for(int i = 0; i < 4; i++) {
+            if (neighbor[i].HasIndustry) {
+                station.AddIndustry(neighbor[i].industry);
+            }
+        }
     }
     void DestroyStation()
     {
@@ -327,6 +350,12 @@ public class GameTile : MonoBehaviour
     void SpawnFactory()
     {
         buildingPrefab = Instantiate(GameManager.Instance.factoryPrefab, transform);
+        industry = buildingPrefab.GetComponent<Industry>();
+        for (int i = 0; i < 4; i++) {
+            if (neighbor[i].HasStation) {
+                neighbor[i].station.AddIndustry(industry);
+            }
+        }
     }
     void DestroyFactory()
     {

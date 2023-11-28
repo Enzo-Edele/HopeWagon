@@ -1,11 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
-public class Train : MonoBehaviour
+public class Wagon : MonoBehaviour
 {
     //float speed = 0.2f; to use later to modify progress factor
-    int wagonCap;
     [SerializeField] List<GameTileCopy> path = new List<GameTileCopy>();
     GameTileCopy currentTile, nextTile;
     Vector3 positionTile, positionNextTile;
@@ -16,18 +15,14 @@ public class Train : MonoBehaviour
 
     [SerializeField] Transform model;
 
-    //locomotive
-    Queue<GameObject> wagonQueue = new Queue<GameObject>();
-
-    //array of array ? / list ? ressource
-    public int storage = 12;
-    public int stock;
+    //array of ressources
 
     //make a factory
 
-    [SerializeField] TMP_Text stockDisplay;
+    public bool isLast = false; //replace by a properly manage train
 
-    public void Spawn(GameTileCopy tile) {
+    public void Spawn(GameTileCopy tile)
+    {
         currentTile = tile;
         nextTile = tile.nextOnPath;
         progress = 0f;
@@ -38,12 +33,11 @@ public class Train : MonoBehaviour
     {
         positionTile = currentTile.tilePosition;
         positionNextTile = currentTile.exitPoint;
-        direction = currentTile.pathDirection; 
+        direction = currentTile.pathDirection;
         directionChange = DirectionChange.None;
         directionAngleTile = directionAangleNextTile = direction.GetAngle();
         transform.localRotation = direction.GetRotation();
         progressFactor = 2f;
-        //ref les tile grid dans leur copy???
     }
 
     void Update()
@@ -54,22 +48,23 @@ public class Train : MonoBehaviour
     public bool GameUpdate()
     {
         progress += Time.deltaTime * progressFactor;
-        while(progress >= 1f) {
-            if (nextTile == null) {
-                /*for (int i = 0; i < path.Count; i++) //faire une copy factory
-                {
-                    //Destroy(path[i].gameObject); //déplacer dans le last wagon
-                }*/
-                stock = GridBoard.Instance.GetTile(currentTile.tileCoordinate).station.Unload(stock);
+        while (progress >= 1f)
+        {
+            if (nextTile == null)
+            {
+                if (isLast) { 
+                    for (int i = 0; i < path.Count; i++) {//faire une copy factory
+                        Destroy(path[i].gameObject);
+                    }
+                }
                 Destroy(gameObject); //make a factory and replace with a reclaim method
                 return false;
             }
-            
             progress = (progress - 1f) / progressFactor;
             PrepareNextTile();
             progress *= progressFactor;
         }
-        if(directionChange == DirectionChange.None)
+        if (directionChange == DirectionChange.None)
         {
             transform.localPosition = Vector3.LerpUnclamped(positionTile, positionNextTile, progress);
         }
@@ -82,22 +77,10 @@ public class Train : MonoBehaviour
     }
     void PrepareNextTile()
     {
-        //spawn wagon
-        //IMPORTANT FIX pour éviter que le premier wagon chevauche la locomotive instancier a 0.5f de progress aprés le premier
-        if(wagonQueue.Count > 0)
-        {
-            Wagon wagon = Instantiate(wagonQueue.Dequeue()).GetComponent<Wagon>();
-            wagon.SetPath(path); 
-            wagon.Spawn(path[0]);
-            if (wagonQueue.Count <= 0) {
-                wagon.isLast = true;
-            }
-        }
-
         currentTile = nextTile;
         nextTile = nextTile.nextOnPath;
         positionTile = positionNextTile;
-        if(nextTile == null)
+        if (nextTile == null)
         {
             PrepareArrival();
             return;
@@ -111,7 +94,7 @@ public class Train : MonoBehaviour
             case DirectionChange.None: PrepareForward(); break;
             case DirectionChange.Right: PrepareRight(); break;
             case DirectionChange.Left: PrepareLeft(); break;
-            //cas de défaut turn around serait une erreur
+                //cas de défaut turn around serait une erreur
         }
         //currentTile.HidePath();
         //nextTile.ShowPath();
@@ -151,26 +134,5 @@ public class Train : MonoBehaviour
     public void SetPath(List<GameTileCopy> newPath)
     {
         path = newPath;
-    }
-    public void SetWagons(List<GameObject> wagonLoad)
-    {
-        for(int i = 0; i < wagonLoad.Count; i++)
-        {
-            wagonQueue.Enqueue(wagonLoad[i]);
-        }
-    }
-    public int Load(int qté)
-    {
-        int leftover = 0;
-        Debug.Assert(qté >= 0, "WARNING : can't load negative value on train");
-        stock += qté;
-
-        if(stock > storage) { 
-            leftover = stock - storage;
-            stock = storage;
-        }
-        stockDisplay.text = "" + stock;
-
-        return leftover;
     }
 }

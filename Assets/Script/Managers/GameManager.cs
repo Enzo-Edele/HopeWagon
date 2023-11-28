@@ -6,11 +6,8 @@ public class GameManager : MonoBehaviour
 {
     GameObject player;
     public GridBoard gridBoard;
-    Vector2Int size = new Vector2Int(10, 10);
+    [SerializeField]Vector2Int size;
     public GameObject[] railPrefabs;
-    public GameObject factoryPrefab; //to remove
-    public GameObject stationPrefab; //to remove merge avec l'ancien object station
-    public GameObject trainPrefab;
 
     public GameObject tileCopy;
 
@@ -22,8 +19,19 @@ public class GameManager : MonoBehaviour
     [SerializeField]int nameIndex = 0; 
     [SerializeField]int NameLooped = 1; 
 
-    public Color[] colorArray = { Color.red, Color.green, Color.blue };
+    public Color[] colorArray = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow, Color.white };
     public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
+
+    public IndustryScriptable captor;
+    public IndustryScriptable plate;
+
+    //to scrap
+    public List<Material> Industrymats = new List<Material>();
+
+    public GameObject factoryPrefab; //to remove
+    public GameObject stationPrefab; //to remove merge avec l'ancien object station
+    public GameObject trainPrefab;
+    public List<GameObject> wagonTemplate = new List<GameObject>();
 
     public static GameManager Instance { get; private set; }
 

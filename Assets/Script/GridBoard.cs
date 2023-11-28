@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GridBoard : MonoBehaviour
 {
-    [SerializeField] Vector2Int size;
+    Vector2Int size;
 
     [SerializeField] int offset = 1;
 
@@ -12,7 +12,7 @@ public class GridBoard : MonoBehaviour
 
     [SerializeField] GameTile tilePrefab = default;
 
-    GameTile[] tiles;
+    [SerializeField] GameTile[] tiles;
     public List<Station> stationList = new List<Station>(); //[SerializeField]
 
     //créer une classe network 
@@ -165,13 +165,13 @@ public class GridBoard : MonoBehaviour
     }
     public GameTile GetTile(Vector3 position)
     {
-        //position = transform.InverseTransformPoint(position);
+        position = transform.InverseTransformPoint(position);
         Vector2Int coordinates = new Vector2Int((int)position.x / offset, (int)position.z / offset);
         return GetTile(coordinates);
     }
     public GameTile GetTile(Vector2Int coordinates)
     {
-        return tiles[coordinates.x * coordinates.y];
+        return tiles[coordinates.y * size.x + coordinates.x];
     }
     public GameTile GetTile(GameTile tile)
     {

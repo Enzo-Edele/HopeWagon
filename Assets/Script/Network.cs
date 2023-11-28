@@ -8,7 +8,7 @@ public class Network : MonoBehaviour
     [SerializeField] string nameNetwork;
     public Color colorNetwork;
 
-    [SerializeField] List<Station> networkStationList = new List<Station>();
+    public List<Station> networkStationList = new List<Station>();
 
     //touche pour display le network
 
@@ -16,7 +16,7 @@ public class Network : MonoBehaviour
     {
         indexNetwork = GameManager.Instance.networkNumber++;
         nameNetwork = "Network" + indexNetwork;
-        colorNetwork = GameManager.Instance.colorArray[Random.Range(0, GameManager.Instance.colorArray.Length)];
+        colorNetwork = GameManager.Instance.colorArray[indexNetwork];//[Random.Range(0, GameManager.Instance.colorArray.Length)];
     }
 
     public void ClaimTile(GameTile tile)
@@ -43,6 +43,22 @@ public class Network : MonoBehaviour
                 networkStationList[i].AddDestination(stationsToAbsorb[j]);
         for (int i = 0; i < stationsToAbsorb.Count; i++)
             networkStationList.Add(stationsToAbsorb[i]);
+    }
+
+    public void RelinkStation()
+    {
+        for (int i = 0; i < networkStationList.Count; i++) {
+            for (int j = i + 1; j < networkStationList.Count; j++) {
+                networkStationList[i].AddDestination(networkStationList[j]);
+                networkStationList[j].AddDestination(networkStationList[i]);
+            }
+        }
+    }
+
+    public void Delete()
+    {
+        GameManager.Instance.networkNumber--;
+        Destroy(gameObject);
     }
     //CAS SPLIT
     //quand suppresion de rail prendre les voisins avec rail ET faire pathfinding depuis un vérifier si les autre ont hasPath == true
