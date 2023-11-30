@@ -11,7 +11,7 @@ public class Industry : MonoBehaviour
     int prodQty = 2;
 
     [SerializeField] int storage = 10;
-    [SerializeField] List<int> starageRessources = new List<int>();
+    [SerializeField] List<int> storageRessources = new List<int>();
     [SerializeField] public int stock { get; private set; }
     [SerializeField] List<int> stockRessources = new List<int>();
     public GameObject model;
@@ -20,7 +20,7 @@ public class Industry : MonoBehaviour
 
     RessourceScriptable ressourceInput; //to list
     RessourceScriptable ressourceOutput; //to list
-    int required; //to list
+    int requiredQty; //to list
     public IndustryScriptable type { 
         get { return type; }
         set {
@@ -28,7 +28,7 @@ public class Industry : MonoBehaviour
             prodTime = value.prodTime;
             prodQty = value.prodQty;
             ressourceInput = value.input;
-            required = value.requireAmount;
+            requiredQty = value.requireAmount;
             //do the next part later
         }
     }
