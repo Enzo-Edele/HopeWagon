@@ -339,6 +339,7 @@ public class GameTile : MonoBehaviour
         for(int i = 0; i < 4; i++) {
             if (neighbor[i].HasIndustry) {
                 station.AddIndustry(neighbor[i].industry);
+                neighbor[i].industry.AddStation(station);
             }
         }
     }
@@ -346,6 +347,11 @@ public class GameTile : MonoBehaviour
     {
         Destroy(stationPrefab);
         stationPrefab = null;
+        for (int i = 0; i < 4; i++) {
+            if (neighbor[i].HasIndustry) {
+                neighbor[i].industry.RemoveStation(station);
+            }
+        }
     }
     void SpawnFactory()
     {
@@ -354,6 +360,7 @@ public class GameTile : MonoBehaviour
         for (int i = 0; i < 4; i++) {
             if (neighbor[i].HasStation) {
                 neighbor[i].station.AddIndustry(industry);
+                industry.AddStation(neighbor[i].station);
             }
         }
     }
@@ -361,8 +368,40 @@ public class GameTile : MonoBehaviour
     {
         Destroy(buildingPrefab); 
         buildingPrefab = null;
+        for (int i = 0; i < 4; i++) {
+            if (neighbor[i].HasStation) {
+                neighbor[i].station.RemoveIndustry(industry);
+            }
+        }
     }
 
+    //link to UI
+
+    public void UpdateUI(InGameUI ui)
+    {
+        string content;
+        if (hasIndustry)
+        {
+            content = "Industry";
+            //industry.canExport    //industry.canImport
+            ui.CreateItemDisplayList(industry.canImport, industry.canExport, industry.stockRessources);
+        }
+        else if (hasStation)
+        {
+            content = "Station";
+            //station.stockRessources
+            List<int> numberRessources = new List<int>();
+            for(int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) {
+                numberRessources.Add(i);
+            }
+            ui.CreateItemDisplayList(numberRessources, numberRessources, station.stockRessources);
+        }
+        else
+            content = "Empty";
+        ui.UpdateTileInfo(name, content);
+    }
+
+    //use for advance option and debbug
     public void ShowNetwork()
     {
         if (railMat != null && network != null)

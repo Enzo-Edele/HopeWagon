@@ -12,8 +12,12 @@ public class Station : MonoBehaviour
     public List<string> destinationNameList = new List<string>();
 
     [SerializeField] List<Industry> linkedIndustries = new List<Industry>();
-    int storage = 50;
+    int storage = 50; //pas besoin de passer en liste tant que les gares on un stockage égal pour tout
     [SerializeField] int inStock;
+    [SerializeField] public List<int> stockRessources;
+
+    [SerializeField] List<bool> canExport = new List<bool>();
+    [SerializeField] List<bool> canImport = new List<bool>();
 
     int requestTime = 2;
     float requestTimer;
@@ -68,6 +72,24 @@ public class Station : MonoBehaviour
             if (industry == linkedIndustries[i])
                 linkedIndustries.RemoveAt(i);
     }
+    //a terme autoriser le joueur a lock et unlock des ressources
+    public void CheckImportExport()
+    {
+        canImport.Clear();
+        canExport.Clear();
+        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) {
+            canExport.Add(false);
+            canImport.Add(false);
+        }
+        for (int i = 0; i < linkedIndustries.Count; i++) {
+            for(int j = 0; j < linkedIndustries[i].canExport.Count; j++) {
+                canImport[linkedIndustries[i].canExport[j]] = true;
+            }
+            for (int k = 0; k < linkedIndustries[i].canImport.Count; k++) {
+                canExport[linkedIndustries[i].canImport[k]] = true;
+            }
+        }
+    }
 
     private void Start()
     {
@@ -78,8 +100,14 @@ public class Station : MonoBehaviour
         for (int i = 0; i < destinationList.Count; i++)
             destinationNameList.Add(destinationList[i].name);
         GridBoard.Instance.stationList.Add(this);
-        inStock = 0;
-        stockDisplay.text = "" + inStock;
+        //inStock = 0; //to remove
+        //stockDisplay.text = "" + inStock; // to remove
+        stockRessources = new List<int>();
+        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) { 
+            stockRessources.Add(0);
+            canExport.Add(false);
+            canImport.Add(false);
+        }
     }
 
     public void DeployTrain(Station destination)
@@ -110,9 +138,30 @@ public class Station : MonoBehaviour
     private void Update() {
         if(requestTimer < 0) {
             requestTimer = requestTime;
-            if(inStock < storage) { 
-                for(int i = 0; i < linkedIndustries.Count; i++) {
-                    linkedIndustries[i].SetStock(ChangeStorage(linkedIndustries[i].stock)); //ajouté des sécurité pour éviter dupli
+            int indexRessource = -1;
+            //maybe repenser pour ne pas faire masse de for
+            //take ressource
+            for(int i = 0; i < linkedIndustries.Count; i++) {
+                //loop through all importable
+                for(int j = 0; j < linkedIndustries[i].canExport.Count; j++) {
+                    //check if matches industry exportable
+                    indexRessource = linkedIndustries[i].canExport[j];
+                    if (canImport[indexRessource]) {
+                        linkedIndustries[i].SetStockRessource(ChangeStorageRessource(linkedIndustries[i].stockRessources[indexRessource], indexRessource), indexRessource); 
+                        //verifier sécurité pour empêcher dupli
+                    }
+                }
+            }
+            //send ressource
+            for (int i = 0; i < linkedIndustries.Count; i++) {
+                //loop through all exportable
+                for (int j = 0; j < linkedIndustries[i].canImport.Count; j++) {
+                    //check if matches industry importable
+                    indexRessource = linkedIndustries[i].canImport[j];
+                    if (canExport[indexRessource]) {
+                        SetStockRessource(linkedIndustries[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
+                        //verifier sécurité pour empêcher dupli
+                    }
                 }
             }
         }
@@ -137,7 +186,6 @@ public class Station : MonoBehaviour
             leftover = inStock - storage;
             inStock = storage;
         }
-        stockDisplay.text = "" + inStock;
 
         return leftover;
     }
@@ -148,7 +196,39 @@ public class Station : MonoBehaviour
             inStock = 0;
         else if (inStock > storage)
             inStock = storage;
-        stockDisplay.text = "" + inStock;
+    }
+
+    public int ChangeStorageRessource(int changeValue, int valueIndex)
+    {
+        int leftover = 0;
+        //au besoin récupérer les id depuis l'index de la liste
+        stockRessources[valueIndex] += changeValue;
+        if (stockRessources[valueIndex] < 0)
+        {
+            leftover = stockRessources[valueIndex];
+            stockRessources[valueIndex] = 0;
+        }
+        else if (stockRessources[valueIndex] > storage)
+        {
+            leftover = stockRessources[valueIndex] - storage;
+            stockRessources[valueIndex] = storage;
+        }
+        //Update UI texte
+
+        return leftover;
+    }
+    public void SetStockRessource(int newStock, int valueIndex)
+    {
+        //ajouter sécurité pour voir si ressource utilisé
+        stockRessources[valueIndex] = newStock;
+        if (stockRessources[valueIndex] < 0)
+            stockRessources[valueIndex] = 0;
+        else if (stockRessources[valueIndex] > storage)
+            stockRessources[valueIndex] = storage;
+
+        //vérifier si leftover ???
+
+        //Update UI string
     }
 
     public int Unload(int toUnload)

@@ -22,8 +22,9 @@ public class GameManager : MonoBehaviour
     public Color[] colorArray = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow, Color.white };
     public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
 
-    public IndustryScriptable captor;
+    public IndustryScriptable captor; //faire list(s)
     public IndustryScriptable plate;
+    public List<RessourceScriptable> ressourceSample = new List<RessourceScriptable>();
 
     //to scrap
     public List<Material> Industrymats = new List<Material>();

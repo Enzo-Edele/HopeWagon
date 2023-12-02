@@ -8,10 +8,10 @@ public class IndustryScriptable : ScriptableObject
 {
     public string nameIndustry;
     public int id;
-    public RessourceScriptable outpout; // list
+    public List<RessourceScriptable> outpout; // list
     public int prodTime;
     public int prodQty; //list
-    public RessourceScriptable input; // list
+    public List<RessourceScriptable> input; // list
     public int requireAmount; //list
     public int storage; //???
     //for later use

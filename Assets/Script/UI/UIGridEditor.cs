@@ -114,11 +114,11 @@ public class UIGridEditor : MonoBehaviour
             }
             if (tile.HasIndustry) {
                 if (applyCaptor) { 
-                    tile.industry.type = GameManager.Instance.captor;
+                    tile.industry.SetIndustryType(GameManager.Instance.captor);
                     tile.industry.model.GetComponent<Renderer>().material = GameManager.Instance.Industrymats[0];
                 }
                 if (applyPlate) {
-                    tile.industry.type = GameManager.Instance.plate;
+                    tile.industry.SetIndustryType(GameManager.Instance.plate);
                     tile.industry.model.GetComponent<Renderer>().material = GameManager.Instance.Industrymats[1];
                 }
             }
@@ -129,7 +129,6 @@ public class UIGridEditor : MonoBehaviour
     {
         railMode = (OptionalToggle)mode;
     }
-
     public void SetApplyStation(bool toggle)
     {
         applyStation = toggle;
@@ -139,12 +138,11 @@ public class UIGridEditor : MonoBehaviour
     {
         applyFactory = toggle;
     }
-
+    //unifier la fonction pour set le type d'industrie
     public void SetApplyCaptor(bool toggle)
     {
         applyCaptor = toggle;
     }
-
     public void SetApplyPlate(bool toggle)
     {
         applyPlate = toggle;
