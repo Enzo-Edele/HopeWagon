@@ -22,20 +22,20 @@ public class GameTile : MonoBehaviour
     Transform railTransform;
     Material railMat;
 
-    int nbRailNeighbor;
-    bool hasRail;
+    [SerializeField] int nbRailNeighbor;
+    [SerializeField]bool hasRail;
     public bool HasRail
     {
         get { return hasRail; }
-        set
-        {
-            if (value != hasRail)
-            {
+        set {
+            if (HasStation)
+                value = true;
+            if (!CanBuildStationRail())
+                value = false;
+            if (value != hasRail) {
                 hasRail = value;
                 for (int i = 0; i < neighbor.Length; i++)
                     if (neighbor[i]) neighbor[i].UpdateRailNeighbor(value);
-                if (HasStation)
-                    hasRail = true;
                 UpdateRail();
                 CheckNeighborNetwork();
             }
@@ -54,22 +54,22 @@ public class GameTile : MonoBehaviour
         }
     }
     public Station station;
-    bool hasStation;
+    [SerializeField] bool hasStation;
     public bool HasStation
     {
         get { return hasStation; }
         set
         {
+            if (!CanBuildStationRail())
+                value = false;
             if (value != hasStation)
             {
-                if(value && CanBuild()) {
-                    hasStation = value;
-                    HasRail = hasStation;
+                hasStation = value;
+                if (hasStation) {
                     SpawnStation();
+                    HasRail = hasStation;   //l'ordre de ces deux lignes a un GROS IMPACT sur le network à revoir
                 }
-                else if (!value) {
-                    hasStation = value;
-                    //HasRail = hasStation;
+                else if (!hasStation) {
                     network.RemoveStation(station);
                     DestroyStation();
                 }
@@ -78,7 +78,7 @@ public class GameTile : MonoBehaviour
     }
 
     public Industry industry { get; private set; }
-    bool hasIndustry;
+    [SerializeField] bool hasIndustry;
     public bool HasIndustry
     {
         get { return hasIndustry; }
@@ -86,7 +86,7 @@ public class GameTile : MonoBehaviour
         {
             if (value != hasIndustry)
             {
-                if (value && CanBuild()) {
+                if (value && CanBuildIndustry()) {
                     hasIndustry = value;
                     SpawnFactory();
                 }
@@ -98,10 +98,13 @@ public class GameTile : MonoBehaviour
         }
     }
 
-    //couvrir le cas spéciaux des rails et stations
-    bool CanBuild()
+    bool CanBuildIndustry()
     {
-        return !(hasStation || hasIndustry);
+        return !(hasStation || hasRail);
+    }
+    bool CanBuildStationRail()
+    {
+        return !(hasIndustry);
     }
     private void Start()
     {
@@ -121,7 +124,7 @@ public class GameTile : MonoBehaviour
     {
         for(int i = 0; i < 4; i++)
         {
-            if (tile == neighbor[i])  //maybe checker le nom si toutes les cases sont "égales"
+            if (tile == neighbor[i])
                 return (TileDirection)i;
         }
         return 0;
@@ -251,7 +254,6 @@ public class GameTile : MonoBehaviour
 
         if (HasRail)
             UpdateRail();
-        //update network
     }
 
     void UpdateRail()
@@ -354,6 +356,7 @@ public class GameTile : MonoBehaviour
                 neighbor[i].industry.RemoveStation(station);
             }
         }
+        //GameManager.Instance.gridBoard.   //créer fonction pour update station list
     }
     void SpawnFactory()
     {
@@ -386,18 +389,16 @@ public class GameTile : MonoBehaviour
         if (hasIndustry)
         {
             content = "Industry";
-            //industry.canExport    //industry.canImport
-            ui.CreateItemDisplayList(industry.canImport, industry.canExport, industry.stockRessources);
+            ui.UpdateItemDisplayList(industry.canImport, industry.canExport, industry.stockRessources);
         }
         else if (hasStation)
         {
             content = "Station";
-            //station.stockRessources
             List<int> numberRessources = new List<int>();
             for(int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) {
                 numberRessources.Add(i);
             }
-            ui.CreateItemDisplayList(numberRessources, numberRessources, station.stockRessources);
+            ui.UpdateItemDisplayList(numberRessources, numberRessources, station.stockRessources);
         }
         else
             content = "Empty";
@@ -481,7 +482,7 @@ public class GameTile : MonoBehaviour
         {
             content = "Industry";
             //industry.canExport    //industry.canImport
-            ui.CreateItemDisplayListBIS(industry.canImport, industry.canExport, industry.stockRessources);
+            ui.UpdateItemDisplayListBIS(industry.canImport, industry.canExport, industry.stockRessources);
         }
         else if (hasStation)
         {
@@ -492,7 +493,7 @@ public class GameTile : MonoBehaviour
             {
                 numberRessources.Add(i);
             }
-            ui.CreateItemDisplayListBIS(numberRessources, numberRessources, station.stockRessources);
+            ui.UpdateItemDisplayListBIS(numberRessources, numberRessources, station.stockRessources);
         }
         else
             content = "Empty";

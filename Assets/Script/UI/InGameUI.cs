@@ -36,13 +36,7 @@ public class InGameUI : MonoBehaviour
                 HandleInput();
             if (Input.GetMouseButtonDown(1))
                 Unselect();
-            /*else if (selectedUnit)
-            {
-                if (Input.GetMouseButtonDown(1))
-                    //DoMove();
-                else
-                    //DoPathFinding();
-            }*/
+            
         }
     }
 
@@ -71,6 +65,7 @@ public class InGameUI : MonoBehaviour
             }
             selectTileMenu.SetActive(true);
             tile.UpdateUI(this);
+            GameManager.Instance.selectedTile = tile;
         }
         else
             selectTileMenu.SetActive(false);
@@ -105,7 +100,7 @@ public class InGameUI : MonoBehaviour
         selectedTileName.text = name;
         selectedTileContent.text = content;
     }
-    public void CreateItemDisplayList(List<int> imports, List<int> exports, List<int> stock) {
+    public void UpdateItemDisplayList(List<int> imports, List<int> exports, List<int> stock) {
         for(int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
         {
             selectedTileImport[i].nameRessource.text = GameManager.Instance.ressourceSample[i].nameRessource;
@@ -144,6 +139,7 @@ public class InGameUI : MonoBehaviour
             }
             selectTileMenuBIS.SetActive(true);
             tile.UpdateUIBIS(this);
+            GameManager.Instance.selectedTileBIS = tile;
         }
         else
             selectTileMenuBIS.SetActive(false);
@@ -153,7 +149,7 @@ public class InGameUI : MonoBehaviour
         selectedTileNameBIS.text = name;
         selectedTileContentBIS.text = content;
     }
-    public void CreateItemDisplayListBIS(List<int> imports, List<int> exports, List<int> stock)
+    public void UpdateItemDisplayListBIS(List<int> imports, List<int> exports, List<int> stock)
     {
         for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
         {

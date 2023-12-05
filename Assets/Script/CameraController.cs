@@ -13,13 +13,21 @@ public class CameraController : MonoBehaviour
     [SerializeField] float minY = 3f;
     [SerializeField] float maxY = 15f;
 
-    //add rotation 
+    //ajuste l'angle entre 60 et 90 degré quand on dézoom
+    [SerializeField] Vector2 rotationLimit;
+
     //add a follow/unfollow object function
-    //ajuster l'angle entre 60 et 90 degré quand on dézoom
+    
+    private void Start()
+    {
+        panLimit.x = (GameManager.Instance.size.x / 2) - 3;
+        panLimit.y = (GameManager.Instance.size.y / 2) - 5;
+    }
 
     void Update()
     {
         Vector3 pos = transform.position;
+        Quaternion rot = transform.rotation;
 
         if(Input.GetKey(KeyCode.Z) || Input.mousePosition.y >= Screen.height - panBorderThickness)
         {
@@ -46,6 +54,10 @@ public class CameraController : MonoBehaviour
         pos.y = Mathf.Clamp(pos.y, minY, maxY);
 
         transform.position = pos;
+
+        rot.x = Mathf.Lerp(rotationLimit.x, rotationLimit.y, (pos.y - minY) / maxY);
+
+        transform.rotation = rot;
 
         panSpeed = Mathf.Lerp(8, 20, (pos.y - minY) / maxY);
     }

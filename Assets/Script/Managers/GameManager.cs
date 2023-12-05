@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     GameObject player;
     public GridBoard gridBoard;
-    [SerializeField]Vector2Int size;
+    public Vector2Int size;
     public GameObject[] railPrefabs;
 
     public GameObject tileCopy;
@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
 
     public InGameUI gameUI;
     public GameTile selectedTile;
+    public GameTile selectedTileBIS; //to remove
 
     public string[] stationNameGeneratorPull = {"Montparnasse", "St Jean", "Du Sud", "De l'Ouest",
         "Austerlitz", "Stalingrad", "Lavoisier" };
@@ -31,9 +32,9 @@ public class GameManager : MonoBehaviour
     public List<Material> Industrymats = new List<Material>();
 
     public GameObject factoryPrefab; //to remove
-    public GameObject stationPrefab; //to remove merge avec l'ancien object station
+    public GameObject stationPrefab; //to remove 
     public GameObject trainPrefab;
-    public List<GameObject> wagonTemplate = new List<GameObject>();
+    public List<GameObject> wagonTemplate = new List<GameObject>(); //to remove 
 
     public static GameManager Instance { get; private set; }
 
@@ -56,6 +57,11 @@ public class GameManager : MonoBehaviour
             saveLoadMenu.gameObject.SetActive(true);
         if (Input.GetKeyDown(KeyCode.C))
             saveLoadMenu.gameObject.SetActive(false);
+
+        if(selectedTile != null)
+            selectedTile.UpdateUI(gameUI);
+        if(selectedTileBIS != null)
+            selectedTileBIS.UpdateUIBIS(gameUI);
     }
 
     public void ChangeGameState(GameState state)

@@ -5,21 +5,19 @@ using TMPro;
 
 public class Industry : MonoBehaviour
 {
-    //string ressourceName = "ressource1";
     int prodTime = 3;
     float prodTimer;
-    List<int> prodQty; //to list
-    List<int> requiredQty; //to list
+    List<int> prodQty; 
+    List<int> requiredQty; 
 
     List<RessourceScriptable> ressourceInput = new List<RessourceScriptable>();
     List<RessourceScriptable> ressourceOutput = new List<RessourceScriptable>();
 
-    [SerializeField] public List<int> canExport;//{ get; private set; }
-    [SerializeField] public List<int> canImport;//{ get; private set; }
+    [SerializeField] public List<int> canExport; //{ get; private set; }
+    [SerializeField] public List<int> canImport; //{ get; private set; }
 
     [SerializeField] int storage = 10; //
-    [SerializeField] public int stock { get; private set; } //
-    [SerializeField] public List<int> stockRessources;//{ get; private set; } //update pour avour un stockage sur All ressource slot
+    [SerializeField] public List<int> stockRessources; //{ get; private set; }
     public GameObject model;
 
     List<Station> linkedStation = new List<Station>();
@@ -40,10 +38,6 @@ public class Industry : MonoBehaviour
             }
         }
     }
-
-    //toscrap
-    [SerializeField] TMP_Text stockDisplay;
-    [SerializeField] TMP_Text requiredStockDisplay;
 
     public void AddStation(Station industry)
     {
@@ -101,7 +95,6 @@ public class Industry : MonoBehaviour
 
     void Update()
     {
-        //update la production que la c'est pas bon pas bon DU TOUT
         if(prodTimer < 0) {
             prodTimer = prodTime;
             bool canProd = CanProduce();
@@ -110,14 +103,14 @@ public class Industry : MonoBehaviour
                     for (int i = 0; i < canImport.Count; i++)
                         ChangeStorageRessource(-requiredQty[i], canImport[i]);
                     for (int i = 0; i < canExport.Count; i++)
-                        ChangeStorageRessource(prodQty[i], canExport[i]); //to update when prod qty will become a list
+                        ChangeStorageRessource(prodQty[i], canExport[i]); 
                     prodTimer = prodTime;
                 }
                 prodTimer = 1;
             }
             if(canImport.Count < 0) {
                 for (int i = canImport.Count; i < canExport.Count; i++)
-                    ChangeStorageRessource(prodQty[i], canExport[i]); //to update when prod qty will become a list
+                    ChangeStorageRessource(prodQty[i], canExport[i]); 
                 prodTimer = prodTime;
             }
         }
@@ -140,7 +133,6 @@ public class Industry : MonoBehaviour
     public int ChangeStorageRessource(int changeValue, int valueIndex)
     {
         int leftover = 0;
-        //au besoin récupérer les id depuis l'index de la liste
         stockRessources[valueIndex] += changeValue;
         if (stockRessources[valueIndex] < 0) {
             leftover = stockRessources[valueIndex];
@@ -150,8 +142,6 @@ public class Industry : MonoBehaviour
             leftover = stockRessources[valueIndex] - storage;
             stockRessources[valueIndex] = storage;
         }
-
-        //Update UI string
 
         return leftover;
     }
@@ -165,29 +155,5 @@ public class Industry : MonoBehaviour
             stockRessources[valueIndex] = storage;
 
         //vérifier si leftover ???
-
-        //Update UI string
-    }
-
-    //not needed now
-    public List<int> ChangeMultipleStorage(List<int> changeValue, List<int> valueIndex)
-    {
-        List<int> leftover = new List<int>(); //changer en liste
-
-        //inStock += changeValue; //créer list in stock
-        //loop pour chaque changement
-        if (stock < 0)
-        {
-            //leftover = stock;
-            stock = 0;
-        }
-        else if (stock > storage)
-        {
-            //leftover = stock - storage;
-            stock = storage;
-        }
-        stockDisplay.text = "" + stock;
-
-        return leftover;
     }
 }

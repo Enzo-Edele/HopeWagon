@@ -13,7 +13,6 @@ public class Station : MonoBehaviour
 
     [SerializeField] List<Industry> linkedIndustries = new List<Industry>();
     int storage = 50; //pas besoin de passer en liste tant que les gares on un stockage égal pour tout
-    [SerializeField] int inStock;
     [SerializeField] public List<int> stockRessources;
 
     [SerializeField] List<bool> canExport = new List<bool>();
@@ -24,7 +23,6 @@ public class Station : MonoBehaviour
 
     //toScrap
     [SerializeField] TMP_Text nameDisplay;
-    [SerializeField] TMP_Text stockDisplay;
 
     public void SetTile(GameTile newTile)
     {
@@ -37,6 +35,7 @@ public class Station : MonoBehaviour
             newNetwork.AddStation(this);
             newNetwork.ClaimTile(tile);
         }
+        destinationList = GridBoard.Instance.GetStationInNetwork(tile);
     }
 
     public void AddDestination(Station station)
@@ -83,18 +82,24 @@ public class Station : MonoBehaviour
         }
         for (int i = 0; i < linkedIndustries.Count; i++) {
             for(int j = 0; j < linkedIndustries[i].canExport.Count; j++) {
-                canImport[linkedIndustries[i].canExport[j]] = true;
+                canExport[linkedIndustries[i].canExport[j]] = true;
             }
             for (int k = 0; k < linkedIndustries[i].canImport.Count; k++) {
-                canExport[linkedIndustries[i].canImport[k]] = true;
+                canImport[linkedIndustries[i].canImport[k]] = true;
             }
         }
     }
 
     private void Awake()
     {
+        name = GameManager.Instance.GiveStationName();
+        nameStation = name;
+        nameDisplay.text = nameStation;
+
+        GridBoard.Instance.stationList.Add(this); //add (check if it exist) a method to properly remove station
         stockRessources = new List<int>();
-        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) {
+        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
+        {
             stockRessources.Add(0);
             canExport.Add(false);
             canImport.Add(false);
@@ -103,13 +108,8 @@ public class Station : MonoBehaviour
 
     private void Start()
     {
-        name = GameManager.Instance.GiveStationName();
-        nameStation = name;
-        nameDisplay.text = nameStation;
-        destinationList = GridBoard.Instance.GetStationInNetwork(tile);
         for (int i = 0; i < destinationList.Count; i++)
             destinationNameList.Add(destinationList[i].name);
-        GridBoard.Instance.stationList.Add(this);      //add (check if it exist) a method to properly remove station
     }
 
     public void DeployTrain(Station destination)
@@ -132,23 +132,29 @@ public class Station : MonoBehaviour
         }
         Train train = Instantiate(GameManager.Instance.trainPrefab).GetComponent<Train>();
         train.SetPath(path);
-        train.Spawn(path[0]); //donner la premiére tile
+        train.Spawn(path[0]); //donne la premiére tile
         train.SetWagons(GameManager.Instance.wagonTemplate);
-        SetStock(train.Load(inStock));
+        
+        List<int> toLoad = new List<int>();
+        for(int j = 0; j < GameManager.Instance.ressourceSample.Count; j++) {
+            if (canExport[j] && canExport[j] == destination.canImport[j])
+                toLoad.Add(j);
+        }
+        for (int j = 0; j < toLoad.Count; j++)
+        {
+            SetStockRessource(train.LoadRessources(stockRessources[toLoad[j]], toLoad[j]), toLoad[j]);
+        }
     }
 
     private void Update() {
         if(requestTimer < 0) {
             requestTimer = requestTime;
             int indexRessource = -1;
-            //maybe repenser pour ne pas faire masse de for
             //take ressource
             for(int i = 0; i < linkedIndustries.Count; i++) {
-                //loop through all importable
                 for(int j = 0; j < linkedIndustries[i].canExport.Count; j++) {
-                    //check if matches industry exportable
                     indexRessource = linkedIndustries[i].canExport[j];
-                    if (canImport[indexRessource]) {
+                    if (canExport[indexRessource]) {
                         linkedIndustries[i].SetStockRessource(ChangeStorageRessource(linkedIndustries[i].stockRessources[indexRessource], indexRessource), indexRessource); 
                         //verifier sécurité pour empêcher dupli
                     }
@@ -156,11 +162,9 @@ public class Station : MonoBehaviour
             }
             //send ressource
             for (int i = 0; i < linkedIndustries.Count; i++) {
-                //loop through all exportable
                 for (int j = 0; j < linkedIndustries[i].canImport.Count; j++) {
-                    //check if matches industry importable
                     indexRessource = linkedIndustries[i].canImport[j];
-                    if (canExport[indexRessource]) {
+                    if (canImport[indexRessource]) {
                         SetStockRessource(linkedIndustries[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
                         //verifier sécurité pour empêcher dupli
                     }
@@ -173,37 +177,9 @@ public class Station : MonoBehaviour
         }
     }
 
-    int ChangeStorage(int changeValue)
-    {
-        int leftover = 0;
-
-        inStock += changeValue;
-        if (inStock < 0)
-        {
-            leftover = inStock;
-            inStock = 0;
-        }
-        else if (inStock > storage)
-        {
-            leftover = inStock - storage;
-            inStock = storage;
-        }
-
-        return leftover;
-    }
-    public void SetStock(int newStock)
-    {
-        inStock = newStock;
-        if (inStock < 0)
-            inStock = 0;
-        else if (inStock > storage)
-            inStock = storage;
-    }
-
     public int ChangeStorageRessource(int changeValue, int valueIndex)
     {
         int leftover = 0;
-        //au besoin récupérer les id depuis l'index de la liste
         stockRessources[valueIndex] += changeValue;
         if (stockRessources[valueIndex] < 0)
         {
@@ -215,7 +191,6 @@ public class Station : MonoBehaviour
             leftover = stockRessources[valueIndex] - storage;
             stockRessources[valueIndex] = storage;
         }
-        //Update UI texte
 
         return leftover;
     }
@@ -229,13 +204,13 @@ public class Station : MonoBehaviour
             stockRessources[valueIndex] = storage;
 
         //vérifier si leftover ???
-
-        //Update UI string
     }
 
-    public int Unload(int toUnload)
+    public int UnloadRessources(int qtyUnload, int ressourceIndex)
     {
-        int leftover = ChangeStorage(toUnload);
+        int leftover = ChangeStorageRessource(qtyUnload, ressourceIndex);
+
+        Debug.Log(stockRessources[ressourceIndex] + " loaded out of " + qtyUnload + " of type " + ressourceIndex);
 
         return leftover;
     }

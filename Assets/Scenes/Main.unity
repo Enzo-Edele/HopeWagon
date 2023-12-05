@@ -734,7 +734,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridBoard: {fileID: 639811394}
-  size: {x: 100, y: 100}
+  size: {x: 50, y: 50}
   railPrefabs:
   - {fileID: 4121519862310764042, guid: 81a4f52b7d263cc43a8ac1a204d01541, type: 3}
   - {fileID: 166640380338565092, guid: 051ffe7741b237648a2b0359cb0b7318, type: 3}
@@ -746,6 +746,7 @@ MonoBehaviour:
   saveLoadMenu: {fileID: 1556357695}
   gameUI: {fileID: 1739574533}
   selectedTile: {fileID: 0}
+  selectedTileBIS: {fileID: 0}
   stationNameGeneratorPull:
   - Montparnasse
   - St Jean
@@ -5374,6 +5375,7 @@ MonoBehaviour:
   scrollSpeed: 20
   minY: 3
   maxY: 15
+  rotationLimit: {x: 0.5, y: 0.7}
 --- !u!1001 &1021761806
 PrefabInstance:
   m_ObjectHideFlags: 0

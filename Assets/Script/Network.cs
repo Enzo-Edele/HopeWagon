@@ -16,7 +16,7 @@ public class Network : MonoBehaviour
     {
         indexNetwork = GameManager.Instance.networkNumber++;
         nameNetwork = "Network" + indexNetwork;
-        colorNetwork = GameManager.Instance.colorArray[indexNetwork];//[Random.Range(0, GameManager.Instance.colorArray.Length)];
+        colorNetwork = GameManager.Instance.colorArray[indexNetwork % GameManager.Instance.colorArray.Length];
     }
 
     public void ClaimTile(GameTile tile)

@@ -5,7 +5,6 @@ using TMPro;
 public class Train : MonoBehaviour
 {
     //float speed = 0.2f; to use later to modify progress factor
-    int wagonCap;
     [SerializeField] List<GameTileCopy> path = new List<GameTileCopy>();
     GameTileCopy currentTile, nextTile;
     Vector3 positionTile, positionNextTile;
@@ -18,15 +17,27 @@ public class Train : MonoBehaviour
 
     //locomotive
     Queue<GameObject> wagonQueue = new Queue<GameObject>();
+    int wagonCap;
 
-    //array of array ? / list ? ressource
+    public List<bool> RouteRessources;
+
     public int storage = 12;
-    public int stock;
+    public List<int> stockRessources;
 
     //make a factory
 
     [SerializeField] TMP_Text stockDisplay;
 
+    private void Awake()
+    {
+        stockRessources = new List<int>();
+        RouteRessources = new List<bool>();
+        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
+        {
+            RouteRessources.Add(false);
+            stockRessources.Add(0);
+        }
+    }
     public void Spawn(GameTileCopy tile) {
         currentTile = tile;
         nextTile = tile.nextOnPath;
@@ -43,7 +54,6 @@ public class Train : MonoBehaviour
         directionAngleTile = directionAangleNextTile = direction.GetAngle();
         transform.localRotation = direction.GetRotation();
         progressFactor = 2f;
-        //ref les tile grid dans leur copy???
     }
 
     void Update()
@@ -60,7 +70,15 @@ public class Train : MonoBehaviour
                 {
                     //Destroy(path[i].gameObject); //déplacer dans le last wagon
                 }*/
-                stock = GridBoard.Instance.GetTile(currentTile.tileCoordinate).station.Unload(stock);
+                //give destination as var
+                for (int i = 0; i < RouteRessources.Count; i++)
+                {
+                    if (RouteRessources[i])
+                    {
+                        stockRessources[i] = GridBoard.Instance.GetTile(currentTile.tileCoordinate).station.UnloadRessources(stockRessources[i], i);
+                        Debug.Log("Unloading");
+                    }
+                }
                 Destroy(gameObject); //make a factory and replace with a reclaim method
                 return false;
             }
@@ -113,8 +131,6 @@ public class Train : MonoBehaviour
             case DirectionChange.Left: PrepareLeft(); break;
             //cas de défaut turn around serait une erreur
         }
-        //currentTile.HidePath();
-        //nextTile.ShowPath();
     }
     void PrepareForward()
     {
@@ -147,7 +163,7 @@ public class Train : MonoBehaviour
         transform.localRotation = direction.GetRotation();
         progressFactor = 2f;
     }
-    //on créer une copie des tile pour conserver les infos du bon pathfind (passer par une fake class qui prend seulement le nécesaire)
+    //on créer une copie des tile pour conserver les infos du bon pathfind
     public void SetPath(List<GameTileCopy> newPath)
     {
         path = newPath;
@@ -159,17 +175,21 @@ public class Train : MonoBehaviour
             wagonQueue.Enqueue(wagonLoad[i]);
         }
     }
-    public int Load(int qté)
+    public int LoadRessources(int qty, int index)
     {
         int leftover = 0;
-        Debug.Assert(qté >= 0, "WARNING : can't load negative value on train");
-        stock += qté;
+        Debug.Assert(qty >= 0, "WARNING : can't load negative value on train");
+        stockRessources[index] += qty;
+        RouteRessources[index] = true;
 
-        if(stock > storage) { 
-            leftover = stock - storage;
-            stock = storage;
+        if (stockRessources[index] > storage) {
+            leftover = stockRessources[index] - storage;
+            stockRessources[index] = storage;
         }
-        stockDisplay.text = "" + stock;
+
+        Debug.Log(stockRessources[index] + " loaded out of " + qty + " remaining " + leftover);
+
+        stockDisplay.text = "" + stockRessources[index];
 
         return leftover;
     }
