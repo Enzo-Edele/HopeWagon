@@ -113,13 +113,11 @@ public class UIGridEditor : MonoBehaviour
                 return;
             }
             if (tile.HasIndustry) {
-                if (applyCaptor) { 
-                    tile.industry.SetIndustryType(GameManager.Instance.captor);
-                    tile.industry.model.GetComponent<Renderer>().material = GameManager.Instance.Industrymats[0];
+                if (applyCaptor) {
+                    tile.industry.SetIndustryType(GameManager.Instance.industryTypes[0]);
                 }
                 if (applyPlate) {
-                    tile.industry.SetIndustryType(GameManager.Instance.plate);
-                    tile.industry.model.GetComponent<Renderer>().material = GameManager.Instance.Industrymats[1];
+                    tile.industry.SetIndustryType(GameManager.Instance.industryTypes[1]);
                 }
             }
         }

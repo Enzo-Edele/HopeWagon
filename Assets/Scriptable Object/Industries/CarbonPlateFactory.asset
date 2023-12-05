@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: CarbonPlateFactory
   m_EditorClassIdentifier: 
   nameIndustry: Carbon Plate Factory
-  id: 0
+  id: 1
   outpout:
   - {fileID: 11400000, guid: 1d2e2437cbf966d43a1e39c1f13bfb9d, type: 2}
-  prodTime: 10
-  prodQty: 2
+  prodTime: 6
+  prodQty: 02000000
   input:
   - {fileID: 11400000, guid: 3adb80a8db9c3984099cce2f2d2bdc5f, type: 2}
-  requireAmount: 4
+  requireAmount: 04000000
   storage: 25
   pollutionLevel: 0
   description: 

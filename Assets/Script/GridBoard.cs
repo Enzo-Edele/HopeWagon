@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class GridBoard : MonoBehaviour
 {
@@ -190,5 +191,23 @@ public class GridBoard : MonoBehaviour
         for (int i = 0; i < networkList.Count; i++)
             if (network == networkList[i])
                 networkList.RemoveAt(i);
+    }
+
+    public void Save(BinaryWriter writer)
+    {
+        writer.Write(size.x);
+        writer.Write(size.y);
+
+        for (int i = 0; i < tiles.Length; i++)
+            tiles[i].Save(writer);
+    }
+    public void Load(BinaryReader reader, int header)
+    {
+        int x = 20, z = 15;
+        x = reader.ReadInt32();
+        z = reader.ReadInt32();
+
+        for (int i = 0; i < tiles.Length; i++)
+            tiles[i].Load(reader, header);
     }
 }

@@ -11,19 +11,20 @@ public class GameManager : MonoBehaviour
 
     public GameObject tileCopy;
 
+    public SaveLoadMenu saveLoadMenu;
+
     public InGameUI gameUI;
     public GameTile selectedTile;
 
     public string[] stationNameGeneratorPull = {"Montparnasse", "St Jean", "Du Sud", "De l'Ouest",
         "Austerlitz", "Stalingrad", "Lavoisier" };
-    [SerializeField]int nameIndex = 0; 
-    [SerializeField]int NameLooped = 1; 
+    [SerializeField]int nameIndex = 0;
+    [SerializeField] int nameLooped = 1;
 
     public Color[] colorArray = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow, Color.white };
     public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
 
-    public IndustryScriptable captor; //faire list(s)
-    public IndustryScriptable plate;
+    public List<IndustryScriptable> industryTypes = new List<IndustryScriptable>(); 
     public List<RessourceScriptable> ressourceSample = new List<RessourceScriptable>();
 
     //to scrap
@@ -51,8 +52,10 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        //if (Input.GetMouseButton(0))
-        //gameUI.DoSelection();
+        if (Input.GetKeyDown(KeyCode.X))
+            saveLoadMenu.gameObject.SetActive(true);
+        if (Input.GetKeyDown(KeyCode.C))
+            saveLoadMenu.gameObject.SetActive(false);
     }
 
     public void ChangeGameState(GameState state)
@@ -71,12 +74,12 @@ public class GameManager : MonoBehaviour
 
     public string GiveStationName()
     {
-        string stationName = stationNameGeneratorPull[nameIndex];
+        string stationName = stationNameGeneratorPull[nameIndex] + " " + nameLooped ;
         nameIndex += 1;
         if (nameIndex > stationNameGeneratorPull.Length - 1)
         {
             nameIndex = 0;
-            NameLooped += 1;
+            nameLooped++;
         }
         return stationName;
     }

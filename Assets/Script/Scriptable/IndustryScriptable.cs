@@ -8,12 +8,12 @@ public class IndustryScriptable : ScriptableObject
 {
     public string nameIndustry;
     public int id;
-    public List<RessourceScriptable> outpout; // list
+    public List<RessourceScriptable> outpout;
     public int prodTime;
-    public int prodQty; //list
-    public List<RessourceScriptable> input; // list
-    public int requireAmount; //list
-    public int storage; //???
+    public List<int> prodQty;
+    public List<RessourceScriptable> input;
+    public List<int> requireAmount;
+    public int storage; //??? List
     //for later use
     public int pollutionLevel;
     public string description;

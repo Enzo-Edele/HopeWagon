@@ -431,6 +431,9 @@ MonoBehaviour:
   destinationNameList: []
   linkedIndustries: []
   inStock: 0
+  stockRessources: 
+  canExport: 
+  canImport: 
   nameDisplay: {fileID: 5913496374404603252}
   stockDisplay: {fileID: 917843919685332136}
 --- !u!1 &7022535964868735807
@@ -460,7 +463,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7022535964868735807}
   m_LocalRotation: {x: 0.3420201, y: 0, z: 0, w: 0.9396927}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.27}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -473,7 +476,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 40, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.702}
+  m_AnchoredPosition: {x: 0, y: 0.375}
   m_SizeDelta: {x: 100, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3499153902140825290
@@ -554,7 +557,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &660063909918392209
 RectTransform:
   m_ObjectHideFlags: 0
@@ -796,7 +799,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6077447261869742938
 RectTransform:
   m_ObjectHideFlags: 0

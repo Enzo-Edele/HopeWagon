@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class GameTile : MonoBehaviour
 {
@@ -342,6 +343,7 @@ public class GameTile : MonoBehaviour
                 neighbor[i].industry.AddStation(station);
             }
         }
+        station.CheckImportExport();
     }
     void DestroyStation()
     {
@@ -361,6 +363,7 @@ public class GameTile : MonoBehaviour
             if (neighbor[i].HasStation) {
                 neighbor[i].station.AddIndustry(industry);
                 industry.AddStation(neighbor[i].station);
+                neighbor[i].station.CheckImportExport();
             }
         }
     }
@@ -401,6 +404,49 @@ public class GameTile : MonoBehaviour
         ui.UpdateTileInfo(name, content);
     }
 
+    public void Save(BinaryWriter writer)
+    {
+        writer.Write(HasRail);
+        writer.Write(HasStation);
+        if (hasIndustry)
+        {
+            writer.Write(HasIndustry);
+            if (industry.Type != null)
+                writer.Write(industry.Type.id); //opti plus tard en byte
+            else
+            {
+                writer.Write(-1);
+            }
+        }
+        else
+        {
+            writer.Write(HasIndustry);
+            writer.Write(-1);
+        }
+    }
+
+    public void Load(BinaryReader reader, int header)
+    {
+        ClearTile();
+        HasRail = reader.ReadBoolean();
+        HasStation = reader.ReadBoolean();
+        HasIndustry = reader.ReadBoolean();
+        int industryType = reader.ReadInt32();
+        if (HasIndustry) {
+            if(industryType >= 0) 
+                industry.SetIndustryType(GameManager.Instance.industryTypes[industryType]);
+        }
+        else {
+            HasIndustry = false;
+        }
+    }
+
+    public void ClearTile() {
+        HasRail = false;
+        HasIndustry = false;
+        HasStation = false;
+    }
+
     //use for advance option and debbug
     public void ShowNetwork()
     {
@@ -425,5 +471,31 @@ public class GameTile : MonoBehaviour
     public void HidePath()
     {
         Paint(Color.white);
+    }
+
+    //to scrap
+    public void UpdateUIBIS(InGameUI ui)
+    {
+        string content;
+        if (hasIndustry)
+        {
+            content = "Industry";
+            //industry.canExport    //industry.canImport
+            ui.CreateItemDisplayListBIS(industry.canImport, industry.canExport, industry.stockRessources);
+        }
+        else if (hasStation)
+        {
+            content = "Station";
+            //station.stockRessources
+            List<int> numberRessources = new List<int>();
+            for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
+            {
+                numberRessources.Add(i);
+            }
+            ui.CreateItemDisplayListBIS(numberRessources, numberRessources, station.stockRessources);
+        }
+        else
+            content = "Empty";
+        ui.UpdateTileInfoBIS(name, content);
     }
 }

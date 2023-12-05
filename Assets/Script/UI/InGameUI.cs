@@ -20,6 +20,12 @@ public class InGameUI : MonoBehaviour
     [SerializeField] List<UIRessourceItem> selectedTileImport = new List<UIRessourceItem>();
     [SerializeField] List<UIRessourceItem> selectedTileExport = new List<UIRessourceItem>();
 
+    [SerializeField] GameObject selectTileMenuBIS;
+    [SerializeField] TMP_Text selectedTileNameBIS;
+    [SerializeField] TMP_Text selectedTileContentBIS;
+    [SerializeField] List<UIRessourceItem> selectedTileImportBIS = new List<UIRessourceItem>();
+    [SerializeField] List<UIRessourceItem> selectedTileExportBIS = new List<UIRessourceItem>();
+
     //Unit
 
     void Update()
@@ -75,7 +81,7 @@ public class InGameUI : MonoBehaviour
         currentTile = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
         if (currentTile)
         {
-            //update panel info 2
+            DoSelectionBIS(currentTile);
         }
         //hide current tile info panel
     }
@@ -102,17 +108,69 @@ public class InGameUI : MonoBehaviour
     public void CreateItemDisplayList(List<int> imports, List<int> exports, List<int> stock) {
         for(int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
         {
-            selectedTileImport[i].qtyRessource.text = "";
-            selectedTileExport[i].qtyRessource.text = "";
+            selectedTileImport[i].nameRessource.text = GameManager.Instance.ressourceSample[i].nameRessource;
+            selectedTileImport[i].qtyRessource.text = "0";
+            selectedTileExport[i].nameRessource.text = GameManager.Instance.ressourceSample[i].nameRessource;
+            selectedTileExport[i].qtyRessource.text = "0";
         }
         for(int i = 0; i < imports.Count; i++) {
-            selectedTileImport[imports[i]].nameRessource.text = GameManager.Instance.ressourceSample[imports[i]].nameRessource;
-            selectedTileImport[imports[i]].nameRessource.text = "" + stock[imports[i]];
+            if(stock.Count >= 0)
+                selectedTileImport[imports[i]].qtyRessource.text = "" + stock[imports[i]];
         }
         for (int i = 0; i < exports.Count; i++)
         {
-            selectedTileExport[exports[i]].nameRessource.text = GameManager.Instance.ressourceSample[exports[i]].nameRessource;
-            selectedTileExport[exports[i]].nameRessource.text = "" + stock[exports[i]];
+            if (stock.Count >= 0)
+                selectedTileExport[exports[i]].qtyRessource.text = "" + stock[exports[i]];
+        }
+    }
+    //toscrap
+    void DoSelectionBIS(GameTile tile)
+    {
+        if (tile)
+        {
+            if (tile.station != null)
+            {
+                stationMenu.SetActive(true);
+                stationStartText.text = tile.station.name;
+                destinationDropdown.options.Clear();
+                foreach (string option in tile.station.destinationNameList)
+                {
+                    destinationDropdown.options.Add(new TMP_Dropdown.OptionData() { text = option });
+                }
+            }
+            else
+            {
+                stationMenu.SetActive(false);
+            }
+            selectTileMenuBIS.SetActive(true);
+            tile.UpdateUIBIS(this);
+        }
+        else
+            selectTileMenuBIS.SetActive(false);
+    }
+    public void UpdateTileInfoBIS(string name, string content)
+    {
+        selectedTileNameBIS.text = name;
+        selectedTileContentBIS.text = content;
+    }
+    public void CreateItemDisplayListBIS(List<int> imports, List<int> exports, List<int> stock)
+    {
+        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
+        {
+            selectedTileImportBIS[i].nameRessource.text = GameManager.Instance.ressourceSample[i].nameRessource;
+            selectedTileImportBIS[i].qtyRessource.text = "0";
+            selectedTileExportBIS[i].nameRessource.text = GameManager.Instance.ressourceSample[i].nameRessource;
+            selectedTileExportBIS[i].qtyRessource.text = "0";
+        }
+        for (int i = 0; i < imports.Count; i++)
+        {
+            if (stock.Count >= 0)
+                selectedTileImportBIS[imports[i]].qtyRessource.text = "" + stock[imports[i]];
+        }
+        for (int i = 0; i < exports.Count; i++)
+        {
+            if (stock.Count >= 0)
+                selectedTileExportBIS[exports[i]].qtyRessource.text = "" + stock[exports[i]];
         }
     }
 }

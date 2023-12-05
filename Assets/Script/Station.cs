@@ -91,6 +91,16 @@ public class Station : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        stockRessources = new List<int>();
+        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) {
+            stockRessources.Add(0);
+            canExport.Add(false);
+            canImport.Add(false);
+        }
+    }
+
     private void Start()
     {
         name = GameManager.Instance.GiveStationName();
@@ -99,15 +109,7 @@ public class Station : MonoBehaviour
         destinationList = GridBoard.Instance.GetStationInNetwork(tile);
         for (int i = 0; i < destinationList.Count; i++)
             destinationNameList.Add(destinationList[i].name);
-        GridBoard.Instance.stationList.Add(this);
-        //inStock = 0; //to remove
-        //stockDisplay.text = "" + inStock; // to remove
-        stockRessources = new List<int>();
-        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) { 
-            stockRessources.Add(0);
-            canExport.Add(false);
-            canImport.Add(false);
-        }
+        GridBoard.Instance.stationList.Add(this);      //add (check if it exist) a method to properly remove station
     }
 
     public void DeployTrain(Station destination)
