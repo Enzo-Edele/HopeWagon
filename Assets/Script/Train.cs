@@ -32,7 +32,7 @@ public class Train : MonoBehaviour
     {
         stockRessources = new List<int>();
         RouteRessources = new List<bool>();
-        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
+        for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
         {
             RouteRessources.Add(false);
             stockRessources.Add(0);
@@ -75,8 +75,9 @@ public class Train : MonoBehaviour
                 {
                     if (RouteRessources[i])
                     {
+                        GameManager.Instance.playerData.AddContratProgress(i, stockRessources[i]);
                         stockRessources[i] = GridBoard.Instance.GetTile(currentTile.tileCoordinate).station.UnloadRessources(stockRessources[i], i);
-                        Debug.Log("Unloading");
+                        GameManager.Instance.playerData.ChangeTrainStock(1);
                     }
                 }
                 Destroy(gameObject); //make a factory and replace with a reclaim method
@@ -186,8 +187,7 @@ public class Train : MonoBehaviour
             leftover = stockRessources[index] - storage;
             stockRessources[index] = storage;
         }
-
-        Debug.Log(stockRessources[index] + " loaded out of " + qty + " remaining " + leftover);
+        //Debug.Log(stockRessources[index] + " loaded out of " + qty + " remaining " + leftover);
 
         stockDisplay.text = "" + stockRessources[index];
 

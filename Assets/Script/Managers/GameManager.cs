@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    GameObject player;
     public GridBoard gridBoard;
     public Vector2Int size;
     public GameObject[] railPrefabs;
 
+    public PlayerData playerData;
+
     public GameObject tileCopy;
 
+    public UIGridEditor gridEditor;
     public SaveLoadMenu saveLoadMenu;
-
     public InGameUI gameUI;
     public GameTile selectedTile;
     public GameTile selectedTileBIS; //to remove
@@ -26,7 +27,8 @@ public class GameManager : MonoBehaviour
     public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
 
     public List<IndustryScriptable> industryTypes = new List<IndustryScriptable>(); 
-    public List<RessourceScriptable> ressourceSample = new List<RessourceScriptable>();
+    public List<RessourceScriptable> ressourceTypes = new List<RessourceScriptable>();
+    public List<ContractScriptable> contratTypes = new List<ContractScriptable>();
 
     //to scrap
     public List<Material> Industrymats = new List<Material>();
@@ -51,14 +53,19 @@ public class GameManager : MonoBehaviour
         Instance = this;
         gridBoard.Initialize(size);
     }
+    private void Start()
+    {
+        saveLoadMenu.Load("save1"); //use for demo build
+    }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.X))
-            saveLoadMenu.gameObject.SetActive(true);
-        if (Input.GetKeyDown(KeyCode.C))
-            saveLoadMenu.gameObject.SetActive(false);
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.X))
+            InterractSaveLoadMenu();
 
-        if(selectedTile != null)
+        if (Input.GetKeyDown(KeyCode.E))
+            OpenCloseEditMode();
+
+        if (selectedTile != null)
             selectedTile.UpdateUI(gameUI);
         if(selectedTileBIS != null)
             selectedTileBIS.UpdateUIBIS(gameUI);
@@ -76,6 +83,15 @@ public class GameManager : MonoBehaviour
             case GameState.pause:
                 break;
         }
+    }
+
+    public void InterractSaveLoadMenu() {
+        saveLoadMenu.ActivateMenu();
+    }
+
+    public void OpenCloseEditMode()
+    {
+        gridEditor.ActivateEditMode();
     }
 
     public string GiveStationName()

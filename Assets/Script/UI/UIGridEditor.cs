@@ -5,9 +5,12 @@ using System.IO;
 public class UIGridEditor : MonoBehaviour
 {
     public GridBoard grid;
+    [SerializeField] GameObject editMenu;
 
     bool applyStation, applyFactory;
-    bool applyCaptor, applyPlate;
+    bool applyCaptor, applyPlate, applyDrill, applyRefinery, applyChip;
+
+    bool isActive = false;
 
     enum OptionalToggle
     {
@@ -19,6 +22,12 @@ public class UIGridEditor : MonoBehaviour
     bool isDrag;
     TileDirection dragDirection;
     GameTile previousTile;
+
+    public void ActivateEditMode()
+    {
+        isActive = !isActive;
+        editMenu.SetActive(isActive);
+    }
 
     private void Update()
     {
@@ -109,16 +118,29 @@ public class UIGridEditor : MonoBehaviour
                 return;
             }
             if (applyFactory) {
-                tile.HasIndustry = !tile.HasIndustry;
+                tile.HasIndustry = false;
                 return;
             }
-            if (tile.HasIndustry) {
-                if (applyCaptor) {
-                    tile.industry.SetIndustryType(GameManager.Instance.industryTypes[0]);
-                }
-                if (applyPlate) {
-                    tile.industry.SetIndustryType(GameManager.Instance.industryTypes[1]);
-                }
+            if (applyCaptor) {
+                tile.HasIndustry = true;
+                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[0]);
+            }
+            if (applyPlate) {
+                tile.HasIndustry = true;
+                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[1]);
+            }
+            if (applyDrill) {
+                tile.HasIndustry = true;
+                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[2]);
+            }
+            if (applyRefinery) {
+                tile.HasIndustry = true;
+                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[3]);
+            }
+            if (applyChip)
+            {
+                tile.HasIndustry = true;
+                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[4]);
             }
         }
     }
@@ -144,5 +166,17 @@ public class UIGridEditor : MonoBehaviour
     public void SetApplyPlate(bool toggle)
     {
         applyPlate = toggle;
+    }
+    public void SetApplyDrill(bool toggle)
+    {
+        applyDrill = toggle;
+    }
+    public void SetApplyRefinery(bool toggle)
+    {
+        applyRefinery = toggle;
+    }
+    public void SetApplyChip(bool toggle)
+    {
+        applyChip = toggle;
     }
 }

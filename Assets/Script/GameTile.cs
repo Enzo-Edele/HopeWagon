@@ -34,6 +34,10 @@ public class GameTile : MonoBehaviour
                 value = false;
             if (value != hasRail) {
                 hasRail = value;
+                if (hasRail)
+                    GameManager.Instance.playerData.ChangeRailStock(-1);
+                if (!hasRail)
+                    GameManager.Instance.playerData.ChangeRailStock(0);
                 for (int i = 0; i < neighbor.Length; i++)
                     if (neighbor[i]) neighbor[i].UpdateRailNeighbor(value);
                 UpdateRail();
@@ -68,10 +72,12 @@ public class GameTile : MonoBehaviour
                 if (hasStation) {
                     SpawnStation();
                     HasRail = hasStation;   //l'ordre de ces deux lignes a un GROS IMPACT sur le network à revoir
+                    GameManager.Instance.playerData.ChangeStationStock(-1);
                 }
                 else if (!hasStation) {
                     network.RemoveStation(station);
                     DestroyStation();
+                    GameManager.Instance.playerData.ChangeStationStock(0);
                 }
             }
         }
@@ -395,7 +401,7 @@ public class GameTile : MonoBehaviour
         {
             content = "Station";
             List<int> numberRessources = new List<int>();
-            for(int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) {
+            for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++) {
                 numberRessources.Add(i);
             }
             ui.UpdateItemDisplayList(numberRessources, numberRessources, station.stockRessources);
@@ -489,7 +495,7 @@ public class GameTile : MonoBehaviour
             content = "Station";
             //station.stockRessources
             List<int> numberRessources = new List<int>();
-            for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
+            for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
             {
                 numberRessources.Add(i);
             }

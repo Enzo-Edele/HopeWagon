@@ -33,11 +33,14 @@ public class Industry : MonoBehaviour
                 prodQty = value.prodQty;
                 ressourceInput = value.input;
                 requiredQty = value.requireAmount;
+                industryName.text = value.nameIndustry;
                 //do the next part later
                 model.GetComponent<Renderer>().material = GameManager.Instance.Industrymats[value.id];
             }
         }
     }
+
+    [SerializeField] TMP_Text industryName;
 
     public void AddStation(Station industry)
     {
@@ -61,7 +64,7 @@ public class Industry : MonoBehaviour
     private void Start() {
         prodTimer = prodTime;
         stockRessources = new List<int>();
-        for(int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
+        for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
         {
             stockRessources.Add(0);
         }
@@ -81,9 +84,9 @@ public class Industry : MonoBehaviour
         int i = 0;
         int toFind = listToCheck.Count;
         int found = 0;
-        while (i < GameManager.Instance.ressourceSample.Count && found < toFind)
+        while (i < GameManager.Instance.ressourceTypes.Count && found < toFind)
         {
-            if (GameManager.Instance.ressourceSample[i].id == listToCheck[found].id)
+            if (GameManager.Instance.ressourceTypes[i].id == listToCheck[found].id)
             {
                 listToUpdate.Add(listToCheck[found].id);
                 i = -1;

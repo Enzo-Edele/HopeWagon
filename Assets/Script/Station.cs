@@ -76,7 +76,7 @@ public class Station : MonoBehaviour
     {
         canImport.Clear();
         canExport.Clear();
-        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++) {
+        for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++) {
             canExport.Add(false);
             canImport.Add(false);
         }
@@ -98,7 +98,7 @@ public class Station : MonoBehaviour
 
         GridBoard.Instance.stationList.Add(this); //add (check if it exist) a method to properly remove station
         stockRessources = new List<int>();
-        for (int i = 0; i < GameManager.Instance.ressourceSample.Count; i++)
+        for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
         {
             stockRessources.Add(0);
             canExport.Add(false);
@@ -136,7 +136,7 @@ public class Station : MonoBehaviour
         train.SetWagons(GameManager.Instance.wagonTemplate);
         
         List<int> toLoad = new List<int>();
-        for(int j = 0; j < GameManager.Instance.ressourceSample.Count; j++) {
+        for(int j = 0; j < GameManager.Instance.ressourceTypes.Count; j++) {
             if (canExport[j] && canExport[j] == destination.canImport[j])
                 toLoad.Add(j);
         }
@@ -209,9 +209,7 @@ public class Station : MonoBehaviour
     public int UnloadRessources(int qtyUnload, int ressourceIndex)
     {
         int leftover = ChangeStorageRessource(qtyUnload, ressourceIndex);
-
-        Debug.Log(stockRessources[ressourceIndex] + " loaded out of " + qtyUnload + " of type " + ressourceIndex);
-
+        //Debug.Log(stockRessources[ressourceIndex] + " loaded out of " + qtyUnload + " of type " + ressourceIndex);
         return leftover;
     }
 }

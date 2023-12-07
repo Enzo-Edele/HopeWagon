@@ -2,12 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class SaveLoadMenu : MonoBehaviour
 {
     public GridBoard gridBoard;
 
     const int mapFileVersion = 0;
+
+    [SerializeField] GameObject menuPanel;
+    bool menuIsActive = false;
+
+    //add tutorial button
+    //tutorial open at begining
+    //make a panel list and a forward backward button
 
     public void Save(string path) {
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
@@ -35,5 +43,22 @@ public class SaveLoadMenu : MonoBehaviour
             else
                 Debug.LogWarning("Unkwown map format " + header);
         }
+    }
+
+    public void ActivateMenu()
+    {
+        menuIsActive = !menuIsActive;
+        menuPanel.SetActive(menuIsActive);
+        //pause and unpause game
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene("Main");
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
