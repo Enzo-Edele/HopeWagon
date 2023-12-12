@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerData : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class PlayerData : MonoBehaviour
     public List<int> contractOfTypeGiven;
     //contrats pool //pool rigged with the 6~9 first being forced on easy and 1 out of 3 granted to be an easy one;
 
+    float gameTimer = 0.0f;
+    int gameTime = 180;
+    int completeContract = 0;
+
     public static GameManager Instance { get; private set; }
 
     void Start()
@@ -25,6 +30,19 @@ public class PlayerData : MonoBehaviour
         GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
         GameManager.Instance.gameUI.updateContractDisplay(contratPool);
         LoadSTartGame(); //use for demo build
+        gameTimer = gameTime;
+    }
+    private void Update()
+    {
+        if(gameTimer < 0)
+        {
+            GameManager.Instance.saveLoadMenu.EndGameDemo(completeContract);
+        }
+        else if(gameTimer >= 0)
+        {
+            gameTimer -= Time.deltaTime;
+            GameManager.Instance.saveLoadMenu.TimerUpdate((int)gameTimer);
+        }
     }
     private void LoadSTartGame()
     {
@@ -69,6 +87,7 @@ public class PlayerData : MonoBehaviour
             if (contratPool[i].name == contract.name) {
                 contratPool.RemoveAt(i);
                 foundContract = true;
+                completeContract++;
             }
         }
         Contract newContract = Instantiate(contractPrefab, this.transform).GetComponent<Contract>();

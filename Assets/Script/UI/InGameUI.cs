@@ -5,7 +5,8 @@ using TMPro;
 
 public class InGameUI : MonoBehaviour
 {
-    GameTile currentTile;
+    GameTile currentTileSelected;
+    GameTile currentTileHover;
     Station destination = null;
 
     [SerializeField] GridBoard grid;
@@ -41,15 +42,24 @@ public class InGameUI : MonoBehaviour
     [SerializeField] TMP_Text railQty;
     [SerializeField] TMP_Text stationQty;
     [SerializeField] TMP_Text trainQty;
-    [SerializeField] TMP_Text buildMode;
+    [SerializeField] TMP_Text buildModeText;
 
     [SerializeField] List<TMP_Text> contractsText;
+
+    enum BuildMode
+    {
+        ignore, buildRail, destroyRail, buildStation, destroyStation
+    }
+    BuildMode buildMode;
 
     //MapEdit
 
     bool buildingRail;
     bool destroyingRail;
     bool buildingStation;
+    //add destriy station
+
+    public List<GameObject> prefabPreview = new List<GameObject>();
     //string buildMode; //use to keep track of build mode
 
     void Update()
@@ -65,16 +75,17 @@ public class InGameUI : MonoBehaviour
                 HandleInputDrag();
                 return;
             }
-
+            if(buildMode == BuildMode.buildRail || buildMode == BuildMode.buildStation)
+                UpdatePreview();
         }
     }
 
     void HandleInput()
     {
-        currentTile = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
-        if (currentTile)
+        currentTileSelected = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
+        if (currentTileSelected)
         {
-            DoSelection(currentTile);
+            DoSelection(currentTileSelected);
         }
     }
     void DoSelection(GameTile tile)
@@ -89,12 +100,14 @@ public class InGameUI : MonoBehaviour
                 foreach(string option in tile.station.destinationNameList) {
                     destinationDropdown.options.Add(new TMP_Dropdown.OptionData() { text = option });
                 }
-                int menuIndex = destinationDropdown.value;
-                string nameDestination = destinationDropdown.options[menuIndex].text;
-                for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
-                    if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
-                        destination = GridBoard.Instance.stationList[i];
-                destinationDropdown.captionText.text = destination.name;
+                if(tile.station.destinationNameList.Count > 1) { 
+                    int menuIndex = destinationDropdown.value;
+                    string nameDestination = destinationDropdown.options[menuIndex].text;  //error when only one station on network
+                    for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
+                        if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
+                            destination = GridBoard.Instance.stationList[i];
+                    destinationDropdown.captionText.text = destination.name;
+                }
             }
             else {
                 stationMenu.SetActive(false);
@@ -110,16 +123,17 @@ public class InGameUI : MonoBehaviour
     void Unselect()
     {
         //to remove debug code
-        currentTile = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
-        if (currentTile)
+        currentTileSelected = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
+        if (currentTileSelected)
         {
-            DoSelectionBIS(currentTile);
+            DoSelectionBIS(currentTileSelected);
         }
 
         stationMenu.SetActive(false);
         buildMenu.SetActive(true);
-        //currentTile = null;
-        //selectTileMenu.SetActive(false);
+        currentTileSelected = null;
+        selectTileMenu.SetActive(false);
+        ChangeBuildMode(0);
     }
 
     void HandleInputDrag()
@@ -139,12 +153,18 @@ public class InGameUI : MonoBehaviour
     }
     void EditTiles(GameTile currentTile)
     {
-        if (buildingRail)
+        if (buildMode == BuildMode.buildRail) {
             currentTile.HasRail = true;
-        if (destroyingRail)
+        }
+        if (buildMode == BuildMode.destroyRail) {
             currentTile.HasRail = false;
-        if (buildingStation)
+        }
+        if (buildMode == BuildMode.buildStation) {
             currentTile.HasStation = true;
+        }
+        if (buildMode == BuildMode.destroyStation) {
+            currentTile.HasStation = false;
+        }
     }
     void ValidateDrag(GameTile currentGameTile)
     {
@@ -170,8 +190,22 @@ public class InGameUI : MonoBehaviour
     public void DeployTrain()
     {
         if (destination) {
-            currentTile.station.DeployTrain(destination);
+            currentTileSelected.station.DeployTrain(destination);
             GameManager.Instance.playerData.ChangeTrainStock(-1);
+        }
+    }
+
+    void UpdatePreview()
+    {
+        currentTileHover = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
+        Vector3 pos = new Vector3();
+        if (currentTileHover != null)
+            pos = currentTileHover.transform.position;
+        if (buildMode == BuildMode.buildRail) {
+            prefabPreview[0].transform.position = pos;
+        }
+        if (buildMode == BuildMode.buildStation) {
+            prefabPreview[1].transform.position = pos;
         }
     }
 
@@ -207,49 +241,40 @@ public class InGameUI : MonoBehaviour
         trainQty.text = "" + train;
     }
 
-    public void BuildRail()
+    public void ChangeBuildMode(int newMode)
     {
-        buildingRail = !buildingRail;
-        if (buildingRail)
+        if((int)buildMode == newMode)
+            buildMode = (BuildMode)0;
+        else
+            buildMode = (BuildMode)newMode;
+        switch (buildMode)
         {
-            buildingStation = false;
-            buildMode.text = "Build Rail";
-            destroyingRail = false;
+            case BuildMode.ignore:
+                buildModeText.text = "Selection";
+                prefabPreview[0].SetActive(false);
+                prefabPreview[1].SetActive(false);
+                break;
+            case BuildMode.buildRail:
+                buildModeText.text = "Build Rail";
+                prefabPreview[0].SetActive(true);
+                prefabPreview[1].SetActive(false);
+                break;
+            case BuildMode.destroyRail:
+                buildModeText.text = "Destroy Rail";
+                prefabPreview[0].SetActive(false);
+                prefabPreview[1].SetActive(false);
+                break;
+            case BuildMode.buildStation:
+                buildModeText.text = "Build Station";
+                prefabPreview[0].SetActive(false);
+                prefabPreview[1].SetActive(true);
+                break;
+            case BuildMode.destroyStation:
+                buildModeText.text = "Destroy Station";
+                prefabPreview[0].SetActive(false);
+                prefabPreview[1].SetActive(false);
+                break;
         }
-        else if (buildingStation)
-        {
-            buildMode.text = "Build Station";
-        }
-        else if(!buildingRail)
-            buildMode.text = "Selection";
-    }
-    public void BuildStation()
-    {
-        buildingStation = !buildingStation;
-        if (buildingStation)
-        {
-            buildingRail = false;
-            buildMode.text = "Build Station";
-            destroyingRail = false;
-        }
-        else if (buildingRail)
-        {
-            buildMode.text = "Build Rail";
-        }
-        else if (!buildingStation)
-            buildMode.text = "Selection";
-    }
-    public void DestroyRail()
-    {
-        destroyingRail = !destroyingRail;
-        if (destroyingRail)
-        {
-            buildingRail = false;
-            buildMode.text = "Destroy Rail";
-            buildingStation = false;
-        }
-        else if (!destroyingRail)
-            buildMode.text = "Selection";
     }
 
     public void updateContractDisplay(List<Contract> contracts)

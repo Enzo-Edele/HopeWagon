@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class SaveLoadMenu : MonoBehaviour
 {
@@ -14,8 +15,15 @@ public class SaveLoadMenu : MonoBehaviour
     bool menuIsActive = false;
 
     //add tutorial button
+    [SerializeField] GameObject tutoPanel;
+    [SerializeField] List<GameObject> tutoPanels;
+    int currentTutoPannel = 0;
+    [SerializeField] TMP_Text tipsIndicator;
     //tutorial open at begining
-    //make a panel list and a forward backward button
+    [SerializeField] GameObject endPanel;
+    [SerializeField] TMP_Text endText;
+
+    [SerializeField] TMP_Text timerText;
 
     public void Save(string path) {
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
@@ -50,6 +58,10 @@ public class SaveLoadMenu : MonoBehaviour
         menuIsActive = !menuIsActive;
         menuPanel.SetActive(menuIsActive);
         //pause and unpause game
+        if (menuIsActive)
+            Time.timeScale = 0.0f;
+        else
+            Time.timeScale = 1.0f;
     }
 
     public void Restart()
@@ -60,5 +72,43 @@ public class SaveLoadMenu : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
+    }
+
+    //Demo
+    public void ActivateTuto(bool newState)
+    {
+        tutoPanel.SetActive(newState);
+        tutoPanels[currentTutoPannel].SetActive(newState);
+        menuPanel.SetActive(!newState);
+        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (tutoPanels.Count);
+    }
+
+    public void NextTuto()
+    {
+        tutoPanels[currentTutoPannel].SetActive(false);
+        currentTutoPannel++;
+        if (currentTutoPannel >= tutoPanels.Count)
+            currentTutoPannel = 0;
+        tutoPanels[currentTutoPannel].SetActive(true);
+        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (tutoPanels.Count);
+    }
+    public void PreviousTuto()
+    {
+        tutoPanels[currentTutoPannel].SetActive(false);
+        currentTutoPannel--;
+        if (currentTutoPannel < 0)
+            currentTutoPannel = tutoPanels.Count - 1;
+        tutoPanels[currentTutoPannel].SetActive(true);
+        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (tutoPanels.Count);
+    }
+
+    public void TimerUpdate(int time)
+    {
+        timerText.text = time + "s";
+    }
+    public void EndGameDemo(int completeContract)
+    {
+        endPanel.SetActive(true);
+        endText.text = "Contract Completed : " + completeContract;
     }
 }

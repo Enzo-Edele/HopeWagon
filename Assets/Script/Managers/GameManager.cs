@@ -23,18 +23,18 @@ public class GameManager : MonoBehaviour
     [SerializeField]int nameIndex = 0;
     [SerializeField] int nameLooped = 1;
 
-    public Color[] colorArray = { Color.red, Color.green, Color.blue, Color.cyan, Color.magenta, Color.yellow, Color.white };
-    public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
+    public Color[] colorArrayTile = { new Color(0, 0, 0) };
+    public Color[] colorArrayNetwork = { Color.red };
 
     public List<IndustryScriptable> industryTypes = new List<IndustryScriptable>(); 
     public List<RessourceScriptable> ressourceTypes = new List<RessourceScriptable>();
     public List<ContractScriptable> contratTypes = new List<ContractScriptable>();
 
     //to scrap
-    public List<Material> Industrymats = new List<Material>();
+    public List<Material> Industrymats = new List<Material>(); //move to scriptable
 
-    public GameObject factoryPrefab; //to remove
-    public GameObject stationPrefab; //to remove 
+    public GameObject factoryPrefab; //to remove ???
+    public GameObject stationPrefab; //to remove ???
     public GameObject trainPrefab;
     public List<GameObject> wagonTemplate = new List<GameObject>(); //to remove 
 
@@ -55,15 +55,19 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        saveLoadMenu.Load("save1"); //use for demo build
+        saveLoadMenu.Load("Save1"); //use for demo build
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.Escape))
             InterractSaveLoadMenu();
-
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E)) //to disable for demo build
             OpenCloseEditMode();
+
+        if (Input.GetKeyDown(KeyCode.P))
+            gridBoard.PaintAllTile(colorArrayTile[3]);
+        if (Input.GetKeyDown(KeyCode.M))
+            gridBoard.PaintAllTile(colorArrayTile[0]);
 
         if (selectedTile != null)
             selectedTile.UpdateUI(gameUI);

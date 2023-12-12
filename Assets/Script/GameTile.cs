@@ -75,7 +75,7 @@ public class GameTile : MonoBehaviour
                     GameManager.Instance.playerData.ChangeStationStock(-1);
                 }
                 else if (!hasStation) {
-                    network.RemoveStation(station);
+                    Network.RemoveStation(station);
                     DestroyStation();
                     GameManager.Instance.playerData.ChangeStationStock(0);
                 }
@@ -212,42 +212,40 @@ public class GameTile : MonoBehaviour
             networkClose[0].RelinkStation();
         }
         if (doMerge) {
-            for (int i = 1; i < 4; i++) {
-                if (networkClose[0] != neighbor[i].network) {
-                    //if(neighbor[i].network != null)
-                        //networkClose[0].MergeNetwork(neighbor[i].network.networkStationList);
-                    neighbor[i].RemoveNetwork();
-                    neighbor[i].SetNetworkNeighbor(networkClose[0]);
+            for (int j = 0; j < 4; j++) {
+                if (networkClose[0] != neighbor[j].Network) {
+                    if (neighbor[j].Network != null) {
+                        networkClose[0].MergeNetwork(neighbor[j].network.networkStationList); //
+                    }
+                    //Debug.Log(" equal : " + neighbor[j].gameObject.name + " ref : " + networkClose[0].name);
+                    neighbor[j].RemoveNetwork();
+                    neighbor[j].SetNetworkNeighbor(networkClose[0]); //0 eat the other network
                 }
             }
             networkClose[0].RelinkStation();
-        }
-    }
-
-    public void SetNetworkNeighbor(Network networkToCheck)
-    {
-        for (int i = 0; i < 4; i++)
-            if(neighbor[i] != null)
-                if(neighbor[i].HasRail)
-                    neighbor[i].AddNetwork(networkToCheck);
-    }
-    public void AddNetwork(Network networkToCheck)
-    {
-        if(Network != networkToCheck) { 
-            Network = networkToCheck;
-            if (hasStation)
-                    network.AddStation(station);
-        }
-        else if(network != networkToCheck) {
-            //merge both network
         }
     }
     public void RemoveNetwork()
     {
         if (Network != null)
         {
-            Debug.Log("remove network");
-            network.Delete();
+            Network.Delete();
+        }
+    }
+    public void SetNetworkNeighbor(Network networkToCheck)
+    {
+        if(hasRail)
+            for (int i = 0; i < 4; i++)
+                if(neighbor[i] != null)
+                    if(neighbor[i].HasRail)
+                        neighbor[i].AddNetwork(networkToCheck);
+    }
+    public void AddNetwork(Network networkToCheck)
+    {
+        if(Network != networkToCheck) { 
+            Network = networkToCheck;
+            if (hasStation)
+                    Network.AddStation(station);
         }
     }
 
@@ -457,8 +455,8 @@ public class GameTile : MonoBehaviour
     //use for advance option and debbug
     public void ShowNetwork()
     {
-        if (railMat != null && network != null)
-            railMat.color = network.colorNetwork;
+        if (railMat != null && Network != null)
+            railMat.color = Network.colorNetwork;
     }
     public void HideNetwork()
     {

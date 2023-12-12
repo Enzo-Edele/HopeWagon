@@ -16,8 +16,13 @@ public class UIGridEditor : MonoBehaviour
     {
         Ignore, Yes, No
     }
+    OptionalToggle railMode;
 
-    OptionalToggle railMode, factoryMode;
+    enum ColorToggle
+    {
+        Ignore, Green, Black
+    }
+    ColorToggle colorMode;
 
     bool isDrag;
     TileDirection dragDirection;
@@ -101,6 +106,13 @@ public class UIGridEditor : MonoBehaviour
         {
             currentTile.HasRail = false;
         }
+        if(colorMode != ColorToggle.Ignore)
+        {
+            if (colorMode == ColorToggle.Green)
+                currentTile.Paint(GameManager.Instance.colorArrayTile[0]);
+            else if(colorMode == ColorToggle.Black)
+                currentTile.Paint(GameManager.Instance.colorArrayTile[3]);
+        }
         if (isDrag)
         {
             GameTile otherTile = null; //get tile using direction inverse
@@ -178,5 +190,10 @@ public class UIGridEditor : MonoBehaviour
     public void SetApplyChip(bool toggle)
     {
         applyChip = toggle;
+    }
+
+    public void SetColorMode(int mode)
+    {
+        colorMode = (ColorToggle)mode;
     }
 }

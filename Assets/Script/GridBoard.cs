@@ -17,9 +17,6 @@ public class GridBoard : MonoBehaviour
     public List<Station> stationList = new List<Station>(); //[SerializeField]
 
     //créer une classe network 
-    //creation au moment ou on pose une station et add case de la station
-    //fonction add 
-    //  on ajoute le nouveau et si station on l'ajoute a une liste de station du network
     //et oncheck si voisin sans network ou network diff (pour chaque voisin)
     //      voisin vide : on l'ajoute et répéte opération
     //      network voisin : on copie le voisin, sa liste de station
@@ -28,8 +25,8 @@ public class GridBoard : MonoBehaviour
     //          on supprime n2
     //          on ajoute les voisin de rail vide au network
     //fonction merge
-    //
     List<Network> networkList = new List<Network>();
+    public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
 
     public GameObject network;
 
@@ -65,6 +62,7 @@ public class GridBoard : MonoBehaviour
             }
         }
     }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.N))
@@ -74,6 +72,16 @@ public class GridBoard : MonoBehaviour
             foreach (GameTile tile in tiles)
                 tile.HideNetwork();
     }
+
+    public void PaintAllTile(Color color)
+    {
+        foreach (GameTile tile in tiles)
+        {
+            tile.Paint(color);
+        }
+        //Debug.Log("paint all");
+    }
+
     //Get all station connected to startStation
     public List<Station> GetStationInNetwork(GameTile startStation)
     {
@@ -95,23 +103,23 @@ public class GridBoard : MonoBehaviour
             }
         }
 
-        foreach (GameTile tile in tiles)
+        /*foreach (GameTile tile in tiles)
         {
             tile.HidePath();
             if (!tile.HasRail)
-                tile.Paint(new Color(26/255f, 180/255f, 27/255f));
-        }
+                tile.Paint(GameManager.Instance.colorArrayTile[1]);
+        }*/
 
         foreach (GameTile tile in tiles)
         {
-            if (tile.hasPath)
+            /*if (tile.hasPath) //debbug
                 tile.ShowPath();
-            else if(tile.HasRail)
-            tile.Paint(new Color(26/255f, 180/255f, 27/255f));
+            if(tile.HasRail) //else
+                tile.Paint(GameManager.Instance.colorArrayTile[1]);*/
             if (tile != startStation && tile.hasPath && tile.HasStation) {
                 arrivalStation.Add(tile.station);
                 tile.station.AddDestination(startStation.station);
-                tile.Paint(Color.green);
+                //tile.Paint(Color.green);
             }
         }
         return arrivalStation;
@@ -124,8 +132,8 @@ public class GridBoard : MonoBehaviour
         foreach (GameTile tile in tiles)
         {
             tile.ClearPath();
-            if(tile.HasRail)
-                tile.HidePath();
+            //if(tile.HasRail)
+                //tile.HidePath();
         }
         searchFrontier.Enqueue(destination);
         destination.BecomeDestination();
@@ -144,12 +152,20 @@ public class GridBoard : MonoBehaviour
         GameTile tilePath = start;
         while (tilePath != destination)
         {
-            tilePath.ShowPath();
+            //tilePath.ShowPath();
             tilePath = tilePath.nextOnPath;
             path.Enqueue(tilePath);
         }
         return path;
 
+    }
+
+    public void UpdateNetworks()
+    {
+        for(int i = 0; i < networkList.Count; i++)
+        {
+            networkList[i].ReInitialize(i + 1);
+        }
     }
 
     public GameTile GetTile(Ray ray)

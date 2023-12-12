@@ -14,9 +14,17 @@ public class Network : MonoBehaviour
 
     public void Initialize()
     {
-        indexNetwork = GameManager.Instance.networkNumber++;
+        indexNetwork = GameManager.Instance.gridBoard.networkNumber++;
         nameNetwork = "Network" + indexNetwork;
-        colorNetwork = GameManager.Instance.colorArray[indexNetwork % GameManager.Instance.colorArray.Length];
+        name = "Network" + indexNetwork;
+        colorNetwork = GameManager.Instance.colorArrayNetwork[indexNetwork % GameManager.Instance.colorArrayNetwork.Length];
+    }
+    public void ReInitialize(int i)
+    {
+        indexNetwork = i;
+        nameNetwork = "Network" + indexNetwork;
+        name = "Network" + indexNetwork;
+        colorNetwork = GameManager.Instance.colorArrayNetwork[indexNetwork % GameManager.Instance.colorArrayNetwork.Length];
     }
 
     public void ClaimTile(GameTile tile)
@@ -57,7 +65,8 @@ public class Network : MonoBehaviour
 
     public void Delete()
     {
-        GameManager.Instance.networkNumber--;
+        GameManager.Instance.gridBoard.networkNumber--;
+        GameManager.Instance.gridBoard.RemoveNetwork(this);
         Destroy(gameObject);
     }
     //CAS SPLIT
