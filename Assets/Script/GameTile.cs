@@ -28,20 +28,23 @@ public class GameTile : MonoBehaviour
     {
         get { return hasRail; }
         set {
-            if (HasStation)
+            if (hasStation) 
                 value = true;
-            if (!CanBuildStationRail())
+            if (!CanBuildStationRail()) 
                 value = false;
+            if (value && GameManager.Instance.playerData.railStock <= 0 && !hasStation)
+                return;
             if (value != hasRail) {
                 hasRail = value;
-                if (hasRail)
-                    GameManager.Instance.playerData.ChangeRailStock(-1);
-                if (!hasRail)
-                    GameManager.Instance.playerData.ChangeRailStock(0);
+                if (value) 
+                    GameManager.Instance.playerData.ChangeRailStock(-1); //maybe mettre a l'endroit ou l'on call le changement d'état
+                if (!value) 
+                    GameManager.Instance.playerData.ChangeRailStock(0); //put 1 if we want to give the rail back to the player
                 for (int i = 0; i < neighbor.Length; i++)
                     if (neighbor[i]) neighbor[i].UpdateRailNeighbor(value);
                 UpdateRail();
                 CheckNeighborNetwork();
+                return;
             }
         }
     }
@@ -69,7 +72,7 @@ public class GameTile : MonoBehaviour
             if (value != hasStation)
             {
                 hasStation = value;
-                if (hasStation) {
+                if (hasStation && GameManager.Instance.playerData.stationStock > 0) {
                     SpawnStation();
                     HasRail = hasStation;   //l'ordre de ces deux lignes a un GROS IMPACT sur le network à revoir
                     GameManager.Instance.playerData.ChangeStationStock(-1);
@@ -330,7 +333,8 @@ public class GameTile : MonoBehaviour
                 railTransform = rail.transform;
                 break;
         }
-        railMat = rail.GetComponentInChildren<Renderer>().material;
+        if(HasRail)
+            railMat = rail.GetComponentInChildren<Renderer>().material;
         if (!HasRail)
         {
             Destroy(rail);
@@ -402,7 +406,7 @@ public class GameTile : MonoBehaviour
             for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++) {
                 numberRessources.Add(i);
             }
-            ui.UpdateItemDisplayList(numberRessources, numberRessources, station.stockRessources);
+            ui.UpdateItemDisplayList(numberRessources, numberRessources, station.stockRessources); //error to check
         }
         else
             content = "Empty";

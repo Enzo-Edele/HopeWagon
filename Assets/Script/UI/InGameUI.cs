@@ -20,11 +20,27 @@ public class InGameUI : MonoBehaviour
 
     //UI Element
 
-    [SerializeField] GameObject stationMenu;
-    [SerializeField] TMP_Text stationStartText;
-    [SerializeField] TMP_Dropdown destinationDropdown;
+    [SerializeField] GameObject actionMenu;
+
+    [SerializeField] GameObject stationMenuIndividual;
+    [SerializeField] UIStationItem StationItemIndividual;
+
+    [SerializeField] GameObject stationMenuList;
+    [SerializeField] RectTransform stationList;
+    [SerializeField] UIStationItem stationItemPrefab;
+    bool stationMenuIsexpanded = false;
 
     [SerializeField] GameObject buildMenu;
+
+    GameObject lastActiveMenu;
+
+    [SerializeField] List<TMP_Text> contractsText;
+
+    [SerializeField] GameObject playerRessourceMenu;
+    [SerializeField] TMP_Text railQty;
+    [SerializeField] TMP_Text stationQty;
+    [SerializeField] TMP_Text trainQty;
+    [SerializeField] TMP_Text buildModeText;
 
     [SerializeField] GameObject selectTileMenu;
     [SerializeField] TMP_Text selectedTileName;
@@ -38,13 +54,11 @@ public class InGameUI : MonoBehaviour
     [SerializeField] List<UIRessourceItem> selectedTileImportBIS = new List<UIRessourceItem>();
     [SerializeField] List<UIRessourceItem> selectedTileExportBIS = new List<UIRessourceItem>();
 
-    [SerializeField] GameObject playerRessourceMenu;
-    [SerializeField] TMP_Text railQty;
-    [SerializeField] TMP_Text stationQty;
-    [SerializeField] TMP_Text trainQty;
-    [SerializeField] TMP_Text buildModeText;
-
-    [SerializeField] List<TMP_Text> contractsText;
+    enum ActionMode
+    {
+        ignore, build, station, train
+    }
+    ActionMode actionMode;
 
     enum BuildMode
     {
@@ -52,15 +66,9 @@ public class InGameUI : MonoBehaviour
     }
     BuildMode buildMode;
 
-    //MapEdit
-
-    bool buildingRail;
-    bool destroyingRail;
-    bool buildingStation;
     //add destriy station
 
     public List<GameObject> prefabPreview = new List<GameObject>();
-    //string buildMode; //use to keep track of build mode
 
     void Update()
     {
@@ -77,6 +85,11 @@ public class InGameUI : MonoBehaviour
             }
             if(buildMode == BuildMode.buildRail || buildMode == BuildMode.buildStation)
                 UpdatePreview();
+
+            if (Input.GetKeyDown(KeyCode.T))
+                OpenStationMenuList(true);
+            if (Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftAlt))
+                OpenStationMenuList(false);
         }
     }
 
@@ -92,26 +105,13 @@ public class InGameUI : MonoBehaviour
     {
         if (tile)
         {
-            if(tile.station != null) {
-                stationMenu.SetActive(true);
-                buildMenu.SetActive(false);
-                stationStartText.text = tile.station.name;
-                destinationDropdown.options.Clear();
-                foreach(string option in tile.station.destinationNameList) {
-                    destinationDropdown.options.Add(new TMP_Dropdown.OptionData() { text = option });
-                }
-                if(tile.station.destinationNameList.Count > 1) { 
-                    int menuIndex = destinationDropdown.value;
-                    string nameDestination = destinationDropdown.options[menuIndex].text;  //error when only one station on network
-                    for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
-                        if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
-                            destination = GridBoard.Instance.stationList[i];
-                    destinationDropdown.captionText.text = destination.name;
-                }
+            if(tile.station != null && buildMode != BuildMode.destroyStation) {
+                OpenStationMenuIndividual(true);
+                List<List<bool>> destinationsimports = new List<List<bool>>();
+                StationItemIndividual.Initialize(tile.station, tile.station.canExport, tile.station.destinationNameList, destinationsimports);
             }
-            else {
-                stationMenu.SetActive(false);
-                buildMenu.SetActive(true);
+            else if(buildMode == BuildMode.ignore){
+                OpenActionMenu(true);
             }
             selectTileMenu.SetActive(true);
             tile.UpdateUI(this);
@@ -123,14 +123,13 @@ public class InGameUI : MonoBehaviour
     void Unselect()
     {
         //to remove debug code
-        currentTileSelected = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
+        /*currentTileSelected = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
         if (currentTileSelected)
         {
             DoSelectionBIS(currentTileSelected);
-        }
+        }*/
 
-        stationMenu.SetActive(false);
-        buildMenu.SetActive(true);
+        OpenActionMenu(true);
         currentTileSelected = null;
         selectTileMenu.SetActive(false);
         ChangeBuildMode(0);
@@ -179,20 +178,104 @@ public class InGameUI : MonoBehaviour
         isDrag = false;
     }
 
-    public void SelectDestination()
+    public void ChangeActionMode(int newMode)
     {
-        int menuIndex = destinationDropdown.value;
-        string nameDestination = destinationDropdown.options[menuIndex].text;
-        for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
-            if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
-                destination = GridBoard.Instance.stationList[i];
-    }
-    public void DeployTrain()
-    {
-        if (destination) {
-            currentTileSelected.station.DeployTrain(destination);
-            GameManager.Instance.playerData.ChangeTrainStock(-1);
+        if ((int)actionMode == newMode)
+            actionMode = (ActionMode)0;
+        else
+            actionMode = (ActionMode)newMode;
+        switch (actionMode)
+        {
+            case ActionMode.ignore:
+                OpenActionMenu(true);
+                OpenBuildMenu(false);
+                OpenStationMenuList(false);
+                OpenStationMenuIndividual(false);
+                break;
+            case ActionMode.build:
+                OpenActionMenu(false);
+                OpenBuildMenu(true);
+                OpenStationMenuList(false);
+                OpenStationMenuIndividual(false);
+                break;
+            case ActionMode.station:
+                OpenActionMenu(false);
+                OpenBuildMenu(false);
+                OpenStationMenuList(true);
+                OpenStationMenuIndividual(false);
+                break;
+            case ActionMode.train:
+                OpenActionMenu(false);
+                OpenBuildMenu(false);
+                OpenStationMenuList(false);
+                OpenStationMenuIndividual(false);
+                break;
         }
+    }
+
+    public void OpenActionMenu(bool newState)
+    {
+        actionMenu.SetActive(newState);
+        if (newState) {
+            OpenBuildMenu(false);
+            OpenStationMenuIndividual(false);
+            OpenStationMenuList(false);
+        }
+    }
+    void OpenBuildMenu(bool newState)
+    {
+        buildMenu.SetActive(newState);
+        if (newState) {
+            OpenActionMenu(false);
+            OpenStationMenuIndividual(false);
+            OpenStationMenuList(false);
+        }
+        if (!newState) {
+            ChangeBuildMode(0);
+        }
+    }
+    void OpenStationMenuIndividual(bool newState)
+    {
+        stationMenuIndividual.SetActive(newState);
+        if (newState) {
+            OpenActionMenu(false);
+            OpenBuildMenu(false);
+            OpenStationMenuList(false);
+        }
+    }
+    public void OpenStationMenuList(bool newState)
+    {
+        stationMenuList.SetActive(newState);
+        FillStationListList();
+        if (newState) {
+            OpenActionMenu(false);
+            OpenBuildMenu(false);
+            OpenStationMenuIndividual(false);
+        }
+    }
+    void FillStationListList()
+    {
+        for(int i = 0; i < stationList.childCount; i++)
+            Destroy(stationList.GetChild(i).gameObject);
+        List<Station> list = GameManager.Instance.gridBoard.stationList;
+        for (int i = 0; i < list.Count; i++)
+        {
+            UIStationItem item = Instantiate(stationItemPrefab);
+            item.inGameUI = this;
+            List<List<bool>> stationsImports = new List<List<bool>>();
+            for (int j = 0; j < list[i].destinationList.Count; j++)
+                stationsImports.Add(list[i].destinationList[j].canImport);
+            item.Initialize(list[i], list[i].canExport, list[i].destinationNameList, stationsImports);
+            item.transform.SetParent(stationList, false);
+        }
+    }
+    public void ResizeStationMenu()
+    {
+        stationMenuIsexpanded = !stationMenuIsexpanded;
+        if (stationMenuIsexpanded)
+            stationMenuList.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 700);
+        else
+            stationMenuList.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 200);
     }
 
     void UpdatePreview()
@@ -209,31 +292,6 @@ public class InGameUI : MonoBehaviour
         }
     }
 
-    //fonction tile info
-    public void UpdateTileInfo(string name, string content)
-    {
-        selectedTileName.text = name;
-        selectedTileContent.text = content;
-    }
-    public void UpdateItemDisplayList(List<int> imports, List<int> exports, List<int> stock) {
-        for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
-        {
-            selectedTileImport[i].nameRessource.text = GameManager.Instance.ressourceTypes[i].nameRessource;
-            selectedTileImport[i].qtyRessource.text = "0";
-            selectedTileExport[i].nameRessource.text = GameManager.Instance.ressourceTypes[i].nameRessource;
-            selectedTileExport[i].qtyRessource.text = "0";
-        }
-        for(int i = 0; i < imports.Count; i++) {
-            if(stock.Count >= 0)
-                selectedTileImport[imports[i]].qtyRessource.text = "" + stock[imports[i]];
-        }
-        for (int i = 0; i < exports.Count; i++)
-        {
-            if (stock.Count >= 0)
-                selectedTileExport[exports[i]].qtyRessource.text = "" + stock[exports[i]];
-        }
-    }
-
     public void UpdatePlayerData(int rail, int station, int train)
     {
         railQty.text = "" + rail;
@@ -243,7 +301,7 @@ public class InGameUI : MonoBehaviour
 
     public void ChangeBuildMode(int newMode)
     {
-        if((int)buildMode == newMode)
+        if ((int)buildMode == newMode)
             buildMode = (BuildMode)0;
         else
             buildMode = (BuildMode)newMode;
@@ -277,11 +335,38 @@ public class InGameUI : MonoBehaviour
         }
     }
 
+    //fonction contract
     public void updateContractDisplay(List<Contract> contracts)
     {
-        for(int i = 0; i < 3; i++) {
-            contractsText[i].text = "" + GameManager.Instance.ressourceTypes[contracts[i].requireRessourcesIndex].name + " " 
+        for (int i = 0; i < 3; i++)
+        {
+            contractsText[i].text = "" + GameManager.Instance.ressourceTypes[contracts[i].requireRessourcesIndex].name + " "
                 + contracts[i].accumulated + " / " + contracts[i].required + " -> " + contracts[i].reward + " " + contracts[i].rewardQty;
+        }
+    }
+
+    //fonction tile info
+    public void UpdateTileInfo(string name, string content)
+    {
+        selectedTileName.text = name;
+        selectedTileContent.text = content;
+    }
+    public void UpdateItemDisplayList(List<int> imports, List<int> exports, List<int> stock) {
+        for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
+        {
+            selectedTileImport[i].nameRessource.text = GameManager.Instance.ressourceTypes[i].nameRessource;
+            selectedTileImport[i].qtyRessource.text = "0";
+            selectedTileExport[i].nameRessource.text = GameManager.Instance.ressourceTypes[i].nameRessource;
+            selectedTileExport[i].qtyRessource.text = "0";
+        }
+        for(int i = 0; i < imports.Count; i++) {
+            if(stock.Count >= 0)
+                selectedTileImport[imports[i]].qtyRessource.text = "" + stock[imports[i]];
+        }
+        for (int i = 0; i < exports.Count; i++)
+        {
+            if (stock.Count >= 0)
+                selectedTileExport[exports[i]].qtyRessource.text = "" + stock[exports[i]];
         }
     }
 
@@ -289,17 +374,6 @@ public class InGameUI : MonoBehaviour
     void DoSelectionBIS(GameTile tile)
     {
         if (tile) {
-            if (tile.station != null) {
-                stationMenu.SetActive(true);
-                stationStartText.text = tile.station.name;
-                destinationDropdown.options.Clear();
-                foreach (string option in tile.station.destinationNameList) {
-                    destinationDropdown.options.Add(new TMP_Dropdown.OptionData() { text = option });
-                }
-            }
-            else {
-                stationMenu.SetActive(false);
-            }
             selectTileMenuBIS.SetActive(true);
             tile.UpdateUIBIS(this);
             GameManager.Instance.selectedTileBIS = tile;

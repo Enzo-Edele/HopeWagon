@@ -50,10 +50,13 @@ public class PlayerData : MonoBehaviour
         stationStock = 10;
         trainStock = 5;
         GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
+        GameManager.Instance.saveLoadMenu.ActivateMenu();//for demo
     }
     public void ChangeRailStock(int qty)
     {
         railStock += qty;
+        if (railStock < 0)
+            railStock = 0;
         GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
     }
     public void ChangeStationStock(int qty)

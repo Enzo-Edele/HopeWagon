@@ -20,12 +20,14 @@ public class Wagon : MonoBehaviour
     //make a factory
 
     public bool isLast = false; //replace by a properly manage train
+    TrainRoute transportPath;
 
-    public void Spawn(GameTileCopy tile)
+    public void Spawn(GameTileCopy tile, TrainRoute route)
     {
         currentTile = tile;
         nextTile = tile.nextOnPath;
         progress = 0f;
+        transportPath = route;
         PrepareDepart();
     }
 
@@ -52,11 +54,13 @@ public class Wagon : MonoBehaviour
         {
             if (nextTile == null)
             {
-                if (isLast) { 
-                    for (int i = 0; i < path.Count; i++) {//faire une copy factory
-                        Destroy(path[i].gameObject);
-                    }
+                if (isLast) {
+                    //for (int i = 0; i < path.Count; i++)//faire une copy factory
+                    //Destroy(path[i].gameObject);
+                    transportPath.SetNextPath();
+                    GameManager.Instance.playerData.ChangeTrainStock(1);
                 }
+
                 Destroy(gameObject); //make a factory and replace with a reclaim method
                 return false;
             }

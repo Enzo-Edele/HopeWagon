@@ -17,7 +17,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6832539883539379560
 Transform:
@@ -114,7 +114,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3948942504177697626
 Transform:
@@ -208,7 +208,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7550182138304355734
 Transform:
@@ -377,8 +377,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   path: []
   model: {fileID: 7550182138304355734}
+  RouteRessources: 
   storage: 12
-  stock: 0
+  stockRessources: 
   stockDisplay: {fileID: 8795070727918342082}
 --- !u!1 &7173911536837006304
 GameObject:

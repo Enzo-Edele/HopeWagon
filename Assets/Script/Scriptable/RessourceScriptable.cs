@@ -10,6 +10,7 @@ public class RessourceScriptable : ScriptableObject
     public int id;
     public int tier;
     public int transportScore;
+    public Sprite sprite;
     //for later use
 
     //type de transport

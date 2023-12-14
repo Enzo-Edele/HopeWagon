@@ -12,6 +12,7 @@ public class SaveLoadMenu : MonoBehaviour
     const int mapFileVersion = 0;
 
     [SerializeField] GameObject menuPanel;
+    [SerializeField] TMP_Text resumeText;
     bool menuIsActive = false;
 
     //add tutorial button
@@ -63,9 +64,15 @@ public class SaveLoadMenu : MonoBehaviour
         else
             Time.timeScale = 1.0f;
     }
-
+    public void Resume()
+    {
+        ActivateMenu();
+        resumeText.text = "Resume";
+    }
     public void Restart()
     {
+        endPanel.SetActive(false);
+        menuPanel.SetActive(false);
         SceneManager.LoadScene("Main");
     }
 

@@ -56,6 +56,7 @@ public class Contract : MonoBehaviour
             case "train":
             {
                 GameManager.Instance.playerData.ChangeTrainStock(rewardQty);
+                    Debug.Log("gain : " + rewardQty + " train");
                 break;
             }
             case "station":

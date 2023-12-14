@@ -17,7 +17,7 @@ public class Train : MonoBehaviour
 
     //locomotive
     Queue<GameObject> wagonQueue = new Queue<GameObject>();
-    int wagonCap;
+    TrainRoute transportPath;
 
     public List<bool> RouteRessources;
 
@@ -27,6 +27,9 @@ public class Train : MonoBehaviour
     //make a factory
 
     [SerializeField] TMP_Text stockDisplay;
+
+    bool first = false;
+    bool spawnWagon = false;
 
     private void Awake()
     {
@@ -38,15 +41,15 @@ public class Train : MonoBehaviour
             stockRessources.Add(0);
         }
     }
-    public void Spawn(GameTileCopy tile) {
+    public void Spawn(GameTileCopy tile, TrainRoute route) {
         currentTile = tile;
         nextTile = tile.nextOnPath;
         progress = 0f;
+        transportPath = route;
         PrepareDepart();
     }
 
-    void PrepareDepart()
-    {
+    void PrepareDepart() {
         positionTile = currentTile.tilePosition;
         positionNextTile = currentTile.exitPoint;
         direction = currentTile.pathDirection; 
@@ -66,18 +69,12 @@ public class Train : MonoBehaviour
         progress += Time.deltaTime * progressFactor;
         while(progress >= 1f) {
             if (nextTile == null) {
-                /*for (int i = 0; i < path.Count; i++) //faire une copy factory
-                {
-                    //Destroy(path[i].gameObject); //déplacer dans le last wagon
-                }*/
-                //give destination as var
                 for (int i = 0; i < RouteRessources.Count; i++)
                 {
                     if (RouteRessources[i])
                     {
                         GameManager.Instance.playerData.AddContratProgress(i, stockRessources[i]);
                         stockRessources[i] = GridBoard.Instance.GetTile(currentTile.tileCoordinate).station.UnloadRessources(stockRessources[i], i);
-                        GameManager.Instance.playerData.ChangeTrainStock(1);
                     }
                 }
                 Destroy(gameObject); //make a factory and replace with a reclaim method
@@ -97,21 +94,26 @@ public class Train : MonoBehaviour
             float angle = Mathf.LerpUnclamped(directionAngleTile, directionAangleNextTile, progress);
             transform.localRotation = Quaternion.Euler(0f, angle, 0f);
         }
+
+        //spawn wagon   //marche mal si virage dans spawn
+        if (spawnWagon && progress > 0.5f && wagonQueue.Count > 0)
+        {
+            Wagon wagon = Instantiate(wagonQueue.Dequeue()).GetComponent<Wagon>();
+            wagon.SetPath(path);
+            wagon.Spawn(path[0], transportPath);
+            if (wagonQueue.Count <= 0)
+            {
+                wagon.isLast = true;
+            }
+            spawnWagon = false;
+        }
+
         return true;
     }
     void PrepareNextTile()
     {
-        //spawn wagon
-        //IMPORTANT FIX pour éviter que le premier wagon chevauche la locomotive instancier a 0.5f de progress aprés le premier
-        if(wagonQueue.Count > 0)
-        {
-            Wagon wagon = Instantiate(wagonQueue.Dequeue()).GetComponent<Wagon>();
-            wagon.SetPath(path); 
-            wagon.Spawn(path[0]);
-            if (wagonQueue.Count <= 0) {
-                wagon.isLast = true;
-            }
-        }
+        if (wagonQueue.Count > 0)
+            spawnWagon = true;
 
         currentTile = nextTile;
         nextTile = nextTile.nextOnPath;

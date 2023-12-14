@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     public GameObject factoryPrefab; //to remove ???
     public GameObject stationPrefab; //to remove ???
     public GameObject trainPrefab;
+    public GameObject routePrefab;
     public List<GameObject> wagonTemplate = new List<GameObject>(); //to remove 
 
     public static GameManager Instance { get; private set; }

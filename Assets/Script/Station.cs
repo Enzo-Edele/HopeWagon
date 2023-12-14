@@ -8,20 +8,22 @@ public class Station : MonoBehaviour
     public string nameStation = "Name_Station";
     public GameTile tile { get; private set; }
 
-    [SerializeField] List<Station> destinationList = new List<Station>();
+    public List<Station> destinationList = new List<Station>();
     public List<string> destinationNameList = new List<string>();
 
     [SerializeField] List<Industry> linkedIndustries = new List<Industry>();
     int storage = 50; //pas besoin de passer en liste tant que les gares on un stockage égal pour tout
-    [SerializeField] public List<int> stockRessources;
+    [SerializeField] public List<int> stockRessources; //public get private set
 
-    [SerializeField] List<bool> canExport = new List<bool>();
-    [SerializeField] List<bool> canImport = new List<bool>();
+    public List<bool> canExport = new List<bool>(); //public get private set
+    public List<bool> canImport = new List<bool>(); //public get private set
+
+    List<TrainRoute> trainComing = new List<TrainRoute>();
+    List<TrainRoute> trainLeaving = new List<TrainRoute>();
 
     int requestTime = 2;
     float requestTimer;
 
-    //toScrap
     [SerializeField] TMP_Text nameDisplay;
 
     public void SetTile(GameTile newTile)
@@ -112,31 +114,35 @@ public class Station : MonoBehaviour
             destinationNameList.Add(destinationList[i].name);
     }
 
-    public void DeployTrain(Station destination)
+    public void CreateRoute(Station destination)
     {
         List<GameTileCopy> path = new List<GameTileCopy>();
         Queue<GameTile> pathToCopy = GridBoard.Instance.Pathfinding(destination.tile, tile);
 
+        TrainRoute route = Instantiate(GameManager.Instance.routePrefab).GetComponent<TrainRoute>(); 
+
         GameTile tileToCopy = pathToCopy.Dequeue();
-        path.Add(Instantiate(GameManager.Instance.tileCopy).GetComponent<GameTileCopy>());
+        path.Add(Instantiate(GameManager.Instance.tileCopy, route.gameObject.transform).GetComponent<GameTileCopy>());
         path[0].SetUpTileCopy(tileToCopy.tileCoordinate, tileToCopy.transform.position, tileToCopy.distance, tileToCopy.pathDirection, tileToCopy.exitPoint);
         int i = 0;
         while(pathToCopy.Count > 0)
         {
             i++;
             GameTile tileTC = pathToCopy.Dequeue();
-            path.Add(Instantiate(GameManager.Instance.tileCopy).GetComponent<GameTileCopy>()); //referencé la gametilecopy dans une factory
+            path.Add(Instantiate(GameManager.Instance.tileCopy, route.gameObject.transform).GetComponent<GameTileCopy>()); //referencé la gametilecopy dans une factory
                                                                                                //et virer le get component TRANSFORM ???
             path[i].SetUpTileCopy(tileTC.tileCoordinate, tileTC.transform.position, tileTC.distance, tileTC.pathDirection, tileTC.exitPoint);
             path[i - 1].SetUpTileCopyNext(path[i]);
         }
-        Train train = Instantiate(GameManager.Instance.trainPrefab).GetComponent<Train>();
-        train.SetPath(path);
-        train.Spawn(path[0]); //donne la premiére tile
-        train.SetWagons(GameManager.Instance.wagonTemplate);
-        
+
+        route.Initialize(path, this, destination);
+    }
+
+    public void DeployTrain(Station destination, Train train)
+    {
         List<int> toLoad = new List<int>();
-        for(int j = 0; j < GameManager.Instance.ressourceTypes.Count; j++) {
+        for (int j = 0; j < GameManager.Instance.ressourceTypes.Count; j++)
+        {
             if (canExport[j] && canExport[j] == destination.canImport[j])
                 toLoad.Add(j);
         }
