@@ -69,14 +69,15 @@ public class Train : MonoBehaviour
         progress += Time.deltaTime * progressFactor;
         while(progress >= 1f) {
             if (nextTile == null) {
-                for (int i = 0; i < RouteRessources.Count; i++)
+                transportPath.UnloadRessource(currentTile);
+                /*for (int i = 0; i < RouteRessources.Count; i++)
                 {
                     if (RouteRessources[i])
                     {
                         GameManager.Instance.playerData.AddContratProgress(i, stockRessources[i]);
                         stockRessources[i] = GridBoard.Instance.GetTile(currentTile.tileCoordinate).station.UnloadRessources(stockRessources[i], i);
                     }
-                }
+                }*/
                 Destroy(gameObject); //make a factory and replace with a reclaim method
                 return false;
             }

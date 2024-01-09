@@ -7,6 +7,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] float panBorderThickness = 10f;
     //use map size to set limit
     public Vector2 panLimit;
+    float targetPosY;
 
     //require to be more flexible in negative if angle < 90
     [SerializeField] float scrollSpeed = 20f;
@@ -46,8 +47,12 @@ public class CameraController : MonoBehaviour
             pos.x += panSpeed * Time.deltaTime;
         }
 
+        //check if hovering map not a menu
         float scroll = Input.GetAxis("MouseScrollWheel");
-        pos.y -= scroll * scrollSpeed * 100f * Time.deltaTime;
+
+        targetPosY = targetPosY - scroll * scrollSpeed * 100f * Time.deltaTime;
+        pos.y = Mathf.Lerp(pos.y, targetPosY, 0.2f);
+        //pos.y -= scroll * scrollSpeed * 100f * Time.deltaTime;
 
         pos.x = Mathf.Clamp(pos.x, -panLimit.x, panLimit.x);
         pos.z = Mathf.Clamp(pos.z, -panLimit.y - 5, panLimit.y);
@@ -55,6 +60,9 @@ public class CameraController : MonoBehaviour
 
         transform.position = pos;
 
+        float targetRotX = Mathf.Lerp(rotationLimit.x, rotationLimit.y, (pos.y - minY) / maxY);
+
+        //rot.x = Mathf.Lerp(rot.x, targetRotX, 0.3f);
         rot.x = Mathf.Lerp(rotationLimit.x, rotationLimit.y, (pos.y - minY) / maxY);
 
         transform.rotation = rot;

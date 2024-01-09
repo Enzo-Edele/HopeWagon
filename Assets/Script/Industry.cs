@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class Industry : MonoBehaviour
 {
@@ -13,8 +14,10 @@ public class Industry : MonoBehaviour
     List<RessourceScriptable> ressourceInput = new List<RessourceScriptable>();
     List<RessourceScriptable> ressourceOutput = new List<RessourceScriptable>();
 
-    [SerializeField] public List<int> canExport; //{ get; private set; }
-    [SerializeField] public List<int> canImport; //{ get; private set; }
+    [SerializeField] public List<int> exportID; //{ get; private set; }
+    [SerializeField] public List<int> importID; //{ get; private set; }
+    [SerializeField] public List<bool> canExport; //{ get; private set; }
+    [SerializeField] public List<bool> canImport; //{ get; private set; }
 
     [SerializeField] int storage = 10; //
     [SerializeField] public List<int> stockRessources; //{ get; private set; }
@@ -40,7 +43,12 @@ public class Industry : MonoBehaviour
         }
     }
 
+    [SerializeField] Canvas canvas;
     [SerializeField] TMP_Text industryName;
+    [SerializeField] Transform outputDisplay;
+    [SerializeField] Transform inputDisplay;
+    [SerializeField] GameObject imagePrefab;
+    //exportsIcon
 
     public void AddStation(Station industry)
     {
@@ -58,8 +66,8 @@ public class Industry : MonoBehaviour
 
     private void Awake()
     {
-        canExport = new List<int>();
-        canImport = new List<int>();
+        exportID = new List<int>();
+        importID = new List<int>();
     }
     private void Start() {
         prodTimer = prodTime;
@@ -67,20 +75,28 @@ public class Industry : MonoBehaviour
         for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
         {
             stockRessources.Add(0);
+            canExport.Add(false);
+            canImport.Add(false);
         }
     }
     public void SetIndustryType(IndustryScriptable newType) {
         Type = newType;
         prodTimer = prodTime;
-        SetAcceptedRessources(ressourceInput, canImport);
-        SetAcceptedRessources(ressourceOutput, canExport);
+        SetAcceptedRessources(ressourceInput, importID, canImport, inputDisplay);
+        SetAcceptedRessources(ressourceOutput, exportID, canExport, outputDisplay);
         for(int i = 0; i < linkedStation.Count; i++) {
             linkedStation[i].CheckImportExport();
         }
     }
-    void SetAcceptedRessources(List<RessourceScriptable> listToCheck, List<int> listToUpdate)
+    void SetAcceptedRessources(List<RessourceScriptable> listToCheck, List<int> listToUpdate, List<bool> checkToUpdate, Transform display)
     {
         listToUpdate.Clear();
+        checkToUpdate.Clear();
+        for(int j = 0; j < GameManager.Instance.ressourceTypes.Count; j++) {
+            checkToUpdate.Add(false);
+        }
+        for(int k = 1; k < display.childCount; k++)
+            Destroy(display.GetChild(k).gameObject);
         int i = 0;
         int toFind = listToCheck.Count;
         int found = 0;
@@ -89,6 +105,9 @@ public class Industry : MonoBehaviour
             if (GameManager.Instance.ressourceTypes[i].id == listToCheck[found].id)
             {
                 listToUpdate.Add(listToCheck[found].id);
+                checkToUpdate[i] = true;
+                Image icon = Instantiate(imagePrefab, display).GetComponent<Image>();
+                icon.sprite = GameManager.Instance.ressourceTypes[i].sprite;
                 i = -1;
                 found++;
             }
@@ -101,19 +120,19 @@ public class Industry : MonoBehaviour
         if(prodTimer < 0) {
             prodTimer = prodTime;
             bool canProd = CanProduce();
-            if (canImport.Count >= 0) {
+            if (importID.Count >= 0) {
                 if (canProd) {
-                    for (int i = 0; i < canImport.Count; i++)
-                        ChangeStorageRessource(-requiredQty[i], canImport[i]);
-                    for (int i = 0; i < canExport.Count; i++)
-                        ChangeStorageRessource(prodQty[i], canExport[i]); 
+                    for (int i = 0; i < importID.Count; i++)
+                        ChangeStorageRessource(-requiredQty[i], importID[i]);
+                    for (int i = 0; i < exportID.Count; i++)
+                        ChangeStorageRessource(prodQty[i], exportID[i]); 
                     prodTimer = prodTime;
                 }
                 prodTimer = 1;
             }
-            if(canImport.Count < 0) {
-                for (int i = canImport.Count; i < canExport.Count; i++)
-                    ChangeStorageRessource(prodQty[i], canExport[i]); 
+            if(importID.Count < 0) {
+                for (int i = importID.Count; i < exportID.Count; i++)
+                    ChangeStorageRessource(prodQty[i], exportID[i]); 
                 prodTimer = prodTime;
             }
         }
@@ -122,10 +141,15 @@ public class Industry : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        canvas.transform.rotation = Camera.main.transform.rotation;
+    }
+
     bool CanProduce()
     {
-        for(int i = 0; i < canImport.Count; i++) {
-            if (stockRessources[canImport[i]] < requiredQty[i])
+        for(int i = 0; i < importID.Count; i++) {
+            if (stockRessources[importID[i]] < requiredQty[i])
                 return false;
         }
         return true;

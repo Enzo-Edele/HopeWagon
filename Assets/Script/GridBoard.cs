@@ -15,6 +15,7 @@ public class GridBoard : MonoBehaviour
 
     [SerializeField] GameTile[] tiles;
     public List<Station> stationList = new List<Station>(); //[SerializeField]
+    public List<TrainRoute> routeList = new List<TrainRoute>(); //[SerializeField]
 
     //créer une classe network 
     //et oncheck si voisin sans network ou network diff (pour chaque voisin)
@@ -207,6 +208,32 @@ public class GridBoard : MonoBehaviour
         for (int i = 0; i < networkList.Count; i++)
             if (network == networkList[i])
                 networkList.RemoveAt(i);
+    }
+    public void AddStation(Station station)
+    {
+        for (int i = 0; i < stationList.Count; i++)
+            if (stationList[i] == station)
+                return;
+        stationList.Add(station);
+    }
+    public void RemoveStation(Station station)
+    {
+        for (int i = 0; i < stationList.Count; i++)
+            if (station == stationList[i])
+                stationList.RemoveAt(i);
+    }
+    public void AddRoute(TrainRoute trainRoute)
+    {
+        for (int i = 0; i < routeList.Count; i++)
+            if (routeList[i] == trainRoute)
+                return;
+        routeList.Add(trainRoute);
+    }
+    public void RemoveRoute(TrainRoute trainRoute)
+    {
+        for (int i = 0; i < routeList.Count; i++)
+            if (trainRoute == routeList[i])
+                routeList.RemoveAt(i);
     }
 
     public void Save(BinaryWriter writer)

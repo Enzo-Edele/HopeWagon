@@ -10,11 +10,31 @@ public class TrainRoute : MonoBehaviour
     //string routeName;
     public List<Station> destinationArray = new List<Station>();  //on met le départ a 0
     public Station currentDestination; // au start on prend array[1]
+    public Station currentStartPoint;
     public List<GameTileCopy> path = new List<GameTileCopy>();
     public List<GameTileCopy> pathReverse = new List<GameTileCopy>();
+
+    public UIRouteItem displayUI;
     //parent said copy tile heto object
+
+    public List<bool> RouteRessources;
+    public List<int> stockRessources;
+    int storage = 12;   //to update when implementing wagon
+
+    public bool toStop = false;
+
     Train train; //a terme on aura des trains custom pour l'instant prendre un prefab
 
+    private void Awake()
+    {
+        stockRessources = new List<int>();
+        RouteRessources = new List<bool>();
+        for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
+        {
+            RouteRessources.Add(false);
+            stockRessources.Add(0);
+        }
+    }
     private void Update()
     {
         if (timerTrain < 0)
@@ -27,6 +47,7 @@ public class TrainRoute : MonoBehaviour
     {
         destinationArray.Add(depart);
         destinationArray.Add(destination);
+        currentStartPoint = depart;
         currentDestination = destination;
         path = newPath;
         DeployTrain(0);
@@ -51,18 +72,25 @@ public class TrainRoute : MonoBehaviour
     {
         if (GameManager.Instance.playerData.trainStock > 0)
         {
+            if (toStop)
+            {
+                stopRoute();
+                return;
+            }
             train = Instantiate(GameManager.Instance.trainPrefab).GetComponent<Train>();
             train.SetPath(path);
             train.Spawn(path[pathIndex], this);
-            destinationArray[0].DeployTrain(currentDestination, train);
+            currentStartPoint.LoadTrain(currentDestination, this);
             train.SetWagons(GameManager.Instance.wagonTemplate);
             timerTrain = 0;
             GameManager.Instance.playerData.ChangeTrainStock(-1);
+            if(displayUI != null)
+                displayUI.UpdateDisplay();
         }
         else
             timerTrain = timeTrain;
     }
-    public void SetNextPath()
+    public void SetNextPath() //to update with for loop
     {
         List<GameTileCopy> memPath = new List<GameTileCopy>();
         memPath = path;
@@ -72,11 +100,47 @@ public class TrainRoute : MonoBehaviour
         Station memStation = destinationArray[0];
         destinationArray[0] = destinationArray[1];
         destinationArray[1] = memStation;
+        currentStartPoint = destinationArray[0];
         currentDestination = destinationArray[1];
 
         DeployTrain(0);
     }
 
+    public int LoadRessources(int qty, int index)
+    {
+        int leftover = 0;
+        Debug.Assert(qty >= 0, "WARNING : can't load negative value on train");
+        stockRessources[index] += qty;
+        RouteRessources[index] = true;
+
+        if (stockRessources[index] > storage)
+        {
+            leftover = stockRessources[index] - storage;
+            stockRessources[index] = storage;
+        }
+        //Debug.Log(stockRessources[index] + " loaded out of " + qty + " remaining " + leftover);
+
+        return leftover;
+    }
+    public void UnloadRessource(GameTileCopy copy)
+    {
+        for (int i = 0; i < RouteRessources.Count; i++)
+        {
+            if (RouteRessources[i])
+            {
+                GameManager.Instance.playerData.AddContratProgress(i, stockRessources[i]);
+                stockRessources[i] = GridBoard.Instance.GetTile(copy.tileCoordinate).station.UnloadRessources(stockRessources[i], i);
+                RouteRessources[i] = false;
+            }
+        }
+    }
+
+    void stopRoute()
+    {
+        GameManager.Instance.gridBoard.RemoveRoute(this);
+        Destroy(displayUI.gameObject);
+        Destroy(gameObject);
+    }
     /*  depreciated for now
     public void reversePath()
     {

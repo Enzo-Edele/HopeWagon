@@ -75,7 +75,12 @@ public class SaveLoadMenu : MonoBehaviour
         menuPanel.SetActive(false);
         SceneManager.LoadScene("Main");
     }
-
+    public void Continue()
+    {
+        Time.timeScale = 1.0f;
+        GameManager.Instance.playerData.SetTimer(9999);
+        endPanel.SetActive(false);
+    }
     public void Quit()
     {
         Application.Quit();
@@ -117,5 +122,6 @@ public class SaveLoadMenu : MonoBehaviour
     {
         endPanel.SetActive(true);
         endText.text = "Contract Completed : " + completeContract;
+        Time.timeScale = 0.0f;
     }
 }

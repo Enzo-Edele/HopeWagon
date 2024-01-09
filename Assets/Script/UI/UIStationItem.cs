@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class UIStationItem : MonoBehaviour
@@ -12,6 +13,7 @@ public class UIStationItem : MonoBehaviour
     [SerializeField] GameObject trainRessources;
     [SerializeField] TMP_Dropdown destinationDropdown;
     [SerializeField] GameObject destinationImport;
+    [SerializeField] GameObject imagePrefab;
 
     public InGameUI inGameUI;
 
@@ -26,6 +28,15 @@ public class UIStationItem : MonoBehaviour
         stationName.text = departStation.nameStation;
 
         //stationExportImport //activate the right icon
+        for (int j = 1; j < stationExportImport.transform.childCount; j++) {
+            Destroy(stationExportImport.transform.GetChild(j).gameObject);
+        }
+        for (int i = 0; i < itemOwner.canExport.Count; i++) {
+            if (itemOwner.canExport[i]) {
+                Image icon = Instantiate(imagePrefab , stationExportImport.transform).GetComponent<Image>();
+                icon.sprite = GameManager.Instance.ressourceTypes[i].sprite;
+            }
+        }
         //add trainRoutes to dropDown
         //stock the destination of each train
         //stock the ressource of each train
@@ -42,6 +53,18 @@ public class UIStationItem : MonoBehaviour
             for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
                 if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
                     selectedDestination = GridBoard.Instance.stationList[i];
+            for (int j = 1; j < destinationImport.transform.childCount; j++)
+            {
+                Destroy(destinationImport.transform.GetChild(j).gameObject);
+            }
+            for (int i = 0; i < selectedDestination.canImport.Count; i++)
+            {
+                if (selectedDestination.canImport[i])
+                {
+                    Image icon = Instantiate(imagePrefab, destinationImport.transform).GetComponent<Image>();
+                    icon.sprite = GameManager.Instance.ressourceTypes[i].sprite;
+                }
+            }
             destinationDropdown.captionText.text = selectedDestination.name;
         }
     }
@@ -53,6 +76,17 @@ public class UIStationItem : MonoBehaviour
         for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
             if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
                 selectedDestination = GridBoard.Instance.stationList[i];
+        //update ressource
+        for (int j = 1; j < destinationImport.transform.childCount; j++)
+        {
+            Destroy(destinationImport.transform.GetChild(j).gameObject);
+        }
+        for (int i = 0; i < selectedDestination.canImport.Count; i++) {
+            if (selectedDestination.canImport[i]) {
+                Image icon = Instantiate(imagePrefab, destinationImport.transform).GetComponent<Image>();
+                icon.sprite = GameManager.Instance.ressourceTypes[i].sprite;
+            }
+        }
     }
 
     public void DeployTrain()

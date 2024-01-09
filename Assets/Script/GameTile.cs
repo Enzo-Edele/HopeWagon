@@ -357,6 +357,7 @@ public class GameTile : MonoBehaviour
     }
     void DestroyStation()
     {
+        GameManager.Instance.gridBoard.RemoveStation(stationPrefab.GetComponent<Station>());
         Destroy(stationPrefab);
         stationPrefab = null;
         for (int i = 0; i < 4; i++) {
@@ -364,7 +365,6 @@ public class GameTile : MonoBehaviour
                 neighbor[i].industry.RemoveStation(station);
             }
         }
-        //GameManager.Instance.gridBoard.   //créer fonction pour update station list
     }
     void SpawnFactory()
     {
@@ -397,19 +397,25 @@ public class GameTile : MonoBehaviour
         if (hasIndustry)
         {
             content = "Industry";
-            ui.UpdateItemDisplayList(industry.canImport, industry.canExport, industry.stockRessources);
+            //ui.UpdateItemDisplayList(industry.importID, industry.exportID, industry.stockRessources);
+            ui.UpdateItemDisplayListNew(industry.canImport, industry.canExport, industry.stockRessources);
         }
         else if (hasStation)
         {
             content = "Station";
             List<int> numberRessources = new List<int>();
-            for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++) {
+            for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
+            {
                 numberRessources.Add(i);
             }
-            ui.UpdateItemDisplayList(numberRessources, numberRessources, station.stockRessources); //error to check
+            //ui.UpdateItemDisplayList(numberRessources, numberRessources, station.stockRessources); //error to check
+            ui.UpdateItemDisplayListNew(station.canImport, station.canExport, station.stockRessources); //error to check
         }
         else
+        {
             content = "Empty";
+            ui.UpdateItemDisplayListNew();
+        }
         ui.UpdateTileInfo(name, content);
     }
 
@@ -490,7 +496,7 @@ public class GameTile : MonoBehaviour
         {
             content = "Industry";
             //industry.canExport    //industry.canImport
-            ui.UpdateItemDisplayListBIS(industry.canImport, industry.canExport, industry.stockRessources);
+            ui.UpdateItemDisplayListBIS(industry.importID, industry.exportID, industry.stockRessources);
         }
         else if (hasStation)
         {

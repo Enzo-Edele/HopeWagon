@@ -83,11 +83,11 @@ public class Station : MonoBehaviour
             canImport.Add(false);
         }
         for (int i = 0; i < linkedIndustries.Count; i++) {
-            for(int j = 0; j < linkedIndustries[i].canExport.Count; j++) {
-                canExport[linkedIndustries[i].canExport[j]] = true;
+            for(int j = 0; j < linkedIndustries[i].exportID.Count; j++) {
+                canExport[linkedIndustries[i].exportID[j]] = true;
             }
-            for (int k = 0; k < linkedIndustries[i].canImport.Count; k++) {
-                canImport[linkedIndustries[i].canImport[k]] = true;
+            for (int k = 0; k < linkedIndustries[i].importID.Count; k++) {
+                canImport[linkedIndustries[i].importID[k]] = true;
             }
         }
     }
@@ -98,7 +98,7 @@ public class Station : MonoBehaviour
         nameStation = name;
         nameDisplay.text = nameStation;
 
-        GridBoard.Instance.stationList.Add(this); //add (check if it exist) a method to properly remove station
+        GridBoard.Instance.AddStation(this);
         stockRessources = new List<int>();
         for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
         {
@@ -136,9 +136,10 @@ public class Station : MonoBehaviour
         }
 
         route.Initialize(path, this, destination);
+        GameManager.Instance.gridBoard.AddRoute(route);
     }
 
-    public void DeployTrain(Station destination, Train train)
+    public void LoadTrain(Station destination, TrainRoute route)
     {
         List<int> toLoad = new List<int>();
         for (int j = 0; j < GameManager.Instance.ressourceTypes.Count; j++)
@@ -148,7 +149,7 @@ public class Station : MonoBehaviour
         }
         for (int j = 0; j < toLoad.Count; j++)
         {
-            SetStockRessource(train.LoadRessources(stockRessources[toLoad[j]], toLoad[j]), toLoad[j]);
+            SetStockRessource(route.LoadRessources(stockRessources[toLoad[j]], toLoad[j]), toLoad[j]);
         }
     }
 
@@ -158,8 +159,8 @@ public class Station : MonoBehaviour
             int indexRessource = -1;
             //take ressource
             for(int i = 0; i < linkedIndustries.Count; i++) {
-                for(int j = 0; j < linkedIndustries[i].canExport.Count; j++) {
-                    indexRessource = linkedIndustries[i].canExport[j];
+                for(int j = 0; j < linkedIndustries[i].exportID.Count; j++) {
+                    indexRessource = linkedIndustries[i].exportID[j];
                     if (canExport[indexRessource]) {
                         linkedIndustries[i].SetStockRessource(ChangeStorageRessource(linkedIndustries[i].stockRessources[indexRessource], indexRessource), indexRessource); 
                         //verifier sécurité pour empêcher dupli
@@ -168,8 +169,8 @@ public class Station : MonoBehaviour
             }
             //send ressource
             for (int i = 0; i < linkedIndustries.Count; i++) {
-                for (int j = 0; j < linkedIndustries[i].canImport.Count; j++) {
-                    indexRessource = linkedIndustries[i].canImport[j];
+                for (int j = 0; j < linkedIndustries[i].importID.Count; j++) {
+                    indexRessource = linkedIndustries[i].importID[j];
                     if (canImport[indexRessource]) {
                         SetStockRessource(linkedIndustries[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
                         //verifier sécurité pour empêcher dupli

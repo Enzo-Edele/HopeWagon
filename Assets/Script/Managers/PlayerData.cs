@@ -47,8 +47,8 @@ public class PlayerData : MonoBehaviour
     private void LoadSTartGame()
     {
         railStock = 50;
-        stationStock = 10;
-        trainStock = 5;
+        stationStock = 7;
+        trainStock = 7;
         GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
         GameManager.Instance.saveLoadMenu.ActivateMenu();//for demo
     }
@@ -98,5 +98,9 @@ public class PlayerData : MonoBehaviour
         contratPool.Add(newContract);
         GameManager.Instance.gameUI.updateContractDisplay(contratPool);
         return foundContract;
+    }
+    public void SetTimer(int time)
+    {
+        gameTimer = time;
     }
 }
