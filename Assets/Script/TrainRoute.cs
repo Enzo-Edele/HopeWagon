@@ -47,9 +47,12 @@ public class TrainRoute : MonoBehaviour
     {
         destinationArray.Add(depart);
         destinationArray.Add(destination);
+        //replace by a copy of destPath list
+
         currentStartPoint = depart;
         currentDestination = destination;
-        path = newPath;
+        //add a list of path
+        path = newPath;  
         DeployTrain(0);
 
         //adapt for multiple station
@@ -77,7 +80,7 @@ public class TrainRoute : MonoBehaviour
                 stopRoute();
                 return;
             }
-            train = Instantiate(GameManager.Instance.trainPrefab).GetComponent<Train>();
+            train = Instantiate(GameManager.Instance.trainPrefab, new Vector3(0, -10, 0), Quaternion.identity).GetComponent<Train>();
             train.SetPath(path);
             train.Spawn(path[pathIndex], this);
             currentStartPoint.LoadTrain(currentDestination, this);
@@ -138,6 +141,11 @@ public class TrainRoute : MonoBehaviour
     void stopRoute()
     {
         GameManager.Instance.gridBoard.RemoveRoute(this);
+        Destroy(displayUI.gameObject);
+        Destroy(gameObject);
+    }
+    public void LoadigStopRoute()
+    {
         Destroy(displayUI.gameObject);
         Destroy(gameObject);
     }

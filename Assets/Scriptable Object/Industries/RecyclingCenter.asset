@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f401bf696919654d988c7bfabcef76e, type: 3}
+  m_Name: RecyclingCenter
+  m_EditorClassIdentifier: 
+  nameIndustry: Recycling Center
+  id: 6
+  mat: {fileID: 2100000, guid: 4ce38bd1f0992d54db3d5f5a15b6e521, type: 2}
+  outpout:
+  - {fileID: 11400000, guid: a8f46d97d0570644f9838636c2c6b6f6, type: 2}
+  - {fileID: 11400000, guid: f3466b0e0cc66114baa862ddc7e6c797, type: 2}
+  prodTime: 12
+  prodQty: 0300000001000000
+  input:
+  - {fileID: 11400000, guid: de011b2bb48483442bdab5ae2d2da4ed, type: 2}
+  requireAmount: 03000000
+  storage: 2d0000000a0000001e000000
+  pollutionLevel: 0
+  description: 

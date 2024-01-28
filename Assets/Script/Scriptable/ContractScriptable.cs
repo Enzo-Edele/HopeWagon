@@ -11,6 +11,7 @@ public class ContractScriptable : ScriptableObject
     public string nameContract;
     public string reward;
     public int rewardQty;
+    public Sprite rewardIcon;
     public RessourceScriptable requiredRessource;
     public int requiredQty;
 

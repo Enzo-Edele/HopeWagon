@@ -14,4 +14,10 @@ public class RouteRessourceItem : MonoBehaviour
         icon.sprite = GameManager.Instance.ressourceTypes[ressourceID].sprite;
         qtyText.text = "" + qty;
     }
+
+    public void UpdatePolluted(int ressourceID, int stockQty, int requireQty)
+    {
+        icon.sprite = GameManager.Instance.ressourceTypes[ressourceID].sprite;
+        qtyText.text = stockQty + "/" + requireQty;
+    }
 }

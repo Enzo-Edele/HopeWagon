@@ -14,6 +14,7 @@ public class UIStationItem : MonoBehaviour
     [SerializeField] TMP_Dropdown destinationDropdown;
     [SerializeField] GameObject destinationImport;
     [SerializeField] GameObject imagePrefab;
+    List<string> destinationsNames = new List<string>();
 
     public InGameUI inGameUI;
 
@@ -41,6 +42,7 @@ public class UIStationItem : MonoBehaviour
         //stock the destination of each train
         //stock the ressource of each train
 
+        destinationsNames = destinationArray;
         destinationDropdown.options.Clear();
         for(int i = 0; i < destinationArray.Count; i++)
         {
@@ -91,7 +93,11 @@ public class UIStationItem : MonoBehaviour
 
     public void DeployTrain()
     {
-        if (selectedDestination)
-            departStation.CreateRoute(selectedDestination);
+        /*if (selectedDestination)
+        {
+            GameManager.Instance.gameUI.OpenRouteCreator(true);
+            GameManager.Instance.gameUI.SetDestinationListCreator(stationName.text, destinationsNames);
+        }*/
+        departStation.CreateRoute(selectedDestination);
     }
 }

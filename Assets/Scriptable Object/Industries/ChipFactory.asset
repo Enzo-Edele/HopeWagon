@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameIndustry: Chip Factory
   id: 4
+  mat: {fileID: 2100000, guid: a7af8af7816b1ff43bf8602c6c74e8f6, type: 2}
   outpout:
   - {fileID: 11400000, guid: f3466b0e0cc66114baa862ddc7e6c797, type: 2}
   prodTime: 10
@@ -21,6 +22,6 @@ MonoBehaviour:
   input:
   - {fileID: 11400000, guid: d575bd275496a2e4bbaddba85a5b28ae, type: 2}
   requireAmount: 05000000
-  storage: 25
+  storage: 0f00000032000000
   pollutionLevel: 1
   description: 

@@ -12,14 +12,14 @@ public class Station : MonoBehaviour
     public List<string> destinationNameList = new List<string>();
 
     [SerializeField] List<Industry> linkedIndustries = new List<Industry>();
+    [SerializeField] List<PollutedIndustry> linkedPollutedIndustry = new List<PollutedIndustry>();
     int storage = 50; //pas besoin de passer en liste tant que les gares on un stockage égal pour tout
     [SerializeField] public List<int> stockRessources; //public get private set
 
     public List<bool> canExport = new List<bool>(); //public get private set
     public List<bool> canImport = new List<bool>(); //public get private set
 
-    List<TrainRoute> trainComing = new List<TrainRoute>();
-    List<TrainRoute> trainLeaving = new List<TrainRoute>();
+    List<TrainRoute> RouteList = new List<TrainRoute>();
 
     int requestTime = 2;
     float requestTimer;
@@ -38,6 +38,10 @@ public class Station : MonoBehaviour
             newNetwork.ClaimTile(tile);
         }
         destinationList = GridBoard.Instance.GetStationInNetwork(tile);
+        for(int i = 0;i < destinationList.Count; i++)
+        {
+            destinationNameList.Add(destinationList[i].name);
+        }
     }
 
     public void AddDestination(Station station)
@@ -73,6 +77,19 @@ public class Station : MonoBehaviour
             if (industry == linkedIndustries[i])
                 linkedIndustries.RemoveAt(i);
     }
+    public void AddPollutedIndustry(PollutedIndustry industry)
+    {
+        for (int i = 0; i < linkedPollutedIndustry.Count; i++)
+            if (linkedPollutedIndustry[i] == industry)
+                return;
+        linkedPollutedIndustry.Add(industry);
+    }
+    public void RemovePollutedIndustry(PollutedIndustry industry)
+    {
+        for (int i = 0; i < linkedPollutedIndustry.Count; i++)
+            if (industry == linkedPollutedIndustry[i])
+                linkedPollutedIndustry.RemoveAt(i);
+    }
     //a terme autoriser le joueur a lock et unlock des ressources
     public void CheckImportExport()
     {
@@ -88,6 +105,15 @@ public class Station : MonoBehaviour
             }
             for (int k = 0; k < linkedIndustries[i].importID.Count; k++) {
                 canImport[linkedIndustries[i].importID[k]] = true;
+            }
+        }
+        for (int i = 0; i < linkedPollutedIndustry.Count; i++)
+        {
+            for (int j = 0; j < linkedPollutedIndustry[i].exportID.Count; j++) {
+                canExport[linkedPollutedIndustry[i].exportID[j]] = true;
+            }
+            for (int k = 0; k < linkedPollutedIndustry[i].importID.Count; k++) {
+                canImport[linkedPollutedIndustry[i].importID[k]] = true;
             }
         }
     }
@@ -108,15 +134,10 @@ public class Station : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        for (int i = 0; i < destinationList.Count; i++)
-            destinationNameList.Add(destinationList[i].name);
-    }
-
     public void CreateRoute(Station destination)
     {
         List<GameTileCopy> path = new List<GameTileCopy>();
+        //do for all dest of path
         Queue<GameTile> pathToCopy = GridBoard.Instance.Pathfinding(destination.tile, tile);
 
         TrainRoute route = Instantiate(GameManager.Instance.routePrefab).GetComponent<TrainRoute>(); 
@@ -216,7 +237,18 @@ public class Station : MonoBehaviour
     public int UnloadRessources(int qtyUnload, int ressourceIndex)
     {
         int leftover = ChangeStorageRessource(qtyUnload, ressourceIndex);
-        //Debug.Log(stockRessources[ressourceIndex] + " loaded out of " + qtyUnload + " of type " + ressourceIndex);
+        BuildIndustry();
         return leftover;
+    }
+    public void BuildIndustry()
+    {
+        for (int i = 0; i < linkedPollutedIndustry.Count; i++) {
+            for (int j = 0; j < canImport.Count; j++) {
+                if (linkedPollutedIndustry[i] != null && canImport[j] && canImport[j] == linkedPollutedIndustry[i].canImport[j]) //error on this line when depollute
+                {
+                    stockRessources[j] = linkedPollutedIndustry[i].AddRessource(j, stockRessources[j]);
+                }
+            }
+        }
     }
 }

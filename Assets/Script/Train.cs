@@ -28,7 +28,7 @@ public class Train : MonoBehaviour
 
     [SerializeField] TMP_Text stockDisplay;
 
-    bool first = false;
+    //bool first = false;
     bool spawnWagon = false;
 
     private void Awake()
@@ -99,7 +99,7 @@ public class Train : MonoBehaviour
         //spawn wagon   //marche mal si virage dans spawn
         if (spawnWagon && progress > 0.5f && wagonQueue.Count > 0)
         {
-            Wagon wagon = Instantiate(wagonQueue.Dequeue()).GetComponent<Wagon>();
+            Wagon wagon = Instantiate(wagonQueue.Dequeue(), new Vector3(0, -10, 0), Quaternion.identity).GetComponent<Wagon>();
             wagon.SetPath(path);
             wagon.Spawn(path[0], transportPath);
             if (wagonQueue.Count <= 0)

@@ -16,6 +16,7 @@ MonoBehaviour:
   nameContract: RailContract
   reward: rail
   rewardQty: 20
+  rewardIcon: {fileID: 21300000, guid: 63b9db98eac91f046baaa3b644724709, type: 3}
   requiredRessource: {fileID: 11400000, guid: 3adb80a8db9c3984099cce2f2d2bdc5f, type: 2}
   requiredQty: 30
   difficultyLevel: 1

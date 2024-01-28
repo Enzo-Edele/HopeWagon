@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f401bf696919654d988c7bfabcef76e, type: 3}
+  m_Name: DroneFactory
+  m_EditorClassIdentifier: 
+  nameIndustry: DroneFactory
+  id: 7
+  mat: {fileID: 2100000, guid: 5d7effcd7b0e9c540babedb071107a00, type: 2}
+  outpout:
+  - {fileID: 11400000, guid: bb4e2a2c2c81bd441b13f8fbd6632f5a, type: 2}
+  prodTime: 25
+  prodQty: 01000000
+  input:
+  - {fileID: 11400000, guid: 1d2e2437cbf966d43a1e39c1f13bfb9d, type: 2}
+  - {fileID: 11400000, guid: f3466b0e0cc66114baa862ddc7e6c797, type: 2}
+  requireAmount: 0500000002000000
+  storage: 050000003200000014000000
+  pollutionLevel: 0
+  description: 

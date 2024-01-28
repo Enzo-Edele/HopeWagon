@@ -7,9 +7,20 @@ public class Contract : MonoBehaviour
     [SerializeField]ContractScriptable contract;
 
     public int requireRessourcesIndex;
-    public int required = 0;
+    public int requiredQty = 0;
+    public string requiredDisplayText
+    {
+        get { return accumulated + " / " + requiredQty; }
+        private set { }
+    }
     public string reward;
+    public Sprite rewardIcon;
     public int rewardQty = 0;
+    public string rewardDisplayText
+    {
+        get { return "" + rewardQty; }
+        private set { }
+    }
     public int accumulated = 0;
 
     //referencer dans le playerdata
@@ -20,9 +31,10 @@ public class Contract : MonoBehaviour
         if (contract != null)
         {
             requireRessourcesIndex = contract.requiredRessource.id;
-            required = contract.requiredQty;
+            requiredQty = contract.requiredQty;
             reward = contract.reward;
             rewardQty = contract.rewardQty;
+            rewardIcon = contract.rewardIcon;
             GameManager.Instance.gameUI.updateContractDisplay(GameManager.Instance.playerData.contratPool);
             GameManager.Instance.playerData.contractOfTypeGiven[contract.id]++;
             name = contract.nameContract + " " + GameManager.Instance.playerData.contractOfTypeGiven[contract.id];
@@ -33,7 +45,7 @@ public class Contract : MonoBehaviour
     {
         contract = GameManager.Instance.contratTypes[Random.Range(0, GameManager.Instance.contratTypes.Count)];
         requireRessourcesIndex = contract.requiredRessource.id;
-        required = contract.requiredQty;
+        requiredQty = contract.requiredQty;
         reward = contract.reward;
         rewardQty = contract.rewardQty;
         GameManager.Instance.playerData.contractOfTypeGiven[contract.id]++;
@@ -43,7 +55,7 @@ public class Contract : MonoBehaviour
     public void AddToObjective(int amout)
     {
         accumulated += amout;
-        if(accumulated >= required) {
+        if(accumulated >= requiredQty) {
             GiveReward();
         }
         GameManager.Instance.gameUI.updateContractDisplay(GameManager.Instance.playerData.contratPool);

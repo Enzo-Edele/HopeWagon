@@ -19,7 +19,8 @@ public class Industry : MonoBehaviour
     [SerializeField] public List<bool> canExport; //{ get; private set; }
     [SerializeField] public List<bool> canImport; //{ get; private set; }
 
-    [SerializeField] int storage = 10; //
+    [SerializeField] List<int> storage = new List<int>();
+    [SerializeField] List<Vector2Int> storageCheck = new List<Vector2Int>();
     [SerializeField] public List<int> stockRessources; //{ get; private set; }
     public GameObject model;
 
@@ -36,9 +37,23 @@ public class Industry : MonoBehaviour
                 prodQty = value.prodQty;
                 ressourceInput = value.input;
                 requiredQty = value.requireAmount;
+                storage = value.storage;
+                int OutputRessourcesVariety = 0;
+                int InputRessourcesVariety = 0;
+                for (int i = 0; i < value.storage.Count; i++) {
+                    if (OutputRessourcesVariety < ressourceOutput.Count) { 
+                        storageCheck.Add(new Vector2Int(ressourceOutput[OutputRessourcesVariety].id, value.storage[i]));
+                        OutputRessourcesVariety++;
+                    }
+                    if(InputRessourcesVariety < ressourceInput.Count) { 
+                        storageCheck.Add(new Vector2Int(ressourceInput[InputRessourcesVariety].id, value.storage[i]));
+                        InputRessourcesVariety++;
+                    }
+                }
+
                 industryName.text = value.nameIndustry;
                 //do the next part later
-                model.GetComponent<Renderer>().material = GameManager.Instance.Industrymats[value.id];
+                model.GetComponent<Renderer>().material = value.mat;
             }
         }
     }
@@ -68,16 +83,16 @@ public class Industry : MonoBehaviour
     {
         exportID = new List<int>();
         importID = new List<int>();
-    }
-    private void Start() {
-        prodTimer = prodTime;
         stockRessources = new List<int>();
-        for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
+        for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
         {
             stockRessources.Add(0);
             canExport.Add(false);
             canImport.Add(false);
         }
+    }
+    private void Start() {
+        prodTimer = prodTime;
     }
     public void SetIndustryType(IndustryScriptable newType) {
         Type = newType;
@@ -161,13 +176,23 @@ public class Industry : MonoBehaviour
     {
         int leftover = 0;
         stockRessources[valueIndex] += changeValue;
-        if (stockRessources[valueIndex] < 0) {
+        if (stockRessources[valueIndex] < 0)
+        {
             leftover = stockRessources[valueIndex];
             stockRessources[valueIndex] = 0;
         }
-        else if (stockRessources[valueIndex] > storage) {
-            leftover = stockRessources[valueIndex] - storage;
-            stockRessources[valueIndex] = storage;
+        else
+        {
+            for (int i = 0; i < storageCheck.Count; i++)
+            {
+                if(valueIndex == storageCheck[i].x) { 
+                    if (stockRessources[valueIndex] > storageCheck[i].y)
+                    {
+                        leftover = stockRessources[valueIndex] - storage[i];
+                        stockRessources[valueIndex] = storage[i];
+                    }
+                }
+            }
         }
 
         return leftover;
@@ -178,9 +203,17 @@ public class Industry : MonoBehaviour
         stockRessources[valueIndex] = newStock;
         if (stockRessources[valueIndex] < 0)
             stockRessources[valueIndex] = 0;
-        else if (stockRessources[valueIndex] > storage)
-            stockRessources[valueIndex] = storage;
+        else
+            for (int i = 0; i < storageCheck.Count; i++)
+                if (valueIndex == storageCheck[i].x)
+                    if (stockRessources[valueIndex] > storageCheck[i].y)
+                        stockRessources[valueIndex] = storage[i];
 
         //vérifier si leftover ???
+    }
+
+    public void ShowHideUI(bool state)
+    {
+        canvas.gameObject.SetActive(state);
     }
 }

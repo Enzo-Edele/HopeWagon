@@ -72,15 +72,18 @@ public class GameTile : MonoBehaviour
             if (value != hasStation)
             {
                 hasStation = value;
+
+                if (!hasStation)
+                {
+                    Network.RemoveStation(station);
+                    DestroyStation();
+                }
+                if (hasStation && GameManager.Instance.playerData.stationStock <= 0)
+                    hasStation = false;
                 if (hasStation && GameManager.Instance.playerData.stationStock > 0) {
                     SpawnStation();
                     HasRail = hasStation;   //l'ordre de ces deux lignes a un GROS IMPACT sur le network à revoir
-                    GameManager.Instance.playerData.ChangeStationStock(-1);
-                }
-                else if (!hasStation) {
-                    Network.RemoveStation(station);
-                    DestroyStation();
-                    GameManager.Instance.playerData.ChangeStationStock(0);
+                    GameManager.Instance.playerData.ChangeStationStock(-1);   //to move only to places where the player place station
                 }
             }
         }
@@ -102,6 +105,28 @@ public class GameTile : MonoBehaviour
                 else if (!value) {
                     hasIndustry = value;
                     DestroyFactory();
+                }
+            }
+        }
+    }
+    public PollutedIndustry pollutedIndustry { get; private set; }
+    [SerializeField] bool hasPollutedIndustry;
+    public bool HasPollutedIndustry
+    {
+        get { return hasPollutedIndustry; }
+        set
+        {
+            if (value != hasPollutedIndustry)
+            {
+                if (value && CanBuildIndustry())
+                {
+                    hasPollutedIndustry = value;
+                    SpawnPollutedFactory();
+                }
+                else if (!value)
+                {
+                    hasPollutedIndustry = value;
+                    DestroyPollutedFactory();
                 }
             }
         }
@@ -352,6 +377,10 @@ public class GameTile : MonoBehaviour
                 station.AddIndustry(neighbor[i].industry);
                 neighbor[i].industry.AddStation(station);
             }
+            if (neighbor[i].HasPollutedIndustry) {
+                station.AddPollutedIndustry(neighbor[i].pollutedIndustry);
+                neighbor[i].pollutedIndustry.AddStation(station);
+            }
         }
         station.CheckImportExport();
     }
@@ -363,6 +392,7 @@ public class GameTile : MonoBehaviour
         for (int i = 0; i < 4; i++) {
             if (neighbor[i].HasIndustry) {
                 neighbor[i].industry.RemoveStation(station);
+                neighbor[i].pollutedIndustry.RemoveStation(station);
             }
         }
     }
@@ -377,16 +407,56 @@ public class GameTile : MonoBehaviour
                 neighbor[i].station.CheckImportExport();
             }
         }
+        if (hasPollutedIndustry)
+            HasPollutedIndustry = false;
     }
     void DestroyFactory()
     {
-        Destroy(buildingPrefab); 
-        buildingPrefab = null;
         for (int i = 0; i < 4; i++) {
             if (neighbor[i].HasStation) {
                 neighbor[i].station.RemoveIndustry(industry);
             }
         }
+        industry = null;
+        Destroy(buildingPrefab);
+        buildingPrefab = null;
+    }
+    public void UpgradePolluted(int factoryTypeID)
+    {
+        if (hasPollutedIndustry)
+        {
+            HasPollutedIndustry = false;
+            HasIndustry = true;
+            industry.SetIndustryType(GameManager.Instance.industryTypes[factoryTypeID]);
+        }
+    }
+    void SpawnPollutedFactory()
+    {
+        buildingPrefab = Instantiate(GameManager.Instance.pollutedFactoryPrefab, transform);
+        pollutedIndustry = buildingPrefab.GetComponent<PollutedIndustry>();
+        pollutedIndustry.SetTile(this);
+        for (int i = 0; i < 4; i++)
+        {
+            if (neighbor[i].HasStation)
+            {
+                neighbor[i].station.AddPollutedIndustry(pollutedIndustry);
+                pollutedIndustry.AddStation(neighbor[i].station);
+                neighbor[i].station.CheckImportExport();
+            }
+        }
+    }
+    void DestroyPollutedFactory()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (neighbor[i].HasStation)
+            {
+                neighbor[i].station.RemovePollutedIndustry(pollutedIndustry);
+            }
+        }
+        pollutedIndustry = null;
+        Destroy(buildingPrefab);
+        buildingPrefab = null;
     }
 
     //link to UI
@@ -423,19 +493,27 @@ public class GameTile : MonoBehaviour
     {
         writer.Write(HasRail);
         writer.Write(HasStation);
-        if (hasIndustry)
-        {
+        if (hasIndustry) {
             writer.Write(HasIndustry);
             if (industry.Type != null)
                 writer.Write(industry.Type.id); //opti plus tard en byte
-            else
-            {
+            else 
                 writer.Write(-1);
-            }
         }
-        else
-        {
+        else {
             writer.Write(HasIndustry);
+            writer.Write(-1);
+        }
+
+        if (hasPollutedIndustry) {
+            writer.Write(hasPollutedIndustry);
+            if (pollutedIndustry.Type != null)
+                writer.Write(pollutedIndustry.Type.id); //opti plus tard en byte
+            else 
+                writer.Write(-1);
+        }
+        else {
+            writer.Write(HasPollutedIndustry);
             writer.Write(-1);
         }
     }
@@ -451,14 +529,19 @@ public class GameTile : MonoBehaviour
             if(industryType >= 0) 
                 industry.SetIndustryType(GameManager.Instance.industryTypes[industryType]);
         }
-        else {
-            HasIndustry = false;
+        if(header >= 1)
+        {
+            HasPollutedIndustry = reader.ReadBoolean();
+            int pollutedIndustryType = reader.ReadInt32();
+            if (pollutedIndustryType >= 0)
+                pollutedIndustry.SetIndustryType(GameManager.Instance.industryPollutedTypes[pollutedIndustryType]);
         }
     }
 
     public void ClearTile() {
         HasRail = false;
         HasIndustry = false;
+        HasPollutedIndustry = false;
         HasStation = false;
     }
 
@@ -472,6 +555,13 @@ public class GameTile : MonoBehaviour
     {
         if(railMat != null)
             railMat.color = new Color(70 / 255f, 35 / 255f, 27 / 255f);
+    }
+    public void ShowHideUI(bool state)
+    {
+        if (industry != null)
+            industry.ShowHideUI(state);
+        if (pollutedIndustry != null)
+            pollutedIndustry.ShowHideUI(state);
     }
     public void Paint(Color color)
     {

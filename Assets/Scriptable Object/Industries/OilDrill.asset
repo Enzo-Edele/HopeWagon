@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameIndustry: Oil Drill
   id: 2
+  mat: {fileID: 2100000, guid: e247d0deae0bd5e4bb8662dca7abeee0, type: 2}
   outpout:
   - {fileID: 11400000, guid: 255c75182ff267b478db4b0d77453026, type: 2}
   prodTime: 10
   prodQty: 03000000
   input: []
   requireAmount: 
-  storage: 50
+  storage: 3c000000
   pollutionLevel: 3
   description: 

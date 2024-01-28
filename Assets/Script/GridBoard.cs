@@ -28,6 +28,7 @@ public class GridBoard : MonoBehaviour
     //fonction merge
     List<Network> networkList = new List<Network>();
     public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
+    public bool stateWorldUI = true;
 
     public GameObject network;
 
@@ -72,6 +73,10 @@ public class GridBoard : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
             foreach (GameTile tile in tiles)
                 tile.HideNetwork();
+        if (Input.GetKeyDown(KeyCode.M))
+            PaintStation();
+        if (Input.GetKeyDown(KeyCode.R))
+            ShowHideWorldUI();
     }
 
     public void PaintAllTile(Color color)
@@ -80,9 +85,23 @@ public class GridBoard : MonoBehaviour
         {
             tile.Paint(color);
         }
-        //Debug.Log("paint all");
     }
-
+    public void PaintStation()
+    {
+        foreach (GameTile tile in tiles)
+        {
+            if(tile.HasStation)
+                tile.Paint(Color.red);
+        }
+    }
+    public void ShowHideWorldUI()
+    {
+        stateWorldUI = !stateWorldUI;
+        foreach (GameTile tile in tiles)
+        {
+            tile.ShowHideUI(stateWorldUI);
+        }
+    }
     //Get all station connected to startStation
     public List<Station> GetStationInNetwork(GameTile startStation)
     {
@@ -246,11 +265,19 @@ public class GridBoard : MonoBehaviour
     }
     public void Load(BinaryReader reader, int header)
     {
+        for(int i = 0; i < routeList.Count; i++)
+        {
+            routeList[i].LoadigStopRoute();
+        }
+        routeList.Clear();
+
         int x = 20, z = 15;
         x = reader.ReadInt32();
         z = reader.ReadInt32();
 
         for (int i = 0; i < tiles.Length; i++)
             tiles[i].Load(reader, header);
+
+        //setCameraPos
     }
 }

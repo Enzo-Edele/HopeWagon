@@ -5,11 +5,17 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using TMPro;
 
+[System.Serializable]
+public class TutoLabel
+{
+    public List<GameObject> list;
+}
+
 public class SaveLoadMenu : MonoBehaviour
 {
     public GridBoard gridBoard;
 
-    const int mapFileVersion = 0;
+    const int mapFileVersion = 1;
 
     [SerializeField] GameObject menuPanel;
     [SerializeField] TMP_Text resumeText;
@@ -18,11 +24,14 @@ public class SaveLoadMenu : MonoBehaviour
     //add tutorial button
     [SerializeField] GameObject tutoPanel;
     [SerializeField] List<GameObject> tutoPanels;
+    [SerializeField] List<TutoLabel> TutoCategories;
+    int currentTutoLabel = 0;
     int currentTutoPannel = 0;
     [SerializeField] TMP_Text tipsIndicator;
     //tutorial open at begining
     [SerializeField] GameObject endPanel;
-    [SerializeField] TMP_Text endText;
+    [SerializeField] TMP_Text endTextContract;
+    [SerializeField] TMP_Text endTextTime;
 
     [SerializeField] TMP_Text timerText;
 
@@ -36,6 +45,7 @@ public class SaveLoadMenu : MonoBehaviour
 
     public void Load(string path)
     {
+        GameManager.Instance.playerData.Cheat();
         if (!File.Exists(path))
         {
             Debug.Log("File does not exist " + path);
@@ -47,13 +57,24 @@ public class SaveLoadMenu : MonoBehaviour
             if (header <= mapFileVersion)
             {
                 gridBoard.Load(reader, header);
-                //setCameraPos
             }
             else
                 Debug.LogWarning("Unkwown map format " + header);
         }
+        GameManager.Instance.playerData.StopCheat();
     }
 
+    public void HelpButton(int indexHelp)
+    {
+        if (!menuIsActive)
+        {
+            ActivateMenu();
+            tutoPanel.SetActive(true);
+            currentTutoPannel = indexHelp;
+            TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(true);
+            tipsIndicator.text = (currentTutoPannel + 1) + " / " + (TutoCategories[currentTutoLabel].list.Count);
+        }
+    }
     public void ActivateMenu()
     {
         menuIsActive = !menuIsActive;
@@ -78,7 +99,7 @@ public class SaveLoadMenu : MonoBehaviour
     public void Continue()
     {
         Time.timeScale = 1.0f;
-        GameManager.Instance.playerData.SetTimer(9999);
+        //GameManager.Instance.playerData.SetTimer(9999);
         endPanel.SetActive(false);
     }
     public void Quit()
@@ -87,41 +108,53 @@ public class SaveLoadMenu : MonoBehaviour
     }
 
     //Demo
+    //use bouton to make tuto label
+    //use list of image to choose right advice to display
+    //use list of list for each label and their advices
+    public void SelectTuto(int part)
+    {
+        TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(false);
+        currentTutoPannel = 0;
+        currentTutoLabel = part;
+        TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(true);
+        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (TutoCategories[currentTutoLabel].list.Count);
+    }
     public void ActivateTuto(bool newState)
     {
         tutoPanel.SetActive(newState);
-        tutoPanels[currentTutoPannel].SetActive(newState);
+        TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(newState);
         menuPanel.SetActive(!newState);
-        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (tutoPanels.Count);
+        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (TutoCategories[currentTutoLabel].list.Count);
     }
 
     public void NextTuto()
     {
-        tutoPanels[currentTutoPannel].SetActive(false);
+        TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(false);
         currentTutoPannel++;
-        if (currentTutoPannel >= tutoPanels.Count)
+        if (currentTutoPannel >= TutoCategories[currentTutoLabel].list.Count)
             currentTutoPannel = 0;
-        tutoPanels[currentTutoPannel].SetActive(true);
-        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (tutoPanels.Count);
+        TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(true);
+        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (TutoCategories[currentTutoLabel].list.Count);
     }
     public void PreviousTuto()
     {
-        tutoPanels[currentTutoPannel].SetActive(false);
+        TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(false);
         currentTutoPannel--;
         if (currentTutoPannel < 0)
-            currentTutoPannel = tutoPanels.Count - 1;
-        tutoPanels[currentTutoPannel].SetActive(true);
-        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (tutoPanels.Count);
+            currentTutoPannel = TutoCategories[currentTutoLabel].list.Count - 1;
+        TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(true);
+        tipsIndicator.text = (currentTutoPannel + 1) + " / " + (TutoCategories[currentTutoLabel].list.Count);
     }
 
     public void TimerUpdate(int time)
     {
         timerText.text = time + "s";
     }
-    public void EndGameDemo(int completeContract)
+    public void EndGameDemo(int completeContract, float timer)
     {
         endPanel.SetActive(true);
-        endText.text = "Contract Completed : " + completeContract;
+        endTextContract.text = "Contract Completed : " + completeContract;
+        endTextTime.text = "Time Played : " + (int)timer;
         Time.timeScale = 0.0f;
     }
 }

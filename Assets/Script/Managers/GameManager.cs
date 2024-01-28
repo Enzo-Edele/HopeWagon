@@ -26,14 +26,13 @@ public class GameManager : MonoBehaviour
     public Color[] colorArrayTile = { new Color(0, 0, 0) };
     public Color[] colorArrayNetwork = { Color.red };
 
-    public List<IndustryScriptable> industryTypes = new List<IndustryScriptable>(); 
+    public List<IndustryScriptable> industryTypes = new List<IndustryScriptable>();
+    public List<PollutedScriptable> industryPollutedTypes = new List<PollutedScriptable>();
     public List<RessourceScriptable> ressourceTypes = new List<RessourceScriptable>();
     public List<ContractScriptable> contratTypes = new List<ContractScriptable>();
 
-    //to scrap
-    public List<Material> Industrymats = new List<Material>(); //move to scriptable
-
     public GameObject factoryPrefab; //to remove ???
+    public GameObject pollutedFactoryPrefab;
     public GameObject stationPrefab; //to remove ???
     public GameObject trainPrefab;
     public GameObject routePrefab;
@@ -56,7 +55,7 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        saveLoadMenu.Load("Save1"); //use for demo build
+        saveLoadMenu.Load("SaveStart"); 
     }
     private void Update()
     {

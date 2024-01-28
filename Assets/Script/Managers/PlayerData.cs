@@ -8,6 +8,7 @@ public class PlayerData : MonoBehaviour
     public int railStock;
     public int stationStock;
     public int trainStock;
+    int memRail, memStation, memTrain;
 
     //list des types de contrat
     [SerializeField]GameObject contractPrefab;
@@ -16,17 +17,14 @@ public class PlayerData : MonoBehaviour
     public List<int> contractOfTypeGiven;
     //contrats pool //pool rigged with the 6~9 first being forced on easy and 1 out of 3 granted to be an easy one;
 
-    float gameTimer = 0.0f;
-    int gameTime = 180;
-    int completeContract = 0;
+    public float gameTimer = 0.0f;
+    int gameTime = 0;
+    public int completeContract = 0;
 
     public static GameManager Instance { get; private set; }
 
     void Start()
     {
-        railStock = 999; //50
-        stationStock = 20; //10
-        trainStock = 50; //5
         GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
         GameManager.Instance.gameUI.updateContractDisplay(contratPool);
         LoadSTartGame(); //use for demo build
@@ -36,11 +34,11 @@ public class PlayerData : MonoBehaviour
     {
         if(gameTimer < 0)
         {
-            GameManager.Instance.saveLoadMenu.EndGameDemo(completeContract);
+            //GameManager.Instance.saveLoadMenu.EndGameDemo(completeContract);
         }
         else if(gameTimer >= 0)
         {
-            gameTimer -= Time.deltaTime;
+            gameTimer += Time.deltaTime;
             GameManager.Instance.saveLoadMenu.TimerUpdate((int)gameTimer);
         }
     }
@@ -102,5 +100,22 @@ public class PlayerData : MonoBehaviour
     public void SetTimer(int time)
     {
         gameTimer = time;
+    }
+
+    public void Cheat()
+    {
+        memRail = railStock;
+        memStation = stationStock;
+        memTrain = trainStock;
+        railStock = 999;
+        stationStock = 999;
+        trainStock = 999;
+    }
+    public void StopCheat()
+    {
+        railStock = memRail;
+        stationStock = memStation;
+        trainStock = memTrain;
+        GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
     }
 }

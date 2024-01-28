@@ -8,10 +8,9 @@ public class InGameUI : MonoBehaviour
 {
     GameTile currentTileSelected;
     GameTile currentTileHover;
-    Station destination = null;
 
     [SerializeField] GridBoard grid;
-    bool isDrag;
+    bool isDrag = false;
     TileDirection dragDirection;
     GameTile previousTile;
 
@@ -31,6 +30,12 @@ public class InGameUI : MonoBehaviour
     [SerializeField] UIStationItem stationItemPrefab;
     bool stationMenuIsexpanded = false;
 
+    [SerializeField] GameObject routeCreatorMenu;
+    [SerializeField] RectTransform routeCreatorDestinations;
+    [SerializeField] TMP_Dropdown newRouteStartDropdown;
+    [SerializeField] List<TMP_Dropdown> newRouteDestDropdown = new List<TMP_Dropdown>(); //turn to list ???
+    [SerializeField] List<Station> newRoutePath = new List<Station>();
+
     [SerializeField] GameObject routeMenuList;
     [SerializeField] RectTransform routeList;
     [SerializeField] UIRouteItem routeItemPrefab;
@@ -41,7 +46,7 @@ public class InGameUI : MonoBehaviour
 
     GameObject lastActiveMenu;
 
-    [SerializeField] List<TMP_Text> contractsText;
+    [SerializeField] List<UIContratItem> contractsDisplay;
 
     [SerializeField] GameObject playerRessourceMenu;
     [SerializeField] TMP_Text railQty;
@@ -193,10 +198,10 @@ public class InGameUI : MonoBehaviour
             currentTile.HasRail = false;
         }
         if (buildMode == BuildMode.buildStation) {
-            currentTile.HasStation = true;
+            //currentTile.HasStation = true;
         }
         if (buildMode == BuildMode.destroyStation) {
-            currentTile.HasStation = false;
+            //currentTile.HasStation = false;
         }
         if (buildMode == BuildMode.destroy)
         {
@@ -263,6 +268,7 @@ public class InGameUI : MonoBehaviour
             OpenBuildMenu(false);
             OpenStationMenuIndividual(false);
             OpenStationMenuList(false);
+            OpenRouteCreator(false);
             OpenRouteMenuList(false);
         }
     }
@@ -273,6 +279,7 @@ public class InGameUI : MonoBehaviour
             OpenActionMenu(false);
             OpenStationMenuIndividual(false);
             OpenStationMenuList(false);
+            OpenRouteCreator(false);
             OpenRouteMenuList(false);
         }
         if (!newState) {
@@ -286,6 +293,7 @@ public class InGameUI : MonoBehaviour
             OpenActionMenu(false);
             OpenBuildMenu(false);
             OpenStationMenuList(false);
+            OpenRouteCreator(false);
             OpenRouteMenuList(false);
         }
     }
@@ -297,6 +305,18 @@ public class InGameUI : MonoBehaviour
             OpenActionMenu(false);
             OpenBuildMenu(false);
             OpenStationMenuIndividual(false);
+            OpenRouteCreator(false);
+            OpenRouteMenuList(false);
+        }
+    }
+    public void OpenRouteCreator(bool newState) {
+        routeCreatorMenu.SetActive(newState);
+        if (newState)
+        {
+            OpenActionMenu(false);
+            OpenBuildMenu(false);
+            OpenStationMenuIndividual(false);
+            OpenStationMenuList(false);
             OpenRouteMenuList(false);
         }
     }
@@ -309,6 +329,7 @@ public class InGameUI : MonoBehaviour
             OpenBuildMenu(false);
             OpenStationMenuIndividual(false);
             OpenStationMenuList(false);
+            OpenRouteCreator(false);
         }
     }
     void FillStationListList()
@@ -334,6 +355,59 @@ public class InGameUI : MonoBehaviour
             stationMenuList.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 700);
         else
             stationMenuList.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 200);
+    }
+    public void SetDestinationListCreator(string startStationName, List<string> listDestination)
+    {
+        newRouteStartDropdown.captionText.text = startStationName;
+        newRoutePath.Clear();
+        for (int i = 2; i < 3; i++) //replace 3 by child count-1
+        {
+            //delete children
+        }
+        for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
+            if (listDestination[0] == GridBoard.Instance.stationList[i].nameStation)
+                newRoutePath.Add(GridBoard.Instance.stationList[i]);
+        newRouteDestDropdown[0].options.Clear();
+        for (int i = 0; i < listDestination.Count; i++)
+        {
+            newRouteDestDropdown[0].options.Add(new TMP_Dropdown.OptionData() { text = listDestination[i] });
+        }
+    }
+    void AddDestination()
+    {
+        //instanciate dropdown list
+        //fill with possible destination
+        //add to dest list
+
+        //enable minus if list > 0
+    }
+    void MinusDestination()
+    {
+        //find in list
+        //delete
+        //disable minus if list < 1
+    }
+    public void ChangeDestination(TMP_Dropdown destToChange)
+    {
+        int destID = -1;
+        for(int i = 0; i < newRouteDestDropdown.Count; i++)
+        {
+            if (destToChange == newRouteDestDropdown[i])
+                destID = i;
+        }
+        if (destID >= 0)
+        {
+            int menuIndex = newRouteDestDropdown[destID].value;
+            string nameDestination = newRouteDestDropdown[destID].options[menuIndex].text;
+            for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
+                if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
+                    newRoutePath[destID] = GridBoard.Instance.stationList[i];
+        }
+    }
+    public void DeployTrain()
+    {
+        if (currentTileSelected.HasStation)
+            currentTileSelected.station.CreateRoute(newRoutePath[0]);
     }
     void FillRouteList()
     {
@@ -428,8 +502,7 @@ public class InGameUI : MonoBehaviour
     {
         for (int i = 0; i < 3; i++)
         {
-            contractsText[i].text = "" + GameManager.Instance.ressourceTypes[contracts[i].requireRessourcesIndex].name + " "
-                + contracts[i].accumulated + " / " + contracts[i].required + " -> " + contracts[i].reward + " " + contracts[i].rewardQty;
+            contractsDisplay[i].Set(GameManager.Instance.ressourceTypes[contracts[i].requireRessourcesIndex].sprite, contracts[i].requiredDisplayText, contracts[i].rewardIcon, contracts[i].rewardDisplayText);
         }
     }
 

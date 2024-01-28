@@ -16,6 +16,7 @@ MonoBehaviour:
   nameContract: TrainContract
   reward: train
   rewardQty: 1
+  rewardIcon: {fileID: 21300000, guid: d5726e92060044846b65eea72c41955e, type: 3}
   requiredRessource: {fileID: 11400000, guid: d575bd275496a2e4bbaddba85a5b28ae, type: 2}
   requiredQty: 35
   difficultyLevel: 2

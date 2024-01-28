@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameIndustry: Carbon Captor
   id: 0
+  mat: {fileID: 2100000, guid: 682f6124708b64f4d8b97d634289ea96, type: 2}
   outpout:
   - {fileID: 11400000, guid: 3adb80a8db9c3984099cce2f2d2bdc5f, type: 2}
   prodTime: 2
   prodQty: 02000000
   input: []
   requireAmount: 
-  storage: 30
+  storage: 1e000000
   pollutionLevel: -3
   description: 

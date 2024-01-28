@@ -176,4 +176,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   path: []
   model: {fileID: 8617505738445200221}
+  wagonModel: {fileID: 1523625953198230884}
   isLast: 0

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 628da50deb4eee64cb644918e5247bbe, type: 3}
+  m_Name: PollutedLandfill
+  m_EditorClassIdentifier: 
+  nameBuilding: Polluted Landfill
+  id: 5
+  mat: {fileID: 2100000, guid: 4533654689978884fbb7055d44f488b4, type: 2}
+  input:
+  - {fileID: 11400000, guid: 1d2e2437cbf966d43a1e39c1f13bfb9d, type: 2}
+  requireAmount: 0a000000
+  industryScriptable: {fileID: 11400000, guid: 60cfb89b479d8254d8bc217941cae114, type: 2}
+  pollutionLevel: 0
+  description: 

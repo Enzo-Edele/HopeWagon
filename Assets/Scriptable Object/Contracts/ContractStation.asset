@@ -16,6 +16,7 @@ MonoBehaviour:
   nameContract: StationContract
   reward: station
   rewardQty: 2
+  rewardIcon: {fileID: 21300000, guid: 0bce14c77a61ad940add3f83e56520e6, type: 3}
   requiredRessource: {fileID: 11400000, guid: 255c75182ff267b478db4b0d77453026, type: 2}
   requiredQty: 40
   difficultyLevel: 1

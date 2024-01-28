@@ -11,6 +11,7 @@ public class RessourceScriptable : ScriptableObject
     public int tier;
     public int transportScore;
     public Sprite sprite;
+    public Material mat;
     //for later use
 
     //type de transport

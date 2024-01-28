@@ -427,7 +427,8 @@ MonoBehaviour:
   importID: 
   canExport: 
   canImport: 
-  storage: 10
+  storage: 
+  storageCheck: []
   stockRessources: 
   model: {fileID: 558727869577292719}
   canvas: {fileID: 7469797023413538211}

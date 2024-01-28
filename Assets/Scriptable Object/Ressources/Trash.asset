@@ -16,3 +16,5 @@ MonoBehaviour:
   id: 5
   tier: 0
   transportScore: 3
+  sprite: {fileID: 21300000, guid: 77ad828a57e1add4ba2606c20e3f0527, type: 3}
+  mat: {fileID: 2100000, guid: 4ce38bd1f0992d54db3d5f5a15b6e521, type: 2}

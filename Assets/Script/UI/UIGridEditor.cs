@@ -7,8 +7,8 @@ public class UIGridEditor : MonoBehaviour
     public GridBoard grid;
     [SerializeField] GameObject editMenu;
 
-    bool applyStation, applyFactory;
-    bool applyCaptor, applyPlate, applyDrill, applyRefinery, applyChip;
+    bool applyStation, applyFactory, applyPollutedFactory;
+    bool applyCaptor, applyPlate, applyDrill, applyRefinery, applyChip, applyLandfill, applyRecycling, applyDrone, applyCity;
 
     bool isActive = false;
 
@@ -129,31 +129,53 @@ public class UIGridEditor : MonoBehaviour
                 tile.HasStation = !tile.HasStation;
                 return;
             }
-            if (applyFactory) {
+            if (applyFactory && tile.HasIndustry) {
                 tile.HasIndustry = false;
                 return;
             }
-            if (applyCaptor) {
-                tile.HasIndustry = true;
-                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[0]);
-            }
-            if (applyPlate) {
-                tile.HasIndustry = true;
-                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[1]);
-            }
-            if (applyDrill) {
-                tile.HasIndustry = true;
-                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[2]);
-            }
-            if (applyRefinery) {
-                tile.HasIndustry = true;
-                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[3]);
-            }
-            if (applyChip)
+            if (applyPollutedFactory && tile.HasPollutedIndustry)
             {
-                tile.HasIndustry = true;
-                tile.industry.SetIndustryType(GameManager.Instance.industryTypes[4]);
+                tile.HasPollutedIndustry = false;
+                return;
             }
+            if (!tile.HasIndustry && (applyFactory | applyPollutedFactory))
+            {
+                ApplyType(applyFactory, applyPollutedFactory, tile);
+            }
+        }
+    }
+    void ApplyType(bool factory, bool polluted, GameTile tile)
+    {
+        int type = -1;
+        if (applyCaptor)
+            type = 0;
+        if (applyPlate)
+            type = 1;
+        if (applyDrill)
+            type = 2;
+        if (applyRefinery)
+            type = 3;
+        if (applyChip)
+            type = 4;
+        if (applyLandfill)
+            type = 5;
+        if (applyRecycling)
+            type = 6;
+        if (applyDrone)
+            type = 7;
+        if (applyCity)
+            type = 8;
+        if (factory && type >= 0)
+        {
+            tile.HasPollutedIndustry = false;
+            tile.HasIndustry = true;
+            tile.industry.SetIndustryType(GameManager.Instance.industryTypes[type]);
+        }
+        if (polluted && type >= 0)
+        {
+            tile.HasIndustry = false;
+            tile.HasPollutedIndustry = true;
+            tile.pollutedIndustry.SetIndustryType(GameManager.Instance.industryPollutedTypes[type]);
         }
     }
 
@@ -169,6 +191,10 @@ public class UIGridEditor : MonoBehaviour
     public void SetApplyFactory(bool toggle)
     {
         applyFactory = toggle;
+    }
+    public void SetApplyPollutedFactory(bool toggle)
+    {
+        applyPollutedFactory = toggle;
     }
     //unifier la fonction pour set le type d'industrie
     public void SetApplyCaptor(bool toggle)
@@ -190,6 +216,22 @@ public class UIGridEditor : MonoBehaviour
     public void SetApplyChip(bool toggle)
     {
         applyChip = toggle;
+    }
+    public void SetApplyLandfill(bool toggle)
+    {
+        applyLandfill = toggle;
+    }
+    public void SetApplyRecycling(bool toggle)
+    {
+        applyRecycling = toggle;
+    }
+    public void SetApplyDrone(bool toggle)
+    {
+        applyDrone = toggle;
+    }
+    public void SetApplyCity(bool toggle)
+    {
+        applyCity = toggle;
     }
 
     public void SetColorMode(int mode)

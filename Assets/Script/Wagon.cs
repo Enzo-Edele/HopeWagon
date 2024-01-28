@@ -14,6 +14,7 @@ public class Wagon : MonoBehaviour
     float progress, progressFactor;
 
     [SerializeField] Transform model;
+    [SerializeField] GameObject wagonModel;
 
     //array of ressources
 
@@ -28,6 +29,10 @@ public class Wagon : MonoBehaviour
         nextTile = tile.nextOnPath;
         progress = 0f;
         transportPath = route;
+        for (int i = 0; i < route.stockRessources.Count; i++) {
+            if (route.stockRessources[i] > 0)
+                wagonModel.GetComponent<Renderer>().material = GameManager.Instance.ressourceTypes[i].mat;
+        }
         PrepareDepart();
     }
 

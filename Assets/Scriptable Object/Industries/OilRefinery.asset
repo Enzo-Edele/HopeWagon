@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameIndustry: Oil Refinery
   id: 3
+  mat: {fileID: 2100000, guid: 9b0f911e771745c4c9368075ceb74423, type: 2}
   outpout:
   - {fileID: 11400000, guid: d575bd275496a2e4bbaddba85a5b28ae, type: 2}
   prodTime: 15
@@ -21,6 +22,6 @@ MonoBehaviour:
   input:
   - {fileID: 11400000, guid: 255c75182ff267b478db4b0d77453026, type: 2}
   requireAmount: 03000000
-  storage: 20
+  storage: 1e0000002d000000
   pollutionLevel: 1
   description: 
