@@ -90,6 +90,14 @@ public class Station : MonoBehaviour
             if (industry == linkedPollutedIndustry[i])
                 linkedPollutedIndustry.RemoveAt(i);
     }
+
+    public void ChangeName(string nName)
+    {
+        name = nName;
+        nameStation = nName;
+        nameDisplay.text = nName;
+    }
+
     //a terme autoriser le joueur a lock et unlock des ressources
     public void CheckImportExport()
     {

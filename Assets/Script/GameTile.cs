@@ -461,7 +461,7 @@ public class GameTile : MonoBehaviour
 
     //link to UI
 
-    public void UpdateUI(InGameUI ui)
+    public void UpdateUI(UIManagerInGame ui)
     {
         string content;
         if (hasIndustry)
@@ -493,6 +493,10 @@ public class GameTile : MonoBehaviour
     {
         writer.Write(HasRail);
         writer.Write(HasStation);
+        if (hasStation)
+        {
+            writer.Write(station.name);
+        }
         if (hasIndustry) {
             writer.Write(HasIndustry);
             if (industry.Type != null)
@@ -523,6 +527,10 @@ public class GameTile : MonoBehaviour
         ClearTile();
         HasRail = reader.ReadBoolean();
         HasStation = reader.ReadBoolean();
+        if (hasStation && header >= 2)
+        {
+            station.ChangeName(reader.ReadString());
+        }
         HasIndustry = reader.ReadBoolean();
         int industryType = reader.ReadInt32();
         if (HasIndustry) {
@@ -576,31 +584,5 @@ public class GameTile : MonoBehaviour
     public void HidePath()
     {
         Paint(Color.white);
-    }
-
-    //to scrap
-    public void UpdateUIBIS(InGameUI ui)
-    {
-        string content;
-        if (hasIndustry)
-        {
-            content = "Industry";
-            //industry.canExport    //industry.canImport
-            ui.UpdateItemDisplayListBIS(industry.importID, industry.exportID, industry.stockRessources);
-        }
-        else if (hasStation)
-        {
-            content = "Station";
-            //station.stockRessources
-            List<int> numberRessources = new List<int>();
-            for (int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
-            {
-                numberRessources.Add(i);
-            }
-            ui.UpdateItemDisplayListBIS(numberRessources, numberRessources, station.stockRessources);
-        }
-        else
-            content = "Empty";
-        ui.UpdateTileInfoBIS(name, content);
     }
 }

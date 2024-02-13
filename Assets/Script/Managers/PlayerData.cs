@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.IO;
 
 public class PlayerData : MonoBehaviour
 {
@@ -100,6 +101,24 @@ public class PlayerData : MonoBehaviour
     public void SetTimer(int time)
     {
         gameTimer = time;
+    }
+
+    public void Save(BinaryWriter writer)
+    {
+        writer.Write((int)gameTimer);
+        writer.Write(railStock);
+        writer.Write(stationStock);
+        writer.Write(trainStock);
+    }
+    public void Load(BinaryReader reader, int header)
+    {
+        if(header >= 2)
+        {
+            gameTime = reader.ReadInt32();
+            railStock = reader.ReadInt32();
+            stationStock = reader.ReadInt32();
+            trainStock = reader.ReadInt32();
+        }
     }
 
     public void Cheat()

@@ -11,11 +11,11 @@ public class TutoLabel
     public List<GameObject> list;
 }
 
-public class SaveLoadMenu : MonoBehaviour
+public class UIManagerMenu : MonoBehaviour
 {
     public GridBoard gridBoard;
 
-    const int mapFileVersion = 1;
+    const int mapFileVersion = 3;
 
     [SerializeField] GameObject menuPanel;
     [SerializeField] TMP_Text resumeText;
@@ -40,6 +40,7 @@ public class SaveLoadMenu : MonoBehaviour
         {
             writer.Write(mapFileVersion);
             gridBoard.Save(writer);
+            GameManager.Instance.playerData.Save(writer);
         }
     }
 
@@ -57,11 +58,14 @@ public class SaveLoadMenu : MonoBehaviour
             if (header <= mapFileVersion)
             {
                 gridBoard.Load(reader, header);
+                //load TrainRoute
+                GameManager.Instance.playerData.StopCheat();
+                if (header >= 2)
+                    GameManager.Instance.playerData.Load(reader, header);
             }
             else
                 Debug.LogWarning("Unkwown map format " + header);
         }
-        GameManager.Instance.playerData.StopCheat();
     }
 
     public void HelpButton(int indexHelp)

@@ -15,7 +15,7 @@ public class UIRouteItem : MonoBehaviour
     //display
     [SerializeField] Image stopButton;
 
-    public InGameUI inGameUI;
+    public UIManagerInGame inGameUI;
 
     TrainRoute owner;
 

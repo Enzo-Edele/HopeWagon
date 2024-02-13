@@ -241,6 +241,25 @@ public class GridBoard : MonoBehaviour
             if (station == stationList[i])
                 stationList.RemoveAt(i);
     }
+    public Station GetStation(string stationName)
+    {
+        for (int i = 0; i < stationList.Count; i++)
+            if (stationName == stationList[i].name)
+                return stationList[i];
+        return null;
+    }
+    public void RefreshStation()
+    {
+        for(int i = 0; i < networkList.Count; i++)
+        {
+            for(int j = 0; j < networkList[i].networkStationList.Count; j++)
+            {
+                networkList[i].networkStationList[j].destinationList.Clear();
+                networkList[i].networkStationList[j].destinationNameList.Clear();
+            }
+            networkList[i].RelinkStation();
+        }
+    }
     public void AddRoute(TrainRoute trainRoute)
     {
         for (int i = 0; i < routeList.Count; i++)
@@ -262,6 +281,19 @@ public class GridBoard : MonoBehaviour
 
         for (int i = 0; i < tiles.Length; i++)
             tiles[i].Save(writer);
+        
+        writer.Write(routeList.Count);
+        for(int i = 0; i < routeList.Count; i++)
+        {
+            //save number of dest
+            writer.Write(routeList[i].destinationArray.Count);
+            //for dest save name;
+            for (int j = 0; j < routeList[i].destinationArray.Count; j++)
+                writer.Write(routeList[i].destinationArray[j].nameStation);
+            //if loop or back and forth
+        }
+
+        //savecameraPos
     }
     public void Load(BinaryReader reader, int header)
     {
@@ -274,10 +306,26 @@ public class GridBoard : MonoBehaviour
         int x = 20, z = 15;
         x = reader.ReadInt32();
         z = reader.ReadInt32();
-
+        
         for (int i = 0; i < tiles.Length; i++)
             tiles[i].Load(reader, header);
+        RefreshStation();
+        if (header >= 3)
+        {
+            int routeListCount = reader.ReadInt32();
+            for (int i = 0; i < routeListCount; i++)
+            {
+                int destinationCount = reader.ReadInt32();
+                Station departure = GetStation(reader.ReadString());
+                List<Station> destArray = new List<Station>();
+                for (int j = 0; j < destinationCount - 1; j++) { }
+                destArray.Add(GetStation(reader.ReadString()));
+                //if loop or back and forth
 
+                //create route
+                departure.CreateRoute(destArray[0]);
+            }
+        }
         //setCameraPos
     }
 }

@@ -13,10 +13,9 @@ public class GameManager : MonoBehaviour
     public GameObject tileCopy;
 
     public UIGridEditor gridEditor;
-    public SaveLoadMenu saveLoadMenu;
-    public InGameUI gameUI;
+    public UIManagerMenu saveLoadMenu;
+    public UIManagerInGame gameUI;
     public GameTile selectedTile;
-    public GameTile selectedTileBIS; //to remove
 
     public string[] stationNameGeneratorPull = {"Montparnasse", "St Jean", "Du Sud", "De l'Ouest",
         "Austerlitz", "Stalingrad", "Lavoisier" };
@@ -71,8 +70,6 @@ public class GameManager : MonoBehaviour
 
         if (selectedTile != null)
             selectedTile.UpdateUI(gameUI);
-        if(selectedTileBIS != null)
-            selectedTileBIS.UpdateUIBIS(gameUI);
     }
 
     public void ChangeGameState(GameState state)

@@ -16,7 +16,7 @@ public class UIStationItem : MonoBehaviour
     [SerializeField] GameObject imagePrefab;
     List<string> destinationsNames = new List<string>();
 
-    public InGameUI inGameUI;
+    public UIManagerInGame inGameUI;
 
     Station departStation;
     Station selectedDestination;
