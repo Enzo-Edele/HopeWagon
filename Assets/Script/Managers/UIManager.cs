@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public static UIManager Instance { get; private set; }
+    void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         
