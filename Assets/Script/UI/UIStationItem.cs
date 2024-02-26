@@ -59,6 +59,8 @@ public class UIStationItem : MonoBehaviour
             {
                 Destroy(destinationImport.transform.GetChild(j).gameObject);
             }
+            destinationDropdown.captionText.text = selectedDestination.name;
+
             for (int i = 0; i < selectedDestination.canImport.Count; i++)
             {
                 if (selectedDestination.canImport[i])
@@ -67,7 +69,6 @@ public class UIStationItem : MonoBehaviour
                     icon.sprite = GameManager.Instance.ressourceTypes[i].sprite;
                 }
             }
-            destinationDropdown.captionText.text = selectedDestination.name;
         }
     }
 

@@ -30374,7 +30374,9 @@ MonoBehaviour:
   newRouteStartDropdown: {fileID: 282867861}
   newRouteDestDropdown:
   - {fileID: 267485631}
-  newRoutePath: []
+  newRoutePath:
+  - {fileID: 0}
+  dropdownDestPrefab: {fileID: 1536675070408476625, guid: 8216d62c084a1c54fb735169d4d69f37, type: 3}
   routeMenuList: {fileID: 1289271022}
   routeList: {fileID: 1818183690}
   routeItemPrefab: {fileID: 1418420156967665843, guid: 6924b5895a5a9a244b3cd5f650d8b631, type: 3}
@@ -30771,7 +30773,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1765120462}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1765120462
 MonoBehaviour:
   m_ObjectHideFlags: 0

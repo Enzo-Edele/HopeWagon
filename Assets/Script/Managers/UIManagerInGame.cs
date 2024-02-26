@@ -10,7 +10,7 @@ public class UIManagerInGame : MonoBehaviour
     GameTile currentTileHover;
 
     [SerializeField] GridBoard grid;
-    bool isDrag = false;
+    //bool isDrag = false;
     TileDirection dragDirection;
     GameTile previousTile;
 
@@ -33,8 +33,9 @@ public class UIManagerInGame : MonoBehaviour
     [SerializeField] GameObject routeCreatorMenu;
     [SerializeField] RectTransform routeCreatorDestinations;
     [SerializeField] TMP_Dropdown newRouteStartDropdown;
-    [SerializeField] List<TMP_Dropdown> newRouteDestDropdown = new List<TMP_Dropdown>(); //turn to list ???
+    [SerializeField] List<TMP_Dropdown> newRouteDestDropdown = new List<TMP_Dropdown>(); 
     [SerializeField] List<Station> newRoutePath = new List<Station>();
+    [SerializeField] GameObject dropdownDestPrefab;
 
     [SerializeField] GameObject routeMenuList;
     [SerializeField] RectTransform routeList;
@@ -176,8 +177,8 @@ public class UIManagerInGame : MonoBehaviour
         {
             if (previousTile && previousTile != currentTile)
                 ValidateDrag(currentTile);
-            else
-                isDrag = false;
+            //else
+                //isDrag = false;
             EditTiles(currentTile);
             previousTile = currentTile;
         }
@@ -210,11 +211,11 @@ public class UIManagerInGame : MonoBehaviour
         {
             if (previousTile.GetNeighbor(dragDirection) == currentGameTile)
             {
-                isDrag = true;
+                //isDrag = true;
                 return;
             }
         }
-        isDrag = false;
+        //isDrag = false;
     }
 
     public void ChangeActionMode(int newMode)
@@ -371,7 +372,9 @@ public class UIManagerInGame : MonoBehaviour
     void AddDestination()
     {
         //instanciate dropdown list
+
         //fill with possible destination
+
         //add to dest list
 
         //enable minus if list > 0
