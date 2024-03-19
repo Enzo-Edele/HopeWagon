@@ -13,6 +13,6 @@ public class PollutedScriptable : ScriptableObject
     public List<int> requireAmount;
     public IndustryScriptable industryScriptable;
     //for later use
-    public int pollutionLevel;
+    public float pollutionLevel;
     public string description;
 }

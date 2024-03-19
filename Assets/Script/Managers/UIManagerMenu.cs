@@ -17,12 +17,11 @@ public class UIManagerMenu : MonoBehaviour
 
     const int mapFileVersion = 3;
 
-    [SerializeField] GameObject menuPanel;
-    [SerializeField] TMP_Text resumeText;
+    [SerializeField] GameObject pausePanel;
     bool menuIsActive = false;
 
     //add tutorial button
-    [SerializeField] GameObject tutoPanel;
+    [SerializeField] GameObject ecopediaPanel;
     [SerializeField] List<GameObject> tutoPanels;
     [SerializeField] List<TutoLabel> TutoCategories;
     int currentTutoLabel = 0;
@@ -35,17 +34,29 @@ public class UIManagerMenu : MonoBehaviour
 
     [SerializeField] TMP_Text timerText;
 
+    [SerializeField] GameObject helpButton;
+
     public void Save(string path) {
+        GameManager.Instance.mainMenuUI.ButtonOpenSaveLoadMenu(true);
+        GameManager.Instance.gameUI.ActivateInGameUI(false);
+        menuIsActive = !menuIsActive;
+        pausePanel.SetActive(menuIsActive);
+        /*
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
         {
             writer.Write(mapFileVersion);
             gridBoard.Save(writer);
             GameManager.Instance.playerData.Save(writer);
-        }
+        }*/
     }
 
     public void Load(string path)
     {
+        GameManager.Instance.mainMenuUI.ButtonOpenSaveLoadMenu(false);
+        GameManager.Instance.gameUI.ActivateInGameUI(false);
+        menuIsActive = !menuIsActive;
+        pausePanel.SetActive(menuIsActive);
+        /*
         GameManager.Instance.playerData.Cheat();
         if (!File.Exists(path))
         {
@@ -58,22 +69,23 @@ public class UIManagerMenu : MonoBehaviour
             if (header <= mapFileVersion)
             {
                 gridBoard.Load(reader, header);
-                //load TrainRoute
                 GameManager.Instance.playerData.StopCheat();
                 if (header >= 2)
                     GameManager.Instance.playerData.Load(reader, header);
+                //GridBoard.Instance.RefreshPollutionMax();
             }
             else
                 Debug.LogWarning("Unkwown map format " + header);
         }
+        */
     }
 
     public void HelpButton(int indexHelp)
     {
         if (!menuIsActive)
         {
-            ActivateMenu();
-            tutoPanel.SetActive(true);
+            menuIsActive = true;
+            ecopediaPanel.SetActive(true);
             currentTutoPannel = indexHelp;
             TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(true);
             tipsIndicator.text = (currentTutoPannel + 1) + " / " + (TutoCategories[currentTutoLabel].list.Count);
@@ -82,22 +94,26 @@ public class UIManagerMenu : MonoBehaviour
     public void ActivateMenu()
     {
         menuIsActive = !menuIsActive;
-        menuPanel.SetActive(menuIsActive);
+        pausePanel.SetActive(menuIsActive);
         //pause and unpause game
         if (menuIsActive)
-            Time.timeScale = 0.0f;
+            GameManager.Instance.ChangeGameState(GameManager.GameState.pause);
         else
-            Time.timeScale = 1.0f;
+            GameManager.Instance.ChangeGameState(GameManager.GameState.inGame);
+    }
+
+    public void ActivateHelpButton(bool nState)
+    {
+        helpButton.SetActive(nState);
     }
     public void Resume()
     {
         ActivateMenu();
-        resumeText.text = "Resume";
     }
     public void Restart()
     {
         endPanel.SetActive(false);
-        menuPanel.SetActive(false);
+        pausePanel.SetActive(false);
         SceneManager.LoadScene("Main");
     }
     public void Continue()
@@ -125,9 +141,9 @@ public class UIManagerMenu : MonoBehaviour
     }
     public void ActivateTuto(bool newState)
     {
-        tutoPanel.SetActive(newState);
+        ecopediaPanel.SetActive(newState);
         TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(newState);
-        menuPanel.SetActive(!newState);
+        pausePanel.SetActive(!newState);
         tipsIndicator.text = (currentTutoPannel + 1) + " / " + (TutoCategories[currentTutoLabel].list.Count);
     }
 

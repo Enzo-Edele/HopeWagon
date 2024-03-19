@@ -19,5 +19,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1d2e2437cbf966d43a1e39c1f13bfb9d, type: 2}
   requireAmount: 0a000000
   industryScriptable: {fileID: 11400000, guid: f77d847706913e448999cb575669a693, type: 2}
-  pollutionLevel: 0
+  pollutionLevel: 7
   description: 

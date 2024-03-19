@@ -13,6 +13,7 @@ public class Station : MonoBehaviour
 
     [SerializeField] List<Industry> linkedIndustries = new List<Industry>();
     [SerializeField] List<PollutedIndustry> linkedPollutedIndustry = new List<PollutedIndustry>();
+    [SerializeField] List<PollutionCleaner> linkedPollutionCleaners = new List<PollutionCleaner>();
     int storage = 50; //pas besoin de passer en liste tant que les gares on un stockage égal pour tout
     [SerializeField] public List<int> stockRessources; //public get private set
 
@@ -89,6 +90,19 @@ public class Station : MonoBehaviour
         for (int i = 0; i < linkedPollutedIndustry.Count; i++)
             if (industry == linkedPollutedIndustry[i])
                 linkedPollutedIndustry.RemoveAt(i);
+    }
+    public void AddCleaner(PollutionCleaner cleaner)
+    {
+        for (int i = 0; i < linkedPollutionCleaners.Count; i++)
+            if (linkedPollutionCleaners[i] == cleaner)
+                return;
+        linkedPollutionCleaners.Add(cleaner);
+    }
+    public void RemoveCleaner(PollutionCleaner cleaner)
+    {
+        for (int i = 0; i < linkedPollutionCleaners.Count; i++)
+            if (cleaner == linkedPollutionCleaners[i])
+                linkedPollutionCleaners.RemoveAt(i);
     }
 
     public void ChangeName(string nName)
@@ -167,6 +181,34 @@ public class Station : MonoBehaviour
         route.Initialize(path, this, destination);
         GameManager.Instance.gridBoard.AddRoute(route);
     }
+    public void CreateRouteMultiple(List<Station> destinationsList)
+    {
+        List<List<GameTileCopy>> pathArray = new List<List<GameTileCopy>>();
+        TrainRoute route = Instantiate(GameManager.Instance.routePrefab).GetComponent<TrainRoute>();
+
+        for (int i = 0; i < destinationList.Count; i++)
+        {
+            List<GameTileCopy> path = new List<GameTileCopy>();
+            Queue<GameTile> pathToCopy = GridBoard.Instance.Pathfinding(destinationsList[0].tile, tile);
+
+            GameTile tileToCopy = pathToCopy.Dequeue();
+            path.Add(Instantiate(GameManager.Instance.tileCopy, route.gameObject.transform).GetComponent<GameTileCopy>());
+            path[0].SetUpTileCopy(tileToCopy.tileCoordinate, tileToCopy.transform.position, tileToCopy.distance, tileToCopy.pathDirection, tileToCopy.exitPoint);
+            int j = 0;
+            while (pathToCopy.Count > 0)
+            {
+                j++;
+                GameTile tileTC = pathToCopy.Dequeue();
+                path.Add(Instantiate(GameManager.Instance.tileCopy, route.gameObject.transform).GetComponent<GameTileCopy>()); //referencé la gametilecopy dans une factory
+                                                                                                                               //et virer le get component TRANSFORM ???
+                path[j].SetUpTileCopy(tileTC.tileCoordinate, tileTC.transform.position, tileTC.distance, tileTC.pathDirection, tileTC.exitPoint);
+                path[j - 1].SetUpTileCopyNext(path[j]);
+            }
+            pathArray.Add(path);
+        }
+        route.InitializeMultiple(pathArray, this, destinationsList);
+        GameManager.Instance.gridBoard.AddRoute(route);
+    }
 
     public void LoadTrain(Station destination, TrainRoute route)
     {
@@ -202,6 +244,18 @@ public class Station : MonoBehaviour
                     indexRessource = linkedIndustries[i].importID[j];
                     if (canImport[indexRessource]) {
                         SetStockRessource(linkedIndustries[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
+                        //verifier sécurité pour empêcher dupli
+                    }
+                }
+            }
+            for (int i = 0; i < linkedPollutionCleaners.Count; i++)
+            {
+                for (int j = 0; j < linkedPollutionCleaners[i].importID.Count; j++)
+                {
+                    indexRessource = linkedPollutionCleaners[i].importID[j];
+                    if (canImport[indexRessource])
+                    {
+                        SetStockRessource(linkedPollutionCleaners[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
                         //verifier sécurité pour empêcher dupli
                     }
                 }

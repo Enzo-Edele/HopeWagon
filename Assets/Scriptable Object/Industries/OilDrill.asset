@@ -22,5 +22,5 @@ MonoBehaviour:
   input: []
   requireAmount: 
   storage: 3c000000
-  pollutionLevel: 3
+  pollutionLevel: 5
   description: 

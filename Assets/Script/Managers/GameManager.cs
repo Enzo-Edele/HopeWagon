@@ -4,21 +4,26 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public bool Debbug;
+
     public GridBoard gridBoard;
     public Vector2Int size;
     public GameObject[] railPrefabs;
+    public PollutionManager pollutionManager;
 
     public PlayerData playerData;
 
-    public GameObject tileCopy;
+    public GameObject tileCopy; //make a struct
 
     public UIGridEditor gridEditor;
-    public UIManagerMenu saveLoadMenu;
+    public CameraController cameraController;
+    public UIManagerMainMenu mainMenuUI;
+    public UIManagerMenu pauseMenu;
     public UIManagerInGame gameUI;
     public GameTile selectedTile;
 
     public string[] stationNameGeneratorPull = {"Montparnasse", "St Jean", "Du Sud", "De l'Ouest",
-        "Austerlitz", "Stalingrad", "Lavoisier" };
+        "Austerlitz", "Lavoisier" };
     [SerializeField]int nameIndex = 0;
     [SerializeField] int nameLooped = 1;
 
@@ -30,20 +35,25 @@ public class GameManager : MonoBehaviour
     public List<RessourceScriptable> ressourceTypes = new List<RessourceScriptable>();
     public List<ContractScriptable> contratTypes = new List<ContractScriptable>();
 
-    public GameObject factoryPrefab; //to remove ???
+    public GameObject factoryPrefab;
     public GameObject pollutedFactoryPrefab;
-    public GameObject stationPrefab; //to remove ???
+    public GameObject cleanerPrefab;
+    public GameObject stationPrefab;
     public GameObject trainPrefab;
     public GameObject routePrefab;
     public List<GameObject> wagonTemplate = new List<GameObject>(); //to remove 
+    public GameObject prefabPollutionParticle;
+
+    public Color polluted, depolluted;
 
     public static GameManager Instance { get; private set; }
 
     public enum GameState
     {
-        menu,
+        mainMenu,
         pause,
-        inGame
+        inGame,
+        tuto
     }
     public static GameState gameState { get; private set; }
 
@@ -54,19 +64,21 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        saveLoadMenu.Load("SaveStart"); 
+        mainMenuUI.Load("SaveStart");
+        ChangeGameState(GameState.mainMenu);
+        //pollutionManager.Init();
     }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             InterractSaveLoadMenu();
-        if (Input.GetKeyDown(KeyCode.E)) //to disable for demo build
-            OpenCloseEditMode();
+        //if (Input.GetKeyDown(KeyCode.E)) //to disable for demo build
+            //OpenCloseEditMode();
 
-        if (Input.GetKeyDown(KeyCode.P))
-            gridBoard.PaintAllTile(colorArrayTile[3]);
-        if (Input.GetKeyDown(KeyCode.M))
-            gridBoard.PaintAllTile(colorArrayTile[0]);
+        //if (Input.GetKeyDown(KeyCode.P))
+            //gridBoard.PaintAllTile(colorArrayTile[3]);
+        //if (Input.GetKeyDown(KeyCode.M))
+            //gridBoard.PaintAllTile(colorArrayTile[0]);
 
         if (selectedTile != null)
             selectedTile.UpdateUI(gameUI);
@@ -78,16 +90,24 @@ public class GameManager : MonoBehaviour
         switch (gameState)
         {
             case GameState.inGame:
+                Time.timeScale = 1.0f;
+                pauseMenu.ActivateHelpButton(true);
                 break;
-            case GameState.menu:
+            case GameState.tuto:
+                break;
+            case GameState.mainMenu:
+                Time.timeScale = 0.0f;
                 break;
             case GameState.pause:
+                Time.timeScale = 0.0f;
+                pauseMenu.ActivateHelpButton(false);
+                TutoManager.Instance.CloseTuto();
                 break;
         }
     }
 
     public void InterractSaveLoadMenu() {
-        saveLoadMenu.ActivateMenu();
+        pauseMenu.ActivateMenu();
     }
 
     public void OpenCloseEditMode()

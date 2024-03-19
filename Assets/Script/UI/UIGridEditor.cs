@@ -7,7 +7,7 @@ public class UIGridEditor : MonoBehaviour
     public GridBoard grid;
     [SerializeField] GameObject editMenu;
 
-    bool applyStation, applyFactory, applyPollutedFactory;
+    bool applyStation, applyFactory, applyPollutedFactory, applyCleaner;
     bool applyCaptor, applyPlate, applyDrill, applyRefinery, applyChip, applyLandfill, applyRecycling, applyDrone, applyCity;
 
     bool isActive = false;
@@ -138,9 +138,13 @@ public class UIGridEditor : MonoBehaviour
                 tile.HasPollutedIndustry = false;
                 return;
             }
-            if (!tile.HasIndustry && (applyFactory | applyPollutedFactory))
+            if (!tile.HasIndustry && (applyFactory || applyPollutedFactory))
             {
                 ApplyType(applyFactory, applyPollutedFactory, tile);
+            }
+            if (applyCleaner)
+            {
+                tile.HasCleaner = !tile.HasCleaner;
             }
         }
     }
@@ -195,6 +199,10 @@ public class UIGridEditor : MonoBehaviour
     public void SetApplyPollutedFactory(bool toggle)
     {
         applyPollutedFactory = toggle;
+    }
+    public void SetApplyCleaner(bool toggle)
+    {
+        applyCleaner = toggle;
     }
     //unifier la fonction pour set le type d'industrie
     public void SetApplyCaptor(bool toggle)

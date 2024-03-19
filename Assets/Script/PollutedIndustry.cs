@@ -9,6 +9,7 @@ public class PollutedIndustry : MonoBehaviour
     List<RessourceScriptable> ressourceInput = new List<RessourceScriptable>();
     [SerializeField] List<int> requiredQty = new List<int>();
     public IndustryScriptable IndustryScriptable;
+    public float pollutionLevel;
 
     [SerializeField] List<int> acquiredQty = new List<int>();
 
@@ -21,10 +22,8 @@ public class PollutedIndustry : MonoBehaviour
     public PollutedScriptable Type
     {
         get { return type; }
-        set
-        {
-            if (type != value)
-            {
+        set {
+            if (type != value) {
                 type = value;
                 ressourceInput = value.input;
                 requiredQty = value.requireAmount;
@@ -33,6 +32,7 @@ public class PollutedIndustry : MonoBehaviour
                     acquiredQty.Add(0);
                 IndustryScriptable = value.industryScriptable;
 
+                pollutionLevel = value.pollutionLevel;
                 name = value.nameBuilding;
                 industryName.text = value.nameBuilding;
                 model.GetComponent<Renderer>().material = value.mat;
@@ -73,6 +73,7 @@ public class PollutedIndustry : MonoBehaviour
         {
             linkedStation[i].CheckImportExport();
         }
+        tile.SetMaxPollution((int)pollutionLevel);
     }
 
     public void AddStation(Station industry)
@@ -155,7 +156,7 @@ public class PollutedIndustry : MonoBehaviour
         if(type.id == 8)
         {
             Debug.Log("call win");
-            GameManager.Instance.saveLoadMenu.EndGameDemo(GameManager.Instance.playerData.completeContract, GameManager.Instance.playerData.gameTimer);
+            GameManager.Instance.pauseMenu.EndGameDemo(GameManager.Instance.playerData.completeContract, GameManager.Instance.playerData.gameTimer);
         }
     }
 

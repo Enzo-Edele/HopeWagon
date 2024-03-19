@@ -36,6 +36,7 @@ public class UIManagerInGame : MonoBehaviour
     [SerializeField] List<TMP_Dropdown> newRouteDestDropdown = new List<TMP_Dropdown>(); 
     [SerializeField] List<Station> newRoutePath = new List<Station>();
     [SerializeField] GameObject dropdownDestPrefab;
+    int destNumber;
 
     [SerializeField] GameObject routeMenuList;
     [SerializeField] RectTransform routeList;
@@ -47,6 +48,7 @@ public class UIManagerInGame : MonoBehaviour
 
     GameObject lastActiveMenu;
 
+    [SerializeField] GameObject contractPannel;
     [SerializeField] List<UIContratItem> contractsDisplay;
 
     [SerializeField] GameObject playerRessourceMenu;
@@ -58,14 +60,25 @@ public class UIManagerInGame : MonoBehaviour
     [SerializeField] GameObject ressourceItemPrefab;
     [SerializeField] GameObject selectTileMenu;
     //[SerializeField] TMP_Text selectedTileName;
+    [SerializeField] TMP_Text pollutionLevel;
+    [SerializeField] TMP_Text pollutionLevelMax;
+    [SerializeField] TMP_Text pollutionLevelMin;
     [SerializeField] TMP_Text selectedTileContent;
     [SerializeField] Transform selectedTileRessourceContent;
     //[SerializeField] List<UIRessourceItem> selectedTileRessourceItem = new List<UIRessourceItem>();
 
+    //tuto variable
+    [SerializeField] GameObject tutoPannel;
+
+    [SerializeField] GameObject stationMenuIndividualTuto;
+    [SerializeField] UIStationItem StationItemIndividualTuto;
+
+    [SerializeField] List<Vector2> stationCoordinates = new List<Vector2>();
+    [SerializeField] List<Vector2> railCoordinates = new List<Vector2>();
 
     enum ActionMode
     {
-        ignore, build, station, train
+        ignore, build, station, train, hidden
     }
     ActionMode actionMode;
 
@@ -78,6 +91,16 @@ public class UIManagerInGame : MonoBehaviour
     //add destriy station
 
     public List<GameObject> prefabPreview = new List<GameObject>();
+
+    public void ActivateInGameUI(bool nState)
+    {
+        playerRessourceMenu.SetActive(nState);
+        contractPannel.SetActive(nState);
+        if (nState)
+            ChangeActionMode(0);
+        else
+            ChangeActionMode(4);
+    }
 
     void Update()
     {
@@ -105,9 +128,11 @@ public class UIManagerInGame : MonoBehaviour
     void HandleInput()
     {
         currentTileSelected = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
-        if (currentTileSelected)
-        {
+        if (currentTileSelected && !(GameManager.gameState == GameManager.GameState.tuto)) {
             DoSelection(currentTileSelected);
+        }
+        else if (currentTileSelected) {
+            DoSelectionTuto(currentTileSelected);
         }
     }
     void DoSelection(GameTile tile)
@@ -124,7 +149,10 @@ public class UIManagerInGame : MonoBehaviour
                 tile.HasStation = false;
             }
 
-            selectTileMenu.SetActive(false);
+            if(!GameManager.Instance.Debbug)
+                selectTileMenu.SetActive(false);
+            else
+                selectTileMenu.SetActive(true);
             if (tile.HasStation && (buildMode != BuildMode.destroyStation || buildMode != BuildMode.destroy))
             {
                 OpenStationMenuIndividual(true);
@@ -154,15 +182,70 @@ public class UIManagerInGame : MonoBehaviour
             ChangeActionMode(0);
         }
     }
-    void Unselect()
+    void DoSelectionTuto(GameTile tile)
     {
-        //to remove debug code
-        /*currentTileSelected = GridBoard.Instance.GetTile(Camera.main.ScreenPointToRay(Input.mousePosition));
-        if (currentTileSelected)
+        if (tile)
         {
-            DoSelectionBIS(currentTileSelected);
-        }*/
+            selectTileMenu.SetActive(false);
+            if (tile.HasStation && (buildMode != BuildMode.destroyStation || buildMode != BuildMode.destroy))
+            {
+                OpenStationMenuIndividualTuto(true);
+                List<List<bool>> destinationsimports = new List<List<bool>>();
+                StationItemIndividualTuto.Initialize(tile.station, tile.station.canExport, tile.station.destinationNameList, destinationsimports);
+                selectTileMenu.SetActive(true);
+            }
+            else if (buildMode == BuildMode.ignore)
+            {
+                ChangeActionMode(0);
+            }
+            tile.UpdateUI(this);
 
+            Vector2 coordCheck = tile.tileCoordinate;
+
+            //check if coordinate matches
+            if (buildMode == BuildMode.buildRail)
+            {
+                for (int i = 0; i < railCoordinates.Count; i++)
+                {
+                    if (coordCheck == railCoordinates[i])
+                    {
+                        tile.HasRail = true;
+                        TutoManager.Instance.RailPlaced();
+                    }
+                }
+            }
+            if (buildMode == BuildMode.buildStation)
+            {
+                for (int i = 0; i < stationCoordinates.Count; i++)
+                {
+                    if (coordCheck == stationCoordinates[i])
+                    {
+                        tile.HasStation = true;
+                        TutoManager.Instance.StationPlaced();
+                    }
+                }
+            }
+            GameManager.Instance.selectedTile = tile;
+        }
+        else
+        {
+            selectTileMenu.SetActive(false);
+            ChangeActionMode(0);
+        }
+    }
+    public void SpawnTutoStation() {
+        for(int i = 0; i < stationCoordinates.Count; i++) {
+            TutoManager.Instance.PlaceStationIndicator(stationCoordinates[i]);
+        }
+    }
+    public void SpawnTutoRail() {
+        for (int i = 0; i < railCoordinates.Count; i++) {
+            TutoManager.Instance.PlaceRailIndicator(railCoordinates[i]);
+        }
+    }
+
+    public void Unselect()
+    {
         OpenActionMenu(true);
         currentTileSelected = null;
         selectTileMenu.SetActive(false);
@@ -178,13 +261,17 @@ public class UIManagerInGame : MonoBehaviour
             if (previousTile && previousTile != currentTile)
                 ValidateDrag(currentTile);
             //else
-                //isDrag = false;
-            EditTiles(currentTile);
+            //isDrag = false;
+            if (!(GameManager.gameState == GameManager.GameState.tuto))
+                EditTiles(currentTile);
+            else
+                EditTilesTuto(currentTile);
             previousTile = currentTile;
         }
         else
             previousTile = null;
     }
+    //use for action using drag
     void EditTiles(GameTile currentTile)
     {
         if (buildMode == BuildMode.buildRail) {
@@ -203,6 +290,21 @@ public class UIManagerInGame : MonoBehaviour
         {
             currentTile.HasRail = false;
             currentTile.HasStation = false;
+        }
+    }
+    void EditTilesTuto(GameTile currentTile)
+    {
+        Vector2 coordCheck = currentTile.tileCoordinate;
+        if (buildMode == BuildMode.buildRail && !currentTile.HasRail)
+        {
+            for (int i = 0; i < railCoordinates.Count; i++)
+            {
+                if (coordCheck == railCoordinates[i])
+                {
+                    currentTile.HasRail = true;
+                    TutoManager.Instance.RailPlaced();
+                }
+            }
         }
     }
     void ValidateDrag(GameTile currentGameTile)
@@ -254,6 +356,13 @@ public class UIManagerInGame : MonoBehaviour
                 OpenStationMenuIndividual(false);
                 OpenRouteMenuList(true);
                 break;
+            case ActionMode.hidden:
+                OpenActionMenu(false);
+                OpenBuildMenu(false);
+                OpenStationMenuList(false);
+                OpenStationMenuIndividual(false);
+                OpenRouteMenuList(false);
+                break;
         }
     }
 
@@ -263,6 +372,7 @@ public class UIManagerInGame : MonoBehaviour
         if (newState) {
             OpenBuildMenu(false);
             OpenStationMenuIndividual(false);
+            OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
             OpenRouteMenuList(false);
@@ -274,6 +384,7 @@ public class UIManagerInGame : MonoBehaviour
         if (newState) {
             OpenActionMenu(false);
             OpenStationMenuIndividual(false);
+            OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
             OpenRouteMenuList(false);
@@ -285,9 +396,24 @@ public class UIManagerInGame : MonoBehaviour
     void OpenStationMenuIndividual(bool newState)
     {
         stationMenuIndividual.SetActive(newState);
-        if (newState) {
+        if (newState)
+        {
             OpenActionMenu(false);
             OpenBuildMenu(false);
+            OpenStationMenuIndividualTuto(false);
+            OpenStationMenuList(false);
+            OpenRouteCreator(false);
+            OpenRouteMenuList(false);
+        }
+    }
+    void OpenStationMenuIndividualTuto(bool newState)
+    {
+        stationMenuIndividualTuto.SetActive(newState);
+        if (newState)
+        {
+            OpenActionMenu(false);
+            OpenBuildMenu(false);
+            OpenStationMenuIndividual(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
             OpenRouteMenuList(false);
@@ -301,6 +427,7 @@ public class UIManagerInGame : MonoBehaviour
             OpenActionMenu(false);
             OpenBuildMenu(false);
             OpenStationMenuIndividual(false);
+            OpenStationMenuIndividualTuto(false);
             OpenRouteCreator(false);
             OpenRouteMenuList(false);
         }
@@ -312,6 +439,7 @@ public class UIManagerInGame : MonoBehaviour
             OpenActionMenu(false);
             OpenBuildMenu(false);
             OpenStationMenuIndividual(false);
+            OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
             OpenRouteMenuList(false);
         }
@@ -324,9 +452,14 @@ public class UIManagerInGame : MonoBehaviour
             OpenActionMenu(false);
             OpenBuildMenu(false);
             OpenStationMenuIndividual(false);
+            OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
         }
+    }
+    public void OpenTutoMenu(bool newState)
+    {
+        tutoPannel.SetActive(newState);
     }
     void FillStationListList()
     {
@@ -352,37 +485,59 @@ public class UIManagerInGame : MonoBehaviour
         else
             stationMenuList.GetComponent<RectTransform>().sizeDelta = new Vector2(800, 200);
     }
+
     public void SetDestinationListCreator(string startStationName, List<string> listDestination)
     {
-        newRouteStartDropdown.captionText.text = startStationName;
+        destNumber = 0;
+        newRouteStartDropdown.ClearOptions();
+        newRouteStartDropdown.options.Add(new TMP_Dropdown.OptionData() { text = startStationName });
+        newRouteStartDropdown.RefreshShownValue();
+
         newRoutePath.Clear();
-        for (int i = 2; i < 3; i++) //replace 3 by child count-1
-        {
-            //delete children
-        }
+        for (int i = routeCreatorDestinations.childCount - 1; i > 1; i--) 
+            Destroy(routeCreatorDestinations.GetChild(i).gameObject);
+        for(int i = newRouteDestDropdown.Count - 1; i > 0; i--) 
+            newRouteDestDropdown.RemoveAt(i);
+
         for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
             if (listDestination[0] == GridBoard.Instance.stationList[i].nameStation)
                 newRoutePath.Add(GridBoard.Instance.stationList[i]);
-        newRouteDestDropdown[0].options.Clear();
-        for (int i = 0; i < listDestination.Count; i++)
-        {
+        newRouteDestDropdown[0].ClearOptions();
+        for (int i = 0; i < listDestination.Count; i++) 
             newRouteDestDropdown[0].options.Add(new TMP_Dropdown.OptionData() { text = listDestination[i] });
-        }
+        newRouteDestDropdown[0].RefreshShownValue();
     }
-    void AddDestination()
+    public void AddDestination()
     {
         //instanciate dropdown list
+        TMP_Dropdown nRouteDropdown = Instantiate(dropdownDestPrefab, routeCreatorDestinations).GetComponent<TMP_Dropdown>();
 
         //fill with possible destination
+        nRouteDropdown.options.Clear();
+        for(int i = 0; i < newRoutePath[destNumber].destinationNameList.Count; i++) {
+            nRouteDropdown.options.Add(new TMP_Dropdown.OptionData() { text = newRoutePath[destNumber].destinationNameList[i] });
+        }
 
         //add to dest list
+        for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
+            if (newRoutePath[destNumber].destinationNameList[0] == GridBoard.Instance.stationList[i].nameStation)
+                newRoutePath.Add(GridBoard.Instance.stationList[i]);
+        newRouteDestDropdown.Add(nRouteDropdown);
 
         //enable minus if list > 0
+        destNumber++;
     }
-    void MinusDestination()
+    public void MinusDestination()
     {
-        //find in list
+        //find in list //to do if doing an advanced minus
         //delete
+        if (destNumber > 0)
+        {
+            Destroy(routeCreatorDestinations.GetChild(destNumber + 1).gameObject);
+            newRouteDestDropdown.RemoveAt(destNumber);
+            newRoutePath.RemoveAt(destNumber);
+            destNumber--;
+        }
         //disable minus if list < 1
     }
     public void ChangeDestination(TMP_Dropdown destToChange)
@@ -400,23 +555,36 @@ public class UIManagerInGame : MonoBehaviour
             for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
                 if (nameDestination == GridBoard.Instance.stationList[i].nameStation)
                     newRoutePath[destID] = GridBoard.Instance.stationList[i];
+            //change next dropdown
+            int nextIDs = destNumber - destID;
+            for (int i = 0; i < nextIDs ; i++)
+                MinusDestination();
+            for (int i = 0; i < nextIDs; i++)
+                AddDestination();
         }
+        else
+            Debug.LogError("Route edding destination failled dest index not found");
     }
-    public void DeployTrain()
-    {
+    public void DeployTrain() {
         if (currentTileSelected.HasStation)
             currentTileSelected.station.CreateRoute(newRoutePath[0]);
     }
+    public void DeployTrainMultiple()
+    {
+        if (currentTileSelected.HasStation)
+            currentTileSelected.station.CreateRouteMultiple(newRoutePath);
+    }
+
     void FillRouteList()
     {
         for (int i = 0; i < routeList.childCount; i++)
             Destroy(routeList.GetChild(i).gameObject);
-        List<TrainRoute> list = GameManager.Instance.gridBoard.routeList;
-        for (int i = 0; i < list.Count; i++)
+        List<TrainRoute> listRoute = GameManager.Instance.gridBoard.routeList;
+        for (int i = 0; i < listRoute.Count; i++)
         {
             UIRouteItem item = Instantiate(routeItemPrefab);
             item.inGameUI = this;
-            item.SetDisplay(list[i]);
+            item.SetDisplay(listRoute[i]);
             item.transform.SetParent(routeList, false);
         }
     }
@@ -505,28 +673,13 @@ public class UIManagerInGame : MonoBehaviour
     }
 
     //fonction tile info
-    public void UpdateTileInfo(string name, string content)
+    public void UpdateTileInfo(string name, string content, float pollution, int pollutionMax, int pollutionMin)
     {
         //selectedTileName.text = name;
         selectedTileContent.text = content;
-    }
-    public void UpdateItemDisplayList(List<int> imports, List<int> exports, List<int> stock) {
-        for(int i = 0; i < GameManager.Instance.ressourceTypes.Count; i++)
-        {
-            //selectedTileImport[i].nameRessource.text = GameManager.Instance.ressourceTypes[i].nameRessource;
-            //selectedTileImport[i].qtyRessource.text = "0";
-            //selectedTileExport[i].nameRessource.text = GameManager.Instance.ressourceTypes[i].nameRessource;
-            //selectedTileExport[i].qtyRessource.text = "0";
-        }
-        for(int i = 0; i < imports.Count; i++) {
-            //if(stock.Count >= 0)
-                //selectedTileImport[imports[i]].qtyRessource.text = "" + stock[imports[i]];
-        }
-        for (int i = 0; i < exports.Count; i++)
-        {
-            //if (stock.Count >= 0)
-                //selectedTileExport[exports[i]].qtyRessource.text = "" + stock[exports[i]];
-        }
+        pollutionLevel.text = "Pollution : " + pollution.ToString("0.00");
+        pollutionLevelMax.text = "Pollution Max : " + pollutionMax;
+        pollutionLevelMin.text = "Pollution Min : " + pollutionMin;
     }
     public void UpdateItemDisplayListNew(List<bool> imports, List<bool> exports, List<int> stock)
     {

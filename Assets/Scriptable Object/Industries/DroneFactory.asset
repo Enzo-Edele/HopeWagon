@@ -24,5 +24,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f3466b0e0cc66114baa862ddc7e6c797, type: 2}
   requireAmount: 0500000002000000
   storage: 050000003200000014000000
-  pollutionLevel: 0
+  pollutionLevel: 5
   description: 

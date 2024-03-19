@@ -5,7 +5,7 @@ using TMPro;
 
 public class SaveLoadItem : MonoBehaviour
 {
-    public SaveLoadMenu menu;
+    public UIManagerMainMenu menu;
     //set name display on the button
     public string MapName
     {

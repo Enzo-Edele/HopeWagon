@@ -92,13 +92,16 @@ public class UIStationItem : MonoBehaviour
         }
     }
 
-    public void DeployTrain()
+    public void DeployTrainMultiple()
     {
-        /*if (selectedDestination)
+        if (selectedDestination)
         {
             GameManager.Instance.gameUI.OpenRouteCreator(true);
             GameManager.Instance.gameUI.SetDestinationListCreator(stationName.text, destinationsNames);
-        }*/
+        }
+    }
+    public void DeployTrain()
+    {
         departStation.CreateRoute(selectedDestination);
     }
 }

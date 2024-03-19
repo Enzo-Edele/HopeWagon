@@ -14,6 +14,7 @@ public class GridBoard : MonoBehaviour
     [SerializeField] GameTile tilePrefab = default;
 
     [SerializeField] GameTile[] tiles;
+    public int tileCount;
     public List<Station> stationList = new List<Station>(); //[SerializeField]
     public List<TrainRoute> routeList = new List<TrainRoute>(); //[SerializeField]
 
@@ -43,6 +44,7 @@ public class GridBoard : MonoBehaviour
 
     public void Initialize(Vector2Int size)
     {
+        tileCount = size.x * size.y;
         this.size = size;
         ground.localScale = new Vector3(size.x, 0.05f ,size.y);
 
@@ -54,6 +56,7 @@ public class GridBoard : MonoBehaviour
                 tile.transform.SetParent(transform, false);
                 tile.transform.localPosition = new Vector3(x - offset.x, 0, z - offset.y);
                 tile.name = "Tile : " + x + ", " + z;
+                tile.index = i;
                 tile.SetCoordinate(new Vector2Int(x, z));
                 if (x > 0) {
                     tile.MakeEastWestNeighbor(tile, tiles[i - 1]);
@@ -67,16 +70,18 @@ public class GridBoard : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N))
+        /*if (Input.GetKeyDown(KeyCode.N))
             foreach (GameTile tile in tiles)
                 tile.ShowNetwork();
         if (Input.GetKeyDown(KeyCode.B))
             foreach (GameTile tile in tiles)
                 tile.HideNetwork();
         if (Input.GetKeyDown(KeyCode.M))
-            PaintStation();
+            PaintStation();*/
         if (Input.GetKeyDown(KeyCode.R))
             ShowHideWorldUI();
+        /*if (Input.GetKeyDown(KeyCode.F))
+            PaintPollution();*/
     }
 
     public void PaintAllTile(Color color)
@@ -214,6 +219,10 @@ public class GridBoard : MonoBehaviour
     {
         return tile;
     }
+    public GameTile GetTile(int index)
+    {
+        return (tiles[index]);
+    }
     public Network AddNetwork(Network network)
     {
         for (int i = 0; i < networkList.Count; i++)
@@ -273,6 +282,32 @@ public class GridBoard : MonoBehaviour
             if (trainRoute == routeList[i])
                 routeList.RemoveAt(i);
     }
+    public void ClearRoute()
+    {
+        for (int i = 0; i < routeList.Count; i++)
+            Destroy(routeList[i].gameObject);
+        routeList.Clear();
+    }
+
+    public void RefreshPollutionMax()
+    {
+        foreach (GameTile tile in tiles)
+        {
+            if(tile.HasIndustry)
+                tile.SetMaxPollution((int)tile.industry.pollutionLevel);
+            if(tile.HasPollutedIndustry)
+                tile.SetMaxPollution((int)tile.pollutedIndustry.pollutionLevel);
+            if (tile.HasCleaner)
+                tile.LowerMinPollution((int)tile.cleaner.pollutionLevel);
+        }
+    }
+    void PaintPollution()
+    {
+        foreach(GameTile tile in tiles)
+        {
+            tile.PaintPollution();
+        }
+    }
 
     public void Save(BinaryWriter writer)
     {
@@ -299,9 +334,9 @@ public class GridBoard : MonoBehaviour
     {
         for(int i = 0; i < routeList.Count; i++)
         {
-            routeList[i].LoadigStopRoute();
+            routeList[i].LoadingStopRoute();
         }
-        routeList.Clear();
+        ClearRoute();
 
         int x = 20, z = 15;
         x = reader.ReadInt32();

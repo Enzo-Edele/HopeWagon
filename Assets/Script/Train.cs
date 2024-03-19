@@ -17,7 +17,7 @@ public class Train : MonoBehaviour
 
     //locomotive
     Queue<GameObject> wagonQueue = new Queue<GameObject>();
-    TrainRoute transportPath;
+    TrainRoute trainRoute;
 
     public List<bool> RouteRessources;
 
@@ -41,11 +41,29 @@ public class Train : MonoBehaviour
             stockRessources.Add(0);
         }
     }
-    public void Spawn(GameTileCopy tile, TrainRoute route) {
-        currentTile = tile;
-        nextTile = tile.nextOnPath;
+    public void Spawn(Station depart, Station destination, TrainRoute route) {
+        List<GameTileCopy> pathToCopy = new List<GameTileCopy>();
+
+        Queue<GameTile> pathFind = GridBoard.Instance.Pathfinding(destination.tile, depart.tile);
+        GameTile tileToCopy = pathFind.Dequeue();
+        pathToCopy.Add(Instantiate(GameManager.Instance.tileCopy, gameObject.transform).GetComponent<GameTileCopy>());
+        pathToCopy[0].SetUpTileCopy(tileToCopy.tileCoordinate, tileToCopy.transform.position, tileToCopy.distance, tileToCopy.pathDirection, tileToCopy.exitPoint);
+        int i = 0;
+        while (pathFind.Count > 0)
+        {
+            i++;
+            GameTile tileTC = pathFind.Dequeue();
+            pathToCopy.Add(Instantiate(GameManager.Instance.tileCopy, gameObject.transform).GetComponent<GameTileCopy>()); //referencé la gametilecopy dans une factory
+            pathToCopy[i].SetUpTileCopy(tileTC.tileCoordinate, tileTC.transform.position, tileTC.distance, tileTC.pathDirection, tileTC.exitPoint);
+            pathToCopy[i - 1].SetUpTileCopyNext(pathToCopy[i]);
+        }
+
+        SetPath(pathToCopy);
+
+        currentTile = pathToCopy[0];
+        nextTile = pathToCopy[0].nextOnPath;
         progress = 0f;
-        transportPath = route;
+        trainRoute = route;
         PrepareDepart();
     }
 
@@ -69,7 +87,7 @@ public class Train : MonoBehaviour
         progress += Time.deltaTime * progressFactor;
         while(progress >= 1f) {
             if (nextTile == null) {
-                transportPath.UnloadRessource(currentTile);
+                trainRoute.UnloadRessource(currentTile);
                 /*for (int i = 0; i < RouteRessources.Count; i++)
                 {
                     if (RouteRessources[i])
@@ -101,12 +119,13 @@ public class Train : MonoBehaviour
         {
             Wagon wagon = Instantiate(wagonQueue.Dequeue(), new Vector3(0, -10, 0), Quaternion.identity).GetComponent<Wagon>();
             wagon.SetPath(path);
-            wagon.Spawn(path[0], transportPath);
+            wagon.Spawn(path[0], trainRoute);
             if (wagonQueue.Count <= 0)
             {
                 wagon.isLast = true;
             }
             spawnWagon = false;
+            trainRoute.AddWagon(wagon);
         }
 
         return true;
@@ -195,5 +214,10 @@ public class Train : MonoBehaviour
         stockDisplay.text = "" + stockRessources[index];
 
         return leftover;
+    }
+
+    public void LoadingStopRoute()
+    {
+        Destroy(gameObject);
     }
 }

@@ -22,7 +22,6 @@ public class UIRouteItem : MonoBehaviour
     public void SetDisplay(TrainRoute trainRoute)
     {
         owner = trainRoute;
-        owner.displayUI = this;
         //set name x2
         stationDepartName.text = owner.currentStartPoint.name;
         stationArrivalName.text = owner.currentDestination.name;

@@ -36,13 +36,11 @@ public class SaveLoadMenu : MonoBehaviour
         }
         FillList();
         gameObject.SetActive(true);
-        //HexMapCamera.Locked = true;
     }
     //fct to close saveLoadMenu
     public void Close()
     {
         gameObject.SetActive(false);
-        //HexMapCamera.Locked = false;
     }
     //get the name in the input bar
     string GetSelectPath()
@@ -109,7 +107,7 @@ public class SaveLoadMenu : MonoBehaviour
         for (int i = 0; i < paths.Length; i++)
         {
             SaveLoadItem item = Instantiate(itemPrefab);
-            item.menu = this;
+            //item.menu = this;
             item.MapName = Path.GetFileNameWithoutExtension(paths[i]);
             item.transform.SetParent(listContent, false);
         }

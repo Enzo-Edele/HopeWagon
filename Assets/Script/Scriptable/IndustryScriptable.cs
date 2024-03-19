@@ -16,7 +16,7 @@ public class IndustryScriptable : ScriptableObject
     public List<int> requireAmount;
     public List<int> storage; //??? List
     //for later use
-    public int pollutionLevel;
+    public float pollutionLevel;
     public string description;
     //IndustyScriptable upgrade;
 }

@@ -14,7 +14,6 @@ public class TrainRoute : MonoBehaviour
     public List<GameTileCopy> path = new List<GameTileCopy>();
     public List<GameTileCopy> pathReverse = new List<GameTileCopy>();
 
-    public UIRouteItem displayUI;
     //parent said copy tile heto object
 
     public List<bool> RouteRessources;
@@ -23,7 +22,8 @@ public class TrainRoute : MonoBehaviour
 
     public bool toStop = false;
 
-    Train train; //a terme on aura des trains custom pour l'instant prendre un prefab
+    Train train;
+    List<Wagon> wagonArray = new List<Wagon>();
 
     private void Awake()
     {
@@ -38,7 +38,7 @@ public class TrainRoute : MonoBehaviour
     private void Update()
     {
         if (timerTrain < 0)
-            DeployTrain(0);
+            DeployTrain();
         else if (timerTrain > 0)
             timerTrain -= Time.deltaTime;
     }
@@ -53,9 +53,9 @@ public class TrainRoute : MonoBehaviour
         currentDestination = destination;
         //add a list of path
         path = newPath;  
-        DeployTrain(0);
+        DeployTrain();
 
-        //adapt for multiple station
+        /*adapt for multiple station
         Queue<GameTile> pathToCopy = GridBoard.Instance.Pathfinding(depart.tile, destination.tile);
         GameTile tileToCopy = pathToCopy.Dequeue();
         pathReverse.Add(Instantiate(GameManager.Instance.tileCopy, gameObject.transform).GetComponent<GameTileCopy>());
@@ -68,10 +68,20 @@ public class TrainRoute : MonoBehaviour
             pathReverse.Add(Instantiate(GameManager.Instance.tileCopy, gameObject.transform).GetComponent<GameTileCopy>()); //referencé la gametilecopy dans une factory
             pathReverse[i].SetUpTileCopy(tileTC.tileCoordinate, tileTC.transform.position, tileTC.distance, tileTC.pathDirection, tileTC.exitPoint);
             pathReverse[i - 1].SetUpTileCopyNext(pathReverse[i]);
-        }
+        }*/
+    }
+    public void InitializeMultiple(List<List<GameTileCopy>> newPath, Station depart, List<Station> destination)
+    {
+        destinationArray.Add(depart);
+        for(int j = 0; j < destination.Count; j++)
+            destinationArray.Add(destination[j]);
+
+        currentStartPoint = depart;
+        currentDestination = destination[0];
+        DeployTrain();
     }
 
-    public void DeployTrain(int pathIndex)
+    public void DeployTrain()
     {
         if (GameManager.Instance.playerData.trainStock > 0)
         {
@@ -81,32 +91,36 @@ public class TrainRoute : MonoBehaviour
                 return;
             }
             train = Instantiate(GameManager.Instance.trainPrefab, new Vector3(0, -10, 0), Quaternion.identity).GetComponent<Train>();
-            train.SetPath(path);
-            train.Spawn(path[pathIndex], this);
+            //train.SetPath(path);
+            //train.Spawn(path[pathIndex], this);
+            train.Spawn(destinationArray[0], destinationArray[1], this);
             currentStartPoint.LoadTrain(currentDestination, this);
             train.SetWagons(GameManager.Instance.wagonTemplate);
             timerTrain = 0;
             GameManager.Instance.playerData.ChangeTrainStock(-1);
-            if(displayUI != null)
-                displayUI.UpdateDisplay();
         }
         else
             timerTrain = timeTrain;
     }
     public void SetNextPath() //to update with for loop
     {
-        List<GameTileCopy> memPath = new List<GameTileCopy>();
+        /*List<GameTileCopy> memPath = new List<GameTileCopy>();
         memPath = path;
         path = pathReverse;
-        pathReverse = memPath;
+        pathReverse = memPath;*/
 
-        Station memStation = destinationArray[0];
-        destinationArray[0] = destinationArray[1];
-        destinationArray[1] = memStation;
+        Station memStation;
+        for(int i = 0; i < destinationArray.Count - 1; i++)
+        {
+            memStation = destinationArray[i];
+            destinationArray[i] = destinationArray[i + 1];
+            destinationArray[i + 1] = memStation;
+        }
+
         currentStartPoint = destinationArray[0];
         currentDestination = destinationArray[1];
 
-        DeployTrain(0);
+        DeployTrain();
     }
 
     public int LoadRessources(int qty, int index)
@@ -138,38 +152,35 @@ public class TrainRoute : MonoBehaviour
         }
     }
 
-    void stopRoute()
+    public void AddWagon(Wagon wagon)
     {
+        for (int i = 0; i < wagonArray.Count; i++)
+            if (wagonArray[i] == wagon)
+                return;
+        wagonArray.Add(wagon);
+    }
+    public void RemoveWagon(Wagon wagon)
+    {
+        for (int i = 0; i < wagonArray.Count; i++)
+            if (wagon == wagonArray[i])
+                wagonArray.RemoveAt(i);
+    }
+    public void ClearWagon()
+    {
+        for (int i = 0; i < wagonArray.Count; i++)
+            Destroy(wagonArray[i].gameObject);
+        wagonArray.Clear();
+    }
+
+    void stopRoute() {
         GameManager.Instance.gridBoard.RemoveRoute(this);
-        Destroy(displayUI.gameObject);
         Destroy(gameObject);
     }
-    public void LoadigStopRoute()
-    {
-        Destroy(displayUI.gameObject);
+    public void LoadingStopRoute() {
+        if(train)
+            train.LoadingStopRoute();
+        for (int i = 0; i < wagonArray.Count; i++)
+            Destroy(wagonArray[i].gameObject);
         Destroy(gameObject);
     }
-    /*  depreciated for now
-    public void reversePath()
-    {
-        List<GameTileCopy> pathReverse = new List<GameTileCopy>();
-        for (int i = path.Count - 1; i >= 0; i--)
-        {
-            pathReverse.Add(path[i]);
-        }
-        for (int i = 0; i < path.Count - 1; i++)
-        {
-            pathReverse[i].nextOnPath = pathReverse[i + 1];
-        }
-        pathReverse[path.Count - 1].nextOnPath = null;
-        path = pathReverse;
-
-        //to replace for multiple dest
-        Station memStation = destinationArray[0];
-        destinationArray[0] = destinationArray[1];
-        destinationArray[1] = memStation;
-        currentDestination = destinationArray[1];
-
-        DeployTrain(0);
-    }*/
 }

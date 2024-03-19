@@ -9,7 +9,8 @@ public class Industry : MonoBehaviour
     int prodTime = 3;
     float prodTimer;
     List<int> prodQty; 
-    List<int> requiredQty; 
+    List<int> requiredQty;
+    public float pollutionLevel;
 
     List<RessourceScriptable> ressourceInput = new List<RessourceScriptable>();
     List<RessourceScriptable> ressourceOutput = new List<RessourceScriptable>();
@@ -51,11 +52,18 @@ public class Industry : MonoBehaviour
                     }
                 }
 
+                pollutionLevel = value.pollutionLevel;
                 industryName.text = value.nameIndustry;
                 //do the next part later
                 model.GetComponent<Renderer>().material = value.mat;
             }
         }
+    }
+    GameTile tile;
+    public void SetTile(GameTile ownerTile)
+    {
+        tile = ownerTile;
+        tile.SetMaxPollution((int)pollutionLevel);
     }
 
     [SerializeField] Canvas canvas;
@@ -102,6 +110,8 @@ public class Industry : MonoBehaviour
         for(int i = 0; i < linkedStation.Count; i++) {
             linkedStation[i].CheckImportExport();
         }
+        if(tile != null)
+            tile.SetMaxPollution((int)pollutionLevel); //error in edit mode
     }
     void SetAcceptedRessources(List<RessourceScriptable> listToCheck, List<int> listToUpdate, List<bool> checkToUpdate, Transform display)
     {
@@ -140,7 +150,7 @@ public class Industry : MonoBehaviour
                     for (int i = 0; i < importID.Count; i++)
                         ChangeStorageRessource(-requiredQty[i], importID[i]);
                     for (int i = 0; i < exportID.Count; i++)
-                        ChangeStorageRessource(prodQty[i], exportID[i]); 
+                        ChangeStorageRessource(prodQty[i], exportID[i]);
                     prodTimer = prodTime;
                 }
                 prodTimer = 1;

@@ -5,6 +5,7 @@ using System.IO;
 
 public class GameTile : MonoBehaviour
 {
+    public int index;
     public GameTile[] neighbor = new GameTile[4];
     public Vector2Int tileCoordinate { get; private set; }
     public int distance = int.MaxValue;
@@ -23,7 +24,7 @@ public class GameTile : MonoBehaviour
     Material railMat;
 
     [SerializeField] int nbRailNeighbor;
-    [SerializeField]bool hasRail;
+    [SerializeField] bool hasRail;
     public bool HasRail
     {
         get { return hasRail; }
@@ -131,6 +132,96 @@ public class GameTile : MonoBehaviour
             }
         }
     }
+    public PollutionCleaner cleaner { get; private set; }
+    [SerializeField] bool hasCleaner;
+    public bool HasCleaner
+    {
+        get { return hasCleaner; }
+        set
+        {
+            if (value != hasCleaner)
+            {
+                if (value && CanBuildIndustry())
+                {
+                    hasCleaner = value;
+                    SpawnCleaner();
+                }
+                else if (!value)
+                {
+                    hasCleaner = value;
+                    DestroyCleaner();
+                }
+            }
+        }
+    }
+
+    GameObject pollutionParticle = null;
+    public int pollutionLevel { get; private set; }
+    public void SetPollutionLevel(int nValue)
+    {
+        pollutionLevel = nValue;
+    }
+    int maxPollution = 0;
+    int minPollution = 0;
+    public bool HasMostPollution(int toCheck) //WARNING check if neighbor
+    {
+        for (int i = 0; i < neighbor.Length; i++)
+        {
+            if (!neighbor[i])
+                continue;
+            if (toCheck < neighbor[i].maxPollution)
+                return false;
+        }
+        return true;
+    }
+    public void SetMaxPollution(int nMax)
+    {
+        if (nMax > maxPollution || nMax > 0)
+        {
+            maxPollution = nMax;
+            pollutionLevel = minPollution + maxPollution;
+            for (int i = 0; i < neighbor.Length; i++)
+            {
+                if (!neighbor[i])
+                    continue;
+                if(nMax - 1 > neighbor[i].maxPollution)
+                    neighbor[i].SetMaxPollution(nMax - 1);
+            }
+            UpdatePollutionParticle();
+        }
+    }
+    public void LowerMinPollution(int nMin)
+    {
+        if (nMin < minPollution || nMin < 0)
+        {
+            minPollution = nMin;
+            pollutionLevel = minPollution + maxPollution;
+            for (int i = 0; i < neighbor.Length; i++)
+            {
+                if (!neighbor[i])
+                    continue;
+                if (nMin + 1 < neighbor[i].minPollution)
+                    neighbor[i].LowerMinPollution(nMin + 1);
+            }
+            UpdatePollutionParticle();
+        }
+    }
+    void UpdatePollutionParticle()
+    {
+        if (pollutionLevel > 0 && pollutionParticle == null)
+        {
+            //pollutionParticle = Instantiate(GameManager.Instance.prefabPollutionParticle, this.transform);
+        }
+        else if(pollutionLevel < 0 && pollutionParticle != null)
+        {
+            //Destroy(pollutionParticle.gameObject);
+            //pollutionParticle = null;
+        }
+    }
+    public void PaintPollution()
+    {
+        Paint(Color.Lerp(GameManager.Instance.depolluted, GameManager.Instance.polluted, (pollutionLevel + 10.0f) / 20.0f));
+    }
 
     bool CanBuildIndustry()
     {
@@ -138,7 +229,7 @@ public class GameTile : MonoBehaviour
     }
     bool CanBuildStationRail()
     {
-        return !(hasIndustry);
+        return !(hasIndustry || hasPollutedIndustry || hasCleaner);
     }
     private void Start()
     {
@@ -390,10 +481,10 @@ public class GameTile : MonoBehaviour
         Destroy(stationPrefab);
         stationPrefab = null;
         for (int i = 0; i < 4; i++) {
-            if (neighbor[i].HasIndustry) {
+            if (neighbor[i].HasIndustry)
                 neighbor[i].industry.RemoveStation(station);
+            if(neighbor[i].hasPollutedIndustry)
                 neighbor[i].pollutedIndustry.RemoveStation(station);
-            }
         }
     }
     void SpawnFactory()
@@ -458,6 +549,34 @@ public class GameTile : MonoBehaviour
         Destroy(buildingPrefab);
         buildingPrefab = null;
     }
+    void SpawnCleaner()
+    {
+        buildingPrefab = Instantiate(GameManager.Instance.cleanerPrefab, transform);
+        cleaner = buildingPrefab.GetComponent<PollutionCleaner>();
+        cleaner.SetTile(this);
+        for (int i = 0; i < 4; i++)
+        {
+            if (neighbor[i].HasStation)
+            {
+                neighbor[i].station.AddCleaner(cleaner);
+                cleaner.AddStation(neighbor[i].station);
+                neighbor[i].station.CheckImportExport();
+            }
+        }
+    }
+    void DestroyCleaner()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (neighbor[i].HasStation)
+            {
+                neighbor[i].station.RemoveCleaner(cleaner);
+            }
+        }
+        pollutedIndustry = null;
+        Destroy(buildingPrefab);
+        buildingPrefab = null;
+    }
 
     //link to UI
 
@@ -486,7 +605,7 @@ public class GameTile : MonoBehaviour
             content = "Empty";
             ui.UpdateItemDisplayListNew();
         }
-        ui.UpdateTileInfo(name, content);
+        ui.UpdateTileInfo(name, content, pollutionLevel, maxPollution, minPollution);
     }
 
     public void Save(BinaryWriter writer)
@@ -534,8 +653,11 @@ public class GameTile : MonoBehaviour
         HasIndustry = reader.ReadBoolean();
         int industryType = reader.ReadInt32();
         if (HasIndustry) {
-            if(industryType >= 0) 
+            if (industryType >= 0)
+            {
+                industry.SetTile(this);
                 industry.SetIndustryType(GameManager.Instance.industryTypes[industryType]);
+            }
         }
         if(header >= 1)
         {

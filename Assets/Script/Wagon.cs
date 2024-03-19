@@ -14,24 +14,32 @@ public class Wagon : MonoBehaviour
     float progress, progressFactor;
 
     [SerializeField] Transform model;
-    [SerializeField] GameObject wagonModel;
+    [SerializeField] GameObject ressourceModel;
 
     //array of ressources
 
     //make a factory
 
     public bool isLast = false; //replace by a properly manage train
-    TrainRoute transportPath;
+    TrainRoute trainRoute;
 
     public void Spawn(GameTileCopy tile, TrainRoute route)
     {
         currentTile = tile;
         nextTile = tile.nextOnPath;
         progress = 0f;
-        transportPath = route;
+        trainRoute = route;
+        bool carryRessources = false;
         for (int i = 0; i < route.stockRessources.Count; i++) {
             if (route.stockRessources[i] > 0)
-                wagonModel.GetComponent<Renderer>().material = GameManager.Instance.ressourceTypes[i].mat;
+            {
+                ressourceModel.GetComponent<Renderer>().material = GameManager.Instance.ressourceTypes[i].mat;
+                carryRessources = true;
+            }
+        }
+        if (!carryRessources)
+        {
+            ressourceModel.SetActive(false);
         }
         PrepareDepart();
     }
@@ -62,10 +70,10 @@ public class Wagon : MonoBehaviour
                 if (isLast) {
                     //for (int i = 0; i < path.Count; i++)//faire une copy factory
                     //Destroy(path[i].gameObject);
-                    transportPath.SetNextPath();
+                    trainRoute.SetNextPath();
                     GameManager.Instance.playerData.ChangeTrainStock(1);
                 }
-
+                trainRoute.RemoveWagon(this);
                 Destroy(gameObject); //make a factory and replace with a reclaim method
                 return false;
             }
@@ -143,5 +151,10 @@ public class Wagon : MonoBehaviour
     public void SetPath(List<GameTileCopy> newPath)
     {
         path = newPath;
+    }
+
+    public void LoadingStopRoute()
+    {
+        Destroy(gameObject);
     }
 }

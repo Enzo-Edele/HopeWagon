@@ -40,7 +40,7 @@ public class PlayerData : MonoBehaviour
         else if(gameTimer >= 0)
         {
             gameTimer += Time.deltaTime;
-            GameManager.Instance.saveLoadMenu.TimerUpdate((int)gameTimer);
+            GameManager.Instance.pauseMenu.TimerUpdate((int)gameTimer);
         }
     }
     private void LoadSTartGame()
@@ -49,7 +49,7 @@ public class PlayerData : MonoBehaviour
         stationStock = 7;
         trainStock = 7;
         GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
-        GameManager.Instance.saveLoadMenu.ActivateMenu();//for demo
+        //GameManager.Instance.pauseMenu.ActivateMenu();//for demo
     }
     public void ChangeRailStock(int qty)
     {
@@ -118,6 +118,7 @@ public class PlayerData : MonoBehaviour
             railStock = reader.ReadInt32();
             stationStock = reader.ReadInt32();
             trainStock = reader.ReadInt32();
+            GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
         }
     }
 
@@ -129,6 +130,7 @@ public class PlayerData : MonoBehaviour
         railStock = 999;
         stationStock = 999;
         trainStock = 999;
+        GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
     }
     public void StopCheat()
     {
