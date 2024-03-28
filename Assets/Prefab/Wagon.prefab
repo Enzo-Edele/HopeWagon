@@ -227,6 +227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6683964263644508507}
   - component: {fileID: 8441708826247442944}
+  - component: {fileID: 1196248839934467633}
   m_Layer: 0
   m_Name: Wagon
   m_TagString: Untagged
@@ -266,6 +267,19 @@ MonoBehaviour:
   model: {fileID: 8617505738445200221}
   ressourceModel: {fileID: 3671276052009418340}
   isLast: 0
+--- !u!65 &1196248839934467633
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7374195620423357768}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.30410862, y: 0.5141161, z: 1}
+  m_Center: {x: 0, y: 0.31331822, z: 0}
 --- !u!1 &8982863702602892380
 GameObject:
   m_ObjectHideFlags: 0

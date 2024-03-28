@@ -15,18 +15,9 @@ public class GridBoard : MonoBehaviour
 
     [SerializeField] GameTile[] tiles;
     public int tileCount;
-    public List<Station> stationList = new List<Station>(); //[SerializeField]
-    public List<TrainRoute> routeList = new List<TrainRoute>(); //[SerializeField]
+    public List<Station> stationList = new List<Station>(); 
+    public List<TrainRoute> routeList = new List<TrainRoute>(); 
 
-    //créer une classe network 
-    //et oncheck si voisin sans network ou network diff (pour chaque voisin)
-    //      voisin vide : on l'ajoute et répéte opération
-    //      network voisin : on copie le voisin, sa liste de station
-    //          pour chaque station de n1 on ajoute toutes les dest n2 et ajoute les dest de n2 a celle de n1
-    //          pour chaque station de n2 on ajoute toutes les dest de n1
-    //          on supprime n2
-    //          on ajoute les voisin de rail vide au network
-    //fonction merge
     List<Network> networkList = new List<Network>();
     public int networkNumber; //fonction pour réatribuer les numéros quand liste remove
     public bool stateWorldUI = true;

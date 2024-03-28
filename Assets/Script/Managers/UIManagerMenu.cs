@@ -32,6 +32,7 @@ public class UIManagerMenu : MonoBehaviour
     [SerializeField] TMP_Text endTextContract;
     [SerializeField] TMP_Text endTextTime;
 
+    [SerializeField] GameObject timer;
     [SerializeField] TMP_Text timerText;
 
     [SerializeField] GameObject helpButton;
@@ -98,7 +99,7 @@ public class UIManagerMenu : MonoBehaviour
         //pause and unpause game
         if (menuIsActive)
             GameManager.Instance.ChangeGameState(GameManager.GameState.pause);
-        else
+        else if(!menuIsActive )
             GameManager.Instance.ChangeGameState(GameManager.GameState.inGame);
     }
 
@@ -109,11 +110,13 @@ public class UIManagerMenu : MonoBehaviour
     public void Resume()
     {
         ActivateMenu();
+        ActivateTimer(true);
     }
     public void Restart()
     {
         endPanel.SetActive(false);
         pausePanel.SetActive(false);
+        ActivateTimer(true);
         SceneManager.LoadScene("Main");
     }
     public void Continue()
@@ -164,6 +167,11 @@ public class UIManagerMenu : MonoBehaviour
             currentTutoPannel = TutoCategories[currentTutoLabel].list.Count - 1;
         TutoCategories[currentTutoLabel].list[currentTutoPannel].SetActive(true);
         tipsIndicator.text = (currentTutoPannel + 1) + " / " + (TutoCategories[currentTutoLabel].list.Count);
+    }
+
+    public void ActivateTimer(bool nState)
+    {
+        timer.SetActive(nState);
     }
 
     public void TimerUpdate(int time)

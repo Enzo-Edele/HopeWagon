@@ -17,7 +17,80 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: c231d651889fdc6468801ac5d5431466, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 76295938048
+    m_Localized: "Bonjour manager et f\xE9licitations pour votre promotion \xE0 la
+      t\xEAte du programme Hope Wagon. Peut-\xEAtre d\xE9sirez-vous quelques conseils
+      pour d\xE9buter votre travail."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3271785698533376
+    m_Localized: "Bien commen\xE7ons par les bases, votre r\xF4le est de g\xE9rer
+      le transport entre les industries du programme de d\xE9pollution."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272764477120512
+    m_Localized: "Pour se faire placer des stations aux endroits indiqu\xE9s en ouvrant
+      le menu \u201CConstruire\u201D et s\xE9lectionnant \u201CConstruire Station\u201D."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272792230830080
+    m_Localized: "Maintenant il faut relier les stations en utilisant des rails.
+      Ouvrez le menu \u201CConstruire\u201D et s\xE9lectionnez \u201CConstruire Rail\u201D. "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272836736589824
+    m_Localized: "Les stations sont reli\xE9es maintenant il faut cr\xE9er une route
+      de transport. Cliquez sur une des station puis sur le bouton d\xE9ployer pour
+      cr\xE9er une route entre la station et la destination s\xE9lectionn\xE9e indiqu\xE9
+      dans la partie rouge."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272872274927616
+    m_Localized: "Revenons sur le menu de la station, le bandeau sup\xE9rieur indique
+      le nom et les ressources qu\u2019exporte la station. L\u2018encadr\xE9 \xE0
+      droite la destination choisie parmi toute celle possible et les ressources
+      qu\u2019elle importe."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272892030099456
+    m_Localized: "Le bandeau inf\xE9rieur permet de cr\xE9er une route aller retour
+      avec \u201CD\xE9ployer\u201D ou une route \xE0 plusieur destination avec \u201CCr\xE9er
+      une route\u201D. depuis le menu d\u2019action en s\xE9lectionnant \u201CListe
+      Station\u201D vous aurez acc\xE8s au menu de toutes les stations."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272905464455168
+    m_Localized: "Vous avez maintenant les bases pour \xE9tablir un r\xE9seau de
+      transport. Cependant certains facteurs vont venir limiter votre expansion. "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272921943875584
+    m_Localized: "Vous l\u2019aurez peut-\xEAtre remarqu\xE9 mais vous avez un nombre
+      limit\xE9 de rails, stations et trains. Ces nombres sont indiqu\xE9s en haut
+      de votre \xE9cran. Mais pas de panique il y a un moyen d\u2019en gagner, les
+      contrats."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272938821754880
+    m_Localized: "Les contrats sont affich\xE9s en haut \xE0 gauche. Ils vous demanderont
+      de transporter des ressources \xE0 un endroit o\xF9 elles sont demand\xE9es
+      et vous donneront des rails, stations ou trains en r\xE9compense en fonction
+      de la ressource achemin\xE9. "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4996337231175680
+    m_Localized: "Vous aurez toujours trois contrats actifs, \xE0 chaque fois qu\u2019un
+      contrat sera rempli un nouveau vous sera donn\xE9, et vous choisirez UNE r\xE9compense
+      parmi celles propos\xE9es."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4996384966549504
+    m_Localized: "Vous \xEAtes maintenant pr\xEAt \xE0 d\xE9polluer et accomplir
+      votre objectif de r\xE9tablir une pr\xE9sence humaine en d\xE9polluant une
+      ville."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

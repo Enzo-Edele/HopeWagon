@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: ButtonsUI Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: ButtonsUI
+  m_TableCollectionNameGuidString: fa57fef96ece82d4fa283264a279be20
+  m_Entries:
+  - m_Id: 11791736832
+    m_Key: build_action
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94629240832
+    m_Key: station_list
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1728066981699584
+    m_Key: route_list
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1728677932408832
+    m_Key: build_station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1728786988507136
+    m_Key: destroy_station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1729547617148928
+    m_Key: build_rail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1729630660173824
+    m_Key: destroy_rail
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1730147998212096
+    m_Key: deploy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1730243083083776
+    m_Key: complex_deploy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1730588630818816
+    m_Key: add_destination
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1730678732857344
+    m_Key: minus_destination
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 2450476556171083782
+  references:
+    version: 2
+    RefIds:
+    - rid: 2450476556171083782
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1711036765642

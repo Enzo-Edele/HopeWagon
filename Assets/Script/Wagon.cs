@@ -60,6 +60,12 @@ public class Wagon : MonoBehaviour
         GameUpdate();
     }
 
+    private void OnMouseDown()
+    {
+        GameManager.Instance.gameUI.ChangeActionMode(4);
+        GameManager.Instance.gameUI.SetIndividualRoute(trainRoute);
+    }
+
     public bool GameUpdate()
     {
         progress += Time.deltaTime * progressFactor;

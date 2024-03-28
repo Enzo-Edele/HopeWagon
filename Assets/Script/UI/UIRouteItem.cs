@@ -22,6 +22,8 @@ public class UIRouteItem : MonoBehaviour
     public void SetDisplay(TrainRoute trainRoute)
     {
         owner = trainRoute;
+
+        ClearRessourceDisplay();
         //set name x2
         stationDepartName.text = owner.currentStartPoint.name;
         stationArrivalName.text = owner.currentDestination.name;
@@ -36,6 +38,7 @@ public class UIRouteItem : MonoBehaviour
                 j++;
             }
         }
+        SetStopButton();
         //set wagon
         //set display
     }
@@ -43,9 +46,7 @@ public class UIRouteItem : MonoBehaviour
     {
         stationDepartName.text = owner.currentStartPoint.name;
         stationArrivalName.text = owner.currentDestination.name;
-        carriedRessources.Clear();
-        for (int i = 0; i < RessourceDisplay.childCount; i++)
-            Destroy(RessourceDisplay.GetChild(i).gameObject);
+        ClearRessourceDisplay();
         int j = 0;
         for (int i = 0; i < owner.RouteRessources.Count; i++)
         {
@@ -58,13 +59,25 @@ public class UIRouteItem : MonoBehaviour
         }
     }
 
-    public void StopRoute()
+    public void ClearRessourceDisplay()
     {
-        owner.toStop = !owner.toStop;
+        carriedRessources.Clear();
+        for (int i = RessourceDisplay.childCount; i > 0; i--)
+            Destroy(RessourceDisplay.GetChild(i - 1).gameObject);
+    }
+
+    public void SetStopButton()
+    {
         if (owner.toStop)
             stopButton.color = Color.red;
         else
             stopButton.color = Color.white;
+    }
+
+    public void StopRoute()
+    {
+        owner.toStop = !owner.toStop;
+        SetStopButton();
     }
 }
 

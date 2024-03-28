@@ -17,7 +17,75 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: c231d651889fdc6468801ac5d5431466, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 76295938048
+    m_Localized: Hello manager and congratulations on your promotion to the head
+      of the Hope Wagon program. Maybe you want some tips to start your work.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3271785698533376
+    m_Localized: "Well, let\u2019s start with the basics, your role is to manage
+      transportation between the cleanup program industries."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272764477120512
+    m_Localized: "Placed stations in the places indicated by opening the \u201Cbuild
+      mode\u201D menu and selecting \u201Cbuild station\u201D."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272792230830080
+    m_Localized: "Now connect the stations using rails. Open the \u201Cbuild mode\u201D
+      menu and select \u201Cbuild rail\u201D. "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272836736589824
+    m_Localized: The stations are connected now it is necessary to create a transport
+      route. Click on one of the stations and then on the deploy button to create
+      a route between the station and the selected destination indicated in the red
+      part.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272872274927616
+    m_Localized: "Let\u2019s go back to the station menu, the top banner indicates
+      the name and resources that the station exports. The box to the right show
+      the destination chosen among all possible and the resources it imports."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272892030099456
+    m_Localized: "The lower banner allows you to create a round trip route with \u201CDeploy\u201D
+      or a route to several destinations with \u201CComplex route\u201D. from the
+      action menu by selecting \u201CStation list\u201D you will have access to the
+      menu of all stations."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272905464455168
+    m_Localized: You now have the foundation for a transportation system. However,
+      certain factors will limit your expansion.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272921943875584
+    m_Localized: "You may have noticed, but you have a limited number of rails, stations,
+      and trains. Those numbers are at the top of your screen. But don\u2019t worry,
+      there\u2019s a way to gain some, the contracts."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3272938821754880
+    m_Localized: 'Contracts are displayed at the top left. They will ask you to transport
+      resources to a location where they are requested and will give you tracks,
+      stations or trains as a reward depending on the resource being transported. '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4996337231175680
+    m_Localized: 'You will always have three active contracts, each time a new contract
+      is fullfilled you will be given one, and you will choose ONE reward among those
+      offered. '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4996384966549504
+    m_Localized: You are now ready to clean up and accomplish your goal of restoring
+      a human presence by cleaning up a city.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

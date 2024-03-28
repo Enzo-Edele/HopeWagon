@@ -105,14 +105,18 @@ public class TutoManager : MonoBehaviour
             case 7:
                 //teach player ressources
                 NextAdvice(tutoIndex);
+                GameManager.Instance.gameUI.ActivateOutlinerRessource(true);
                 break;
             case 8:
                 //teach contract
                 NextAdvice(tutoIndex);
+                GameManager.Instance.gameUI.ActivateOutlinerRessource(false);
+                GameManager.Instance.gameUI.ActivateOutlinerContract(true);
                 break;
             case 9:
                 //teach contract replenishment
                 NextAdvice(tutoIndex);
+                GameManager.Instance.gameUI.ActivateOutlinerContract(false);
                 break;
             case 10:
                 //teach objective

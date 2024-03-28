@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6650100045093012290}
   - component: {fileID: 45955259972541783}
   - component: {fileID: 5896852654917108564}
+  - component: {fileID: 3256900593501933366}
   m_Layer: 0
   m_Name: AddRouteComplexButton
   m_TagString: Untagged
@@ -134,6 +135,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &3256900593501933366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402973516141718313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a87fc9af8ff6664e8bcfaab1f41cd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  content: 
+  header: Create a route starting from this one and going to multiple destination
 --- !u!1 &1784151857013991216
 GameObject:
   m_ObjectHideFlags: 0
@@ -276,7 +291,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Create Route
+  m_text: Complex Route
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1963,6 +1978,7 @@ GameObject:
   - component: {fileID: 4417311978765853887}
   - component: {fileID: 4417311978765853886}
   - component: {fileID: 4417311978765853885}
+  - component: {fileID: 9002275867026492487}
   m_Layer: 0
   m_Name: AddRouteButton
   m_TagString: Untagged
@@ -2085,6 +2101,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &9002275867026492487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4417311978765853883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a87fc9af8ff6664e8bcfaab1f41cd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  content: 
+  header: Deploy a train between this station and the selected destination.
 --- !u!1 &4417311978817877435
 GameObject:
   m_ObjectHideFlags: 0
@@ -2151,7 +2181,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quick Deploy
+  m_text: Deploy
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

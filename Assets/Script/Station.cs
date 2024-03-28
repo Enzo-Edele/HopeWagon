@@ -222,48 +222,54 @@ public class Station : MonoBehaviour
         {
             SetStockRessource(route.LoadRessources(stockRessources[toLoad[j]], toLoad[j]), toLoad[j]);
         }
+
+        for(int i = 0; i < linkedIndustries.Count; i++)
+        {
+            linkedIndustries[i].SendRessourcesToStation();
+        }
+
     }
 
     private void Update() {
         if(requestTimer < 0) {
             requestTimer = requestTime;
-            int indexRessource = -1;
-            //take ressource
             for(int i = 0; i < linkedIndustries.Count; i++) {
-                for(int j = 0; j < linkedIndustries[i].exportID.Count; j++) {
-                    indexRessource = linkedIndustries[i].exportID[j];
-                    if (canExport[indexRessource]) {
-                        linkedIndustries[i].SetStockRessource(ChangeStorageRessource(linkedIndustries[i].stockRessources[indexRessource], indexRessource), indexRessource); 
-                        //verifier sécurité pour empêcher dupli
-                    }
-                }
+                //linkedIndustries[i].SendRessourcesToStation();
             }
-            //send ressource
-            for (int i = 0; i < linkedIndustries.Count; i++) {
-                for (int j = 0; j < linkedIndustries[i].importID.Count; j++) {
-                    indexRessource = linkedIndustries[i].importID[j];
-                    if (canImport[indexRessource]) {
-                        SetStockRessource(linkedIndustries[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
-                        //verifier sécurité pour empêcher dupli
-                    }
-                }
-            }
-            for (int i = 0; i < linkedPollutionCleaners.Count; i++)
-            {
-                for (int j = 0; j < linkedPollutionCleaners[i].importID.Count; j++)
-                {
-                    indexRessource = linkedPollutionCleaners[i].importID[j];
-                    if (canImport[indexRessource])
-                    {
-                        SetStockRessource(linkedPollutionCleaners[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
-                        //verifier sécurité pour empêcher dupli
-                    }
-                }
-            }
+            //SendRessourcesToIndustry();
         }
         else
         {
             requestTimer -= Time.deltaTime;
+        }
+    }
+
+    public void SendRessourcesToIndustry()
+    {
+        int indexRessource = -1;
+        for (int i = 0; i < linkedIndustries.Count; i++)
+        {
+            for (int j = 0; j < linkedIndustries[i].importID.Count; j++)
+            {
+                indexRessource = linkedIndustries[i].importID[j];
+                if (canImport[indexRessource])
+                {
+                    SetStockRessource(linkedIndustries[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
+                    //verifier sécurité pour empêcher dupli
+                }
+            }
+        }
+        for (int i = 0; i < linkedPollutionCleaners.Count; i++)
+        {
+            for (int j = 0; j < linkedPollutionCleaners[i].importID.Count; j++)
+            {
+                indexRessource = linkedPollutionCleaners[i].importID[j];
+                if (canImport[indexRessource])
+                {
+                    SetStockRessource(linkedPollutionCleaners[i].ChangeStorageRessource(stockRessources[indexRessource], indexRessource), indexRessource);
+                    //verifier sécurité pour empêcher dupli
+                }
+            }
         }
     }
 
@@ -300,6 +306,8 @@ public class Station : MonoBehaviour
     {
         int leftover = ChangeStorageRessource(qtyUnload, ressourceIndex);
         BuildIndustry();
+        SendRessourcesToIndustry();
+        
         return leftover;
     }
     public void BuildIndustry()

@@ -38,6 +38,9 @@ public class UIManagerInGame : MonoBehaviour
     [SerializeField] GameObject dropdownDestPrefab;
     int destNumber;
 
+    [SerializeField] GameObject routeMenuIndividual;
+    [SerializeField] UIRouteItem RouteItemIndividual;
+
     [SerializeField] GameObject routeMenuList;
     [SerializeField] RectTransform routeList;
     [SerializeField] UIRouteItem routeItemPrefab;
@@ -73,12 +76,15 @@ public class UIManagerInGame : MonoBehaviour
     [SerializeField] GameObject stationMenuIndividualTuto;
     [SerializeField] UIStationItem StationItemIndividualTuto;
 
+    [SerializeField] GameObject tutoRessourceOutliner;
+    [SerializeField] GameObject tutoContractOutliner;
+
     [SerializeField] List<Vector2> stationCoordinates = new List<Vector2>();
     [SerializeField] List<Vector2> railCoordinates = new List<Vector2>();
 
     enum ActionMode
     {
-        ignore, build, station, train, hidden
+        ignore, build, station, train, route, hidden
     }
     ActionMode actionMode;
 
@@ -96,10 +102,11 @@ public class UIManagerInGame : MonoBehaviour
     {
         playerRessourceMenu.SetActive(nState);
         contractPannel.SetActive(nState);
+        GameManager.Instance.pauseMenu.ActivateTimer(nState);
         if (nState)
             ChangeActionMode(0);
         else
-            ChangeActionMode(4);
+            ChangeActionMode(5);
     }
 
     void Update()
@@ -160,7 +167,7 @@ public class UIManagerInGame : MonoBehaviour
                 StationItemIndividual.Initialize(tile.station, tile.station.canExport, tile.station.destinationNameList, destinationsimports);
                 selectTileMenu.SetActive(true);
             }
-            else if (buildMode == BuildMode.ignore)
+            else if (buildMode == BuildMode.ignore && actionMode != ActionMode.route)
             {
                 ChangeActionMode(0);
             }
@@ -176,7 +183,7 @@ public class UIManagerInGame : MonoBehaviour
             }
             GameManager.Instance.selectedTile = tile;
         }
-        else
+        else if(actionMode != ActionMode.route)
         {
             selectTileMenu.SetActive(false);
             ChangeActionMode(0);
@@ -330,30 +337,30 @@ public class UIManagerInGame : MonoBehaviour
         {
             case ActionMode.ignore:
                 OpenActionMenu(true);
-                OpenBuildMenu(false);
-                OpenStationMenuList(false);
-                OpenStationMenuIndividual(false);
-                OpenRouteMenuList(false);
+                //OpenBuildMenu(false);
+                //OpenStationMenuList(false);
+                //OpenStationMenuIndividual(false);
+                //OpenRouteMenuList(false);
                 break;
             case ActionMode.build:
-                OpenActionMenu(false);
+                //OpenActionMenu(false);
                 OpenBuildMenu(true);
-                OpenStationMenuList(false);
-                OpenStationMenuIndividual(false);
-                OpenRouteMenuList(false);
+                //OpenStationMenuList(false);
+                //OpenStationMenuIndividual(false);
+                //OpenRouteMenuList(false);
                 break;
             case ActionMode.station:
-                OpenActionMenu(false);
-                OpenBuildMenu(false);
+                //OpenActionMenu(false);
+                //OpenBuildMenu(false);
                 OpenStationMenuList(true);
-                OpenStationMenuIndividual(false);
-                OpenRouteMenuList(false);
+                //OpenStationMenuIndividual(false);
+                //OpenRouteMenuList(false);
                 break;
             case ActionMode.train:
-                OpenActionMenu(false);
-                OpenBuildMenu(false);
-                OpenStationMenuList(false);
-                OpenStationMenuIndividual(false);
+                //OpenActionMenu(false);
+                //OpenBuildMenu(false);
+                //OpenStationMenuList(false);
+                //OpenStationMenuIndividual(false);
                 OpenRouteMenuList(true);
                 break;
             case ActionMode.hidden:
@@ -362,7 +369,12 @@ public class UIManagerInGame : MonoBehaviour
                 OpenStationMenuList(false);
                 OpenStationMenuIndividual(false);
                 OpenRouteMenuList(false);
+                OpenRouteMenuIndividualList(false);
                 break;
+            case ActionMode.route:
+                OpenRouteMenuIndividualList(true);
+                break;
+                
         }
     }
 
@@ -375,6 +387,7 @@ public class UIManagerInGame : MonoBehaviour
             OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
+            OpenRouteMenuIndividualList(false);
             OpenRouteMenuList(false);
         }
     }
@@ -387,6 +400,7 @@ public class UIManagerInGame : MonoBehaviour
             OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
+            OpenRouteMenuIndividualList(false);
             OpenRouteMenuList(false);
         }
         if (!newState) {
@@ -403,6 +417,7 @@ public class UIManagerInGame : MonoBehaviour
             OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
+            OpenRouteMenuIndividualList(false);
             OpenRouteMenuList(false);
         }
     }
@@ -416,6 +431,7 @@ public class UIManagerInGame : MonoBehaviour
             OpenStationMenuIndividual(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
+            OpenRouteMenuIndividualList(false);
             OpenRouteMenuList(false);
         }
     }
@@ -429,6 +445,7 @@ public class UIManagerInGame : MonoBehaviour
             OpenStationMenuIndividual(false);
             OpenStationMenuIndividualTuto(false);
             OpenRouteCreator(false);
+            OpenRouteMenuIndividualList(false);
             OpenRouteMenuList(false);
         }
     }
@@ -441,6 +458,22 @@ public class UIManagerInGame : MonoBehaviour
             OpenStationMenuIndividual(false);
             OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
+            OpenRouteMenuIndividualList(false);
+            OpenRouteMenuList(false);
+        }
+    }
+    public void OpenRouteMenuIndividualList(bool newState)
+    {
+        routeMenuIndividual.SetActive(newState);
+        if (newState)
+        {
+            FillRouteList();
+            OpenActionMenu(false);
+            OpenBuildMenu(false);
+            OpenStationMenuIndividual(false);
+            OpenStationMenuIndividualTuto(false);
+            OpenStationMenuList(false);
+            OpenRouteCreator(false);
             OpenRouteMenuList(false);
         }
     }
@@ -455,6 +488,7 @@ public class UIManagerInGame : MonoBehaviour
             OpenStationMenuIndividualTuto(false);
             OpenStationMenuList(false);
             OpenRouteCreator(false);
+            OpenRouteMenuIndividualList(false);
         }
     }
     public void OpenTutoMenu(bool newState)
@@ -573,6 +607,11 @@ public class UIManagerInGame : MonoBehaviour
     {
         if (currentTileSelected.HasStation)
             currentTileSelected.station.CreateRouteMultiple(newRoutePath);
+    }
+
+    public void SetIndividualRoute(TrainRoute route)
+    {
+        RouteItemIndividual.SetDisplay(route);
     }
 
     void FillRouteList()
@@ -702,5 +741,14 @@ public class UIManagerInGame : MonoBehaviour
         {
             Destroy(selectedTileRessourceContent.GetChild(j).gameObject);
         }
+    }
+
+    public void ActivateOutlinerRessource(bool nState)
+    {
+        tutoRessourceOutliner.SetActive(nState);
+    }
+    public void ActivateOutlinerContract(bool nState)
+    {
+        tutoContractOutliner.SetActive(nState);
     }
 }

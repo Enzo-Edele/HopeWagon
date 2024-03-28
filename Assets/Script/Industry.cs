@@ -142,8 +142,11 @@ public class Industry : MonoBehaviour
 
     void Update()
     {
+        //production via coroutine ???
+        //ajout d'un barre d'avancement de la prod
+        //pop up ressource produite
         if(prodTimer < 0) {
-            prodTimer = prodTime;
+            prodTimer = 0.5f;
             bool canProd = CanProduce();
             if (importID.Count >= 0) {
                 if (canProd) {
@@ -160,6 +163,7 @@ public class Industry : MonoBehaviour
                     ChangeStorageRessource(prodQty[i], exportID[i]); 
                 prodTimer = prodTime;
             }
+            SendRessourcesToStation();
         }
         else if(prodTimer >= 0 ) {
             prodTimer -= Time.deltaTime;
@@ -169,6 +173,20 @@ public class Industry : MonoBehaviour
     private void LateUpdate()
     {
         canvas.transform.rotation = Camera.main.transform.rotation;
+    }
+
+    public void SendRessourcesToStation()
+    {
+        for (int i = 0; i < exportID.Count; i++)
+        {
+            int split = stockRessources[exportID[i]];
+            if (linkedStation.Count > 0)
+                split = Mathf.FloorToInt(stockRessources[exportID[i]] / linkedStation.Count);
+            for (int j = 0; j < linkedStation.Count; j++)
+            {
+                SetStockRessource(linkedStation[i].ChangeStorageRessource(split, exportID[i]), exportID[i]);
+            }
+        }
     }
 
     bool CanProduce()

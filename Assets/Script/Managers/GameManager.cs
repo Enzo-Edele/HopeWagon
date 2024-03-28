@@ -64,13 +64,13 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        mainMenuUI.Load("SaveStart");
+        mainMenuUI.Load("SaveStart.map");
         ChangeGameState(GameState.mainMenu);
         //pollutionManager.Init();
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !(GameManager.gameState == GameState.pause))
             InterractSaveLoadMenu();
         //if (Input.GetKeyDown(KeyCode.E)) //to disable for demo build
             //OpenCloseEditMode();

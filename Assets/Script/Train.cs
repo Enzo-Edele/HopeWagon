@@ -77,6 +77,12 @@ public class Train : MonoBehaviour
         progressFactor = 2f;
     }
 
+    private void OnMouseDown()
+    {
+        GameManager.Instance.gameUI.ChangeActionMode(4);
+        GameManager.Instance.gameUI.SetIndividualRoute(trainRoute);
+    }
+
     void Update()
     {
         GameUpdate();

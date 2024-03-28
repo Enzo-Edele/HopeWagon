@@ -114,7 +114,7 @@ public class PlayerData : MonoBehaviour
     {
         if(header >= 2)
         {
-            gameTime = reader.ReadInt32();
+            gameTimer = reader.ReadInt32();
             railStock = reader.ReadInt32();
             stationStock = reader.ReadInt32();
             trainStock = reader.ReadInt32();
