@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI Ecopedia_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 14433d809e47f7b44bf73316911e9c6d, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 22051004416
+    m_Localized: Bases
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97691082752
+    m_Localized: "\xC9cop\xE9dia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 290813616128
+    m_Localized: "Bienvenue sur hope wagon l\u2019objectif du jeu est de d\xE9polluer
+      l'environnement est de r\xE9tablir une industrie propre et responsable pour
+      \xE0 terme d\xE9polluer une ville pour la rendre de nouveau habitable. Pour
+      ce faire vous allez d\xE9velopper un r\xE9seau ferr\xE9 et les lignes de transports
+      qui vont avec.\r\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 383100887040
+    m_Localized: "Pour \xE9tablir votre r\xE9seau vous aurez \xE0 votre disposition
+      des rails, stations et trains en quantit\xE9 limit\xE9e. Il est donc important
+      de planifier votre expansion avec soin. Bien s\xFBr il y a un moyen de gagner
+      des rails et autres, les contrats.\r\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 406987448320
+    m_Localized: "Les contrats demandent de transporter une quantit\xE9 d\u2019une
+      ressource \xE0 un endroit o\xF9 elle est demand\xE9e et r\xE9compense le joueur
+      avec des rails, stations ou trains en fonction de la ressource transport\xE9e."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1497493905408
+    m_Localized: Station
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1526648512512
+    m_Localized: "Les stations doivent \xEAtre pos\xE9es sur l\u2019une des quatre
+      cases directement adjacentes \xE0 un \xE9l\xE9ment r\xE9clamant et/ou produisant
+      des ressources pour \xEAtre connect\xE9 \xE0 ce dernier. Chaque \xE9l\xE9ment
+      n\u2019a besoin d\u2019\xEAtre connect\xE9 qu\u2019\xE0 une station qui peut
+      g\xE9rer plusieurs trains."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1554590965760
+    m_Localized: "Voici l\u2019interface des stations, en haut \xE0 gauche le nom
+      de la station et les ressources qu\u2019elle exporte, en bas \xE0 gauche le
+      bouton pour cr\xE9er une route depuis la station et un r\xE9capitulatif des
+      trains passant par la station(WIP), \xE0 droite un menu d\xE9roulant listant
+      les destinations servant \xE0 choisir la destination de la route \xE0 cr\xE9er
+      avec en dessous la liste des ressources que la station r\xE9clame."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1594428465152
+    m_Localized: Route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1611537031168
+    m_Localized: "Les routes se cr\xE9er depuis l\u2019interface des stations avec
+      en point de d\xE9part la station actuellement s\xE9lectionn\xE9e et pour destination
+      celle choisie dans le menu d\xE9roulant de l\u2019interface de la station de
+      d\xE9part. Le transport des ressources est automatique, si le point de d\xE9part
+      produit et que le point d\u2019arriv\xE9e r\xE9clame alors le train prendra
+      la ressource de lui-m\xEAme. Le train sur la route fera l\u2019aller-retour
+      de lui-m\xEAme tant que le joueur ne stop pas la route."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1633636818944
+    m_Localized: "Pour arr\xEAter une route il faut aller dans la liste des routes
+      et cliquer sur la croix qui deviendra alors rouge, une fois une station atteint
+      le train ne repartira pas et la route s\u2019arr\xEAtera. Pour annuler l\u2019arr\xEAt
+      de la route il suffit de recliquer sur la croix qui redeviendra blanche."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1703295819776
+    m_Localized: Industrie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1748875321344
+    m_Localized: "Les industries sont les \xE9l\xE9ments qui produisent et/ou consomme
+      des ressources. Pour exploiter les ressources d\u2019une industrie il faut
+      qu\u2019une station soit adjacentes \xE0 cette derni\xE8re. Les industries
+      existent en 2 version, leur version fonctionnelle o\xF9 elles produisent des
+      ressources et leur version pollu\xE9 o\xF9 il faut leur apporter les ressources
+      qu\u2019elles r\xE9clament pour les rendrent fonctionnelles.\r\nNote : b\xE2timent
+      carr\xE9 = normal, b\xE2timent rond = pollu\xE9.\r\n\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1774036951040
+    m_Localized: "Contr\xF4le"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1801828409344
+    m_Localized: "D\xE9placer la cam\xE9ra : ZS(avant-arri\xE8re) QD(gauche-droite)\r\nZoom/D\xE9zoom
+      : molette souris\r\nS\xE9lectionn\xE9 : clic gauche\r\nD\xE9s\xE9lectionn\xE9
+      : clic droit\r\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6046843133952
+    m_Localized: "Pr\xE9c\xE9dent"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6105924100096
+    m_Localized: Suivant
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

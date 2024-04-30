@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Contract : MonoBehaviour
 {
-    [SerializeField]ContractScriptable contract;
+    public ContractScriptable contract;
 
     public int requireRessourcesIndex;
     public int requiredQty = 0;
@@ -35,9 +35,9 @@ public class Contract : MonoBehaviour
             reward = contract.reward;
             rewardQty = contract.rewardQty;
             rewardIcon = contract.rewardIcon;
-            GameManager.Instance.gameUI.updateContractDisplay(GameManager.Instance.playerData.contratPool);
             GameManager.Instance.playerData.contractOfTypeGiven[contract.id]++;
             name = contract.nameContract + " " + GameManager.Instance.playerData.contractOfTypeGiven[contract.id];
+            GameManager.Instance.gameUI.updateContractDisplay(GameManager.Instance.playerData.contratPool);
         }
     }
 
@@ -48,6 +48,19 @@ public class Contract : MonoBehaviour
         requiredQty = contract.requiredQty;
         reward = contract.reward;
         rewardQty = contract.rewardQty;
+        rewardIcon = contract.rewardIcon;
+        GameManager.Instance.playerData.contractOfTypeGiven[contract.id]++;
+        name = contract.nameContract + " " + GameManager.Instance.playerData.contractOfTypeGiven[contract.id];
+    }
+
+    public void SetType(ContractScriptable type)
+    {
+        contract = type;
+        requireRessourcesIndex = contract.requiredRessource.id;
+        requiredQty = contract.requiredQty;
+        reward = contract.reward;
+        rewardQty = contract.rewardQty;
+        rewardIcon = contract.rewardIcon;
         GameManager.Instance.playerData.contractOfTypeGiven[contract.id]++;
         name = contract.nameContract + " " + GameManager.Instance.playerData.contractOfTypeGiven[contract.id];
     }

@@ -12,7 +12,7 @@ public class TutoManager : MonoBehaviour
     [SerializeField] Button closeTutoButton;
     [SerializeField] TMP_Text closeTutoButtonText;
 
-    [SerializeField] List<string> tutoAdvices = new List<string>();
+    [SerializeField] List<GameObject> tutoAdvices = new List<GameObject>();
 
     [SerializeField] GameObject stationIndicatorPrefab;
     [SerializeField] GameObject railIndicatorPrefab;
@@ -21,7 +21,7 @@ public class TutoManager : MonoBehaviour
     int stationPlaced = 0;
     int railPlaced = 0;
 
-    public int tutoIndex { get; private set; }
+    public int tutoIndex; //{ get; private set; }
     public static TutoManager Instance { get; private set; }
 
     void Awake()
@@ -38,7 +38,10 @@ public class TutoManager : MonoBehaviour
 
     void ChangeTutoText(int tutoID)
     {
-        tutoText.text = tutoAdvices[tutoID];
+        if(tutoID > -1 && tutoID < tutoAdvices.Count)
+            tutoAdvices[tutoID].SetActive(true);
+        if (tutoID > 0 && tutoID <= tutoAdvices.Count)
+            tutoAdvices[tutoID - 1].SetActive(false);
     }
     public void ChangeTutoTextButton(string text)
     {

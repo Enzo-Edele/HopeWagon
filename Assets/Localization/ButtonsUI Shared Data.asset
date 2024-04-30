@@ -59,6 +59,54 @@ MonoBehaviour:
     m_Key: minus_destination
     m_Metadata:
       m_Items: []
+  - m_Id: 6792343815954432
+    m_Key: main_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792479883370496
+    m_Key: new_game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792594178154496
+    m_Key: load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792653636608000
+    m_Key: save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792722196701184
+    m_Key: pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792763720310784
+    m_Key: resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6793807904874496
+    m_Key: quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6794058309017600
+    m_Key: delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6794153498746880
+    m_Key: back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6835337864650752
+    m_Key: restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6835755608940544
+    m_Key: ecopedia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6836667924586496
+    m_Key: continue
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

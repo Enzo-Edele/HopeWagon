@@ -34,6 +34,8 @@ public class UIManagerMenu : MonoBehaviour
 
     [SerializeField] GameObject timer;
     [SerializeField] TMP_Text timerText;
+    int timerMin;
+    int timerHour;
 
     [SerializeField] GameObject helpButton;
 
@@ -174,15 +176,32 @@ public class UIManagerMenu : MonoBehaviour
         timer.SetActive(nState);
     }
 
-    public void TimerUpdate(int time)
+    public void TimerUpdate(float time)
     {
-        timerText.text = time + "s";
+        timerMin = 0;
+        while(time >= 60.0f)
+        {
+            time -= 60.0f;
+            timerMin++;
+        }
+        timerHour = 0;
+        while(timerMin >= 60)
+        {
+            timerMin -= 60;
+            timerHour++;
+        }
+        if(timerHour > 0)
+            timerText.text = timerHour + "h " + timerMin + "min " + (int)time + "s";
+        else if(timerMin > 0)
+            timerText.text = timerMin + "min " + (int)time + "s";
+        else
+            timerText.text = (int)time + "s";
     }
     public void EndGameDemo(int completeContract, float timer)
     {
         endPanel.SetActive(true);
-        endTextContract.text = "Contract Completed : " + completeContract;
-        endTextTime.text = "Time Played : " + (int)timer;
+        endTextContract.text = "" + completeContract;
+        endTextTime.text = "" + (int)timer;
         Time.timeScale = 0.0f;
     }
 }

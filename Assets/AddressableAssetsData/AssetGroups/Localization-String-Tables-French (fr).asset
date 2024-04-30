@@ -29,6 +29,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-fr
     - Preload
+  - m_GUID: 39400bf675b5ae240b18458f68185c87
+    m_Address: UI Ecopedia_fr
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-fr
+    - Preload
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: c247a71a53d510d48a1c2f770d74aa6f, type: 2}
   m_SchemaSet:

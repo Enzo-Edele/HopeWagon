@@ -126,27 +126,47 @@ public class PollutedIndustry : MonoBehaviour
         for (int i = 0; i < ressourceInput.Count; i++) {
             if (ressourceID == ressourceInput[i].id) {
                 acquiredQty[i] += amount;
-                //Debug.Log("I = " + i);
+                if(acquiredQty[i] >= requiredQty[i])
+                {
+                    leftover = acquiredQty[i] - requiredQty[i];
+                    //Debug.Log("check leftover pollute : " + leftover + ", acquired : " + acquiredQty[i] + ", required : " + requiredQty[i]);
+                    acquiredQty[i] = requiredQty[i];
+                }
             }
         }
-        for (int i = 0; i < requiredQty.Count; i++) {
+        /*for (int i = 0; i < requiredQty.Count; i++) {
             if (acquiredQty[i] > requiredQty[i]) {
                 leftover = acquiredQty[i] - requiredQty[i];
                 acquiredQty[i] = requiredQty[i];
             }
-        }
-        bool canDepollute = true;
-        for (int i = 0; i < requiredQty.Count; i++) {
-            if (!(acquiredQty[i] >= requiredQty[i])) {
-                canDepollute = false;
-            }
-        }
-        if (canDepollute)
-            Depollute();
+        }*/
 
         UpdateUI();
         
         return leftover;
+    }
+    public bool CanDepollute()
+    {
+        bool canDepollute = true;
+        for (int i = 0; i < requiredQty.Count; i++)
+        {
+            if (!(acquiredQty[i] >= requiredQty[i]))
+            {
+                canDepollute = false;
+            }
+        }
+        return canDepollute;
+    }
+    public bool FillRessource(int id)
+    {
+        int i = -1;
+        for (int j = 0; j < ressourceInput.Count; j++)
+            if (id == ressourceInput[j].id)
+                i = j;
+        bool hasFill = false;
+        if (acquiredQty[i] >= requiredQty[i])
+            hasFill = true;
+        return hasFill;
     }
 
     public void Depollute()

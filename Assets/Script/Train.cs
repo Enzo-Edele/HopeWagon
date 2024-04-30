@@ -204,23 +204,6 @@ public class Train : MonoBehaviour
             wagonQueue.Enqueue(wagonLoad[i]);
         }
     }
-    public int LoadRessources(int qty, int index)
-    {
-        int leftover = 0;
-        Debug.Assert(qty >= 0, "WARNING : can't load negative value on train");
-        stockRessources[index] += qty;
-        RouteRessources[index] = true;
-
-        if (stockRessources[index] > storage) {
-            leftover = stockRessources[index] - storage;
-            stockRessources[index] = storage;
-        }
-        //Debug.Log(stockRessources[index] + " loaded out of " + qty + " remaining " + leftover);
-
-        stockDisplay.text = "" + stockRessources[index];
-
-        return leftover;
-    }
 
     public void LoadingStopRoute()
     {

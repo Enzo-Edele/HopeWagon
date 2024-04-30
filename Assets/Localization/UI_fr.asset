@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: fr
   m_SharedData: {fileID: 11400000, guid: c231d651889fdc6468801ac5d5431466, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 7447546623682150403
   m_TableData:
   - m_Id: 76295938048
     m_Localized: "Bonjour manager et f\xE9licitations pour votre promotion \xE0 la
@@ -31,12 +32,12 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 3272764477120512
     m_Localized: "Pour se faire placer des stations aux endroits indiqu\xE9s en ouvrant
-      le menu \u201CConstruire\u201D et s\xE9lectionnant \u201CConstruire Station\u201D."
+      le menu \u201CBat\xEEr\u201D et s\xE9lectionnant \u201CBat\xEEr Station\u201D."
     m_Metadata:
       m_Items: []
   - m_Id: 3272792230830080
     m_Localized: "Maintenant il faut relier les stations en utilisant des rails.
-      Ouvrez le menu \u201CConstruire\u201D et s\xE9lectionnez \u201CConstruire Rail\u201D. "
+      Ouvrez le menu \u201CBat\xEEr\u201D et s\xE9lectionnez \u201CBat\xEEr Rail\u201D. "
     m_Metadata:
       m_Items: []
   - m_Id: 3272836736589824
@@ -55,8 +56,8 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 3272892030099456
     m_Localized: "Le bandeau inf\xE9rieur permet de cr\xE9er une route aller retour
-      avec \u201CD\xE9ployer\u201D ou une route \xE0 plusieur destination avec \u201CCr\xE9er
-      une route\u201D. depuis le menu d\u2019action en s\xE9lectionnant \u201CListe
+      avec \u201CD\xE9ployer\u201D ou une route \xE0 plusieur destination avec \u201CD\xE9ploiement
+      Complex\u201D. depuis le menu d\u2019action en s\xE9lectionnant \u201CListe
       Station\u201D vous aurez acc\xE8s au menu de toutes les stations."
     m_Metadata:
       m_Items: []
@@ -91,6 +92,44 @@ MonoBehaviour:
       ville."
     m_Metadata:
       m_Items: []
+  - m_Id: 10096817686945792
+    m_Localized: Contrat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10111264828661760
+    m_Localized: 'Contrats remplis : '
+    m_Metadata:
+      m_Items:
+      - rid: 7447546623682150403
+  - m_Id: 10112532150198272
+    m_Localized: 'Temps de jeu : '
+    m_Metadata:
+      m_Items:
+      - rid: 7447546623682150403
+  - m_Id: 10827485492518912
+    m_Localized: Langue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10827749620424704
+    m_Localized: Effet Sonore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10827877047574528
+    m_Localized: 'Musique
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10828020681515008
+    m_Localized: 'Volume Principal
+
+'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7447546623682150403
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 00a0574c24ec230000a0975e4bed2300

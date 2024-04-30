@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 11791736832
-    m_Localized: Construire
+    m_Localized: "Bat\xEEr"
     m_Metadata:
       m_Items: []
   - m_Id: 94629240832
@@ -33,7 +33,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1728677932408832
-    m_Localized: Construire Station
+    m_Localized: "Bat\xEEr Station"
     m_Metadata:
       m_Items: []
   - m_Id: 1728786988507136
@@ -41,7 +41,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1729547617148928
-    m_Localized: Construire Rail
+    m_Localized: "Bat\xEEr Rail"
     m_Metadata:
       m_Items: []
   - m_Id: 1729630660173824
@@ -62,6 +62,56 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1730678732857344
     m_Localized: -Destination
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792343815954432
+    m_Localized: Menu Principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792479883370496
+    m_Localized: Nouvelle Partie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792594178154496
+    m_Localized: Charger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792653636608000
+    m_Localized: Sauvegarder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792722196701184
+    m_Localized: Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6792763720310784
+    m_Localized: Reprendre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6793807904874496
+    m_Localized: 'Quitter
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6794058309017600
+    m_Localized: Supprimer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6794153498746880
+    m_Localized: Retour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6835337864650752
+    m_Localized: Recommencer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6835755608940544
+    m_Localized: "\xC9cop\xE9dia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6836667924586496
+    m_Localized: Continuer
     m_Metadata:
       m_Items: []
   references:

@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI Ecopedia Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI Ecopedia
+  m_TableCollectionNameGuidString: 14433d809e47f7b44bf73316911e9c6d
+  m_Entries:
+  - m_Id: 22051004416
+    m_Key: basic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 97691082752
+    m_Key: ecopedia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 290813616128
+    m_Key: basic_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 383100887040
+    m_Key: 'basic_2
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 406987448320
+    m_Key: basic_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1497493905408
+    m_Key: 'station
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1526648512512
+    m_Key: 'station_1
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1554590965760
+    m_Key: station_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1594428465152
+    m_Key: route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1611537031168
+    m_Key: 'route_1
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1633636818944
+    m_Key: route_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1703295819776
+    m_Key: industry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1748875321344
+    m_Key: 'industry_1
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1774036951040
+    m_Key: control
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1801828409344
+    m_Key: control_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6046843133952
+    m_Key: previous
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6105924100096
+    m_Key: next
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 7447546692376723456
+  references:
+    version: 2
+    RefIds:
+    - rid: 7447546692376723456
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1712925008231

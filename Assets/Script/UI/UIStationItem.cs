@@ -14,6 +14,7 @@ public class UIStationItem : MonoBehaviour
     [SerializeField] TMP_Dropdown destinationDropdown;
     [SerializeField] GameObject destinationImport;
     [SerializeField] GameObject imagePrefab;
+    [SerializeField] Sprite tradeIco;
     List<string> destinationsNames = new List<string>();
 
     public UIManagerInGame inGameUI;
@@ -41,14 +42,49 @@ public class UIStationItem : MonoBehaviour
         //add trainRoutes to dropDown
         //stock the destination of each train
         //stock the ressource of each train
-
         destinationsNames = destinationArray;
-        destinationDropdown.options.Clear();
-        for(int i = 0; i < destinationArray.Count; i++)
-        {
-            destinationDropdown.options.Add(new TMP_Dropdown.OptionData() { text = destinationArray[i] });
+
+        List<string> matchingDestinations = new List<string>();
+        bool match;
+        int stationToMark = 0;
+        for (int i = destinationsNames.Count - 1; i > -1; i--) {
+            match = false;
+            for (int j = 0; j < itemOwner.canExport.Count; j++) {
+                if (GridBoard.Instance.GetStation(destinationsNames[i]).canImport[j] && itemOwner.canExport[j]) {
+                    matchingDestinations.Add(destinationsNames[i]);
+                    match = true;
+                }
+            }
+            if (match)
+            {
+                destinationsNames.RemoveAt(i);
+                stationToMark++;
+            }
         }
-        if (destinationArray.Count > 0)
+        for (int i = 0; i < matchingDestinations.Count; i++)
+        {
+            destinationsNames.Insert(0, matchingDestinations[i]);
+        }
+
+        destinationDropdown.ClearOptions();
+        List<TMP_Dropdown.OptionData> destinationItems = new List<TMP_Dropdown.OptionData>();
+        for(int i = 0; i < destinationsNames.Count; i++)
+        {
+            string name = destinationsNames[i];
+            var ico = tradeIco;
+            if (i < stationToMark)
+            {
+                var option = new TMP_Dropdown.OptionData(name, ico);
+                destinationItems.Add(option);
+            }
+            else
+            {
+                var option = new TMP_Dropdown.OptionData(name);
+                destinationItems.Add(option);
+            }
+        }
+        destinationDropdown.AddOptions(destinationItems);
+        if (destinationsNames.Count > 0)
         {
             int menuIndex = destinationDropdown.value;
             string nameDestination = destinationDropdown.options[menuIndex].text;  //check if still [error when only one station on network]
@@ -103,5 +139,11 @@ public class UIStationItem : MonoBehaviour
     public void DeployTrain()
     {
         departStation.CreateRoute(selectedDestination);
+    }
+
+    public void FocusStation()
+    {
+        GameManager.Instance.cameraController.LockCamOnPos(departStation.cameraFocusPos);
+        GameManager.Instance.cameraController.LockCamHeight(5.0f);
     }
 }

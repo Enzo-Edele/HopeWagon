@@ -72,8 +72,12 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) && !(GameManager.gameState == GameState.pause))
             InterractSaveLoadMenu();
-        //if (Input.GetKeyDown(KeyCode.E)) //to disable for demo build
-            //OpenCloseEditMode();
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            playerData.ResetRessource();
+        }
+        if (Input.GetKeyDown(KeyCode.E) && Application.isEditor)
+            OpenCloseEditMode();
 
         //if (Input.GetKeyDown(KeyCode.P))
             //gridBoard.PaintAllTile(colorArrayTile[3]);

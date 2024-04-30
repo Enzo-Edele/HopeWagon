@@ -33,11 +33,15 @@ public class PlayerData : MonoBehaviour
     }
     private void Update()
     {
-        if(gameTimer < 0)
+        
+    }
+    private void FixedUpdate()
+    {
+        if (gameTimer < 0)
         {
             //GameManager.Instance.saveLoadMenu.EndGameDemo(completeContract);
         }
-        else if(gameTimer >= 0)
+        else if (gameTimer >= 0)
         {
             gameTimer += Time.deltaTime;
             GameManager.Instance.pauseMenu.TimerUpdate((int)gameTimer);
@@ -109,6 +113,18 @@ public class PlayerData : MonoBehaviour
         writer.Write(railStock);
         writer.Write(stationStock);
         writer.Write(trainStock);
+
+        for(int i = 0; i < contratPool.Count; i++)
+        {
+            writer.Write(contratPool[i].contract.id);
+            if(i < 3)
+            {
+                writer.Write(contratPool[i].requiredQty);
+                writer.Write(contratPool[i].accumulated);
+            }
+        }
+
+        writer.Write(completeContract);
     }
     public void Load(BinaryReader reader, int header)
     {
@@ -120,6 +136,21 @@ public class PlayerData : MonoBehaviour
             trainStock = reader.ReadInt32();
             GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
         }
+        if(header >= 3)
+        {
+            for (int i = 0; i < contratPool.Count; i++)
+            {
+                contratPool[i].SetType(GameManager.Instance.contratTypes[reader.ReadInt32()]);
+                if (i < 3)
+                {
+                    contratPool[i].requiredQty = reader.ReadInt32();
+                    contratPool[i].accumulated = reader.ReadInt32();
+                }
+            }
+            GameManager.Instance.gameUI.updateContractDisplay(contratPool);
+        }
+        if (header >= 4)
+            completeContract = reader.ReadInt32();
     }
 
     public void Cheat()
@@ -137,6 +168,16 @@ public class PlayerData : MonoBehaviour
         railStock = memRail;
         stationStock = memStation;
         trainStock = memTrain;
+        GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
+    }
+
+    //debug and reset fct
+
+    public void ResetRessource()
+    {
+        railStock = 50;
+        stationStock = 7;
+        trainStock = 7;
         GameManager.Instance.gameUI.UpdatePlayerData(railStock, stationStock, trainStock);
     }
 }

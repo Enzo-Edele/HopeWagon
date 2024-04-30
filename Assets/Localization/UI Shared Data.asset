@@ -75,6 +75,34 @@ MonoBehaviour:
     m_Key: tuto_12
     m_Metadata:
       m_Items: []
+  - m_Id: 10096817686945792
+    m_Key: contract
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10111264828661760
+    m_Key: contract_completed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10112532150198272
+    m_Key: time_played
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10827485492518912
+    m_Key: language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10827749620424704
+    m_Key: sound_effect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10827877047574528
+    m_Key: music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10828020681515008
+    m_Key: master_volume
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

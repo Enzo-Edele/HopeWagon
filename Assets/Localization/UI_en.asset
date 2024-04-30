@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: c231d651889fdc6468801ac5d5431466, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 7447546623682150402
   m_TableData:
   - m_Id: 76295938048
     m_Localized: Hello manager and congratulations on your promotion to the head
@@ -86,6 +87,40 @@ MonoBehaviour:
       a human presence by cleaning up a city.
     m_Metadata:
       m_Items: []
+  - m_Id: 10096817686945792
+    m_Localized: 'Contract '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10111264828661760
+    m_Localized: 'Contract Completed : '
+    m_Metadata:
+      m_Items:
+      - rid: 7447546623682150402
+  - m_Id: 10112532150198272
+    m_Localized: 'Time Played : '
+    m_Metadata:
+      m_Items:
+      - rid: 7447546623682150402
+  - m_Id: 10827485492518912
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10827749620424704
+    m_Localized: Sound Effect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10827877047574528
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10828020681515008
+    m_Localized: Master Volume
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 7447546623682150402
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 00a0574c24ec230000a0975e4bed2300

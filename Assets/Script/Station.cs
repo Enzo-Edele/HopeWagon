@@ -27,6 +27,8 @@ public class Station : MonoBehaviour
 
     [SerializeField] TMP_Text nameDisplay;
 
+    public Vector2 cameraFocusPos;
+
     public void SetTile(GameTile newTile)
     {
         tile = newTile;
@@ -43,6 +45,8 @@ public class Station : MonoBehaviour
         {
             destinationNameList.Add(destinationList[i].name);
         }
+        Vector3 tilePos = tile.transform.position;
+        cameraFocusPos = new Vector2(tilePos.x, tilePos.z - 2);
     }
 
     public void AddDestination(Station station)
@@ -305,20 +309,41 @@ public class Station : MonoBehaviour
     public int UnloadRessources(int qtyUnload, int ressourceIndex)
     {
         int leftover = ChangeStorageRessource(qtyUnload, ressourceIndex);
-        BuildIndustry();
         SendRessourcesToIndustry();
         
         return leftover;
     }
-    public void BuildIndustry()
+    public int UnloadRessourcesPolluted(int qtyUnload, int ressourceIndex)
+    {
+        int leftover = ChangeStorageRessource(qtyUnload, ressourceIndex);
+        return leftover;
+    }
+    public bool BuildIndustry()
     {
         for (int i = 0; i < linkedPollutedIndustry.Count; i++) {
             for (int j = 0; j < canImport.Count; j++) {
-                if (linkedPollutedIndustry[i] != null && canImport[j] && canImport[j] == linkedPollutedIndustry[i].canImport[j]) //error on this line when depollute
+                if (linkedPollutedIndustry[i] != null && canImport[j] && canImport[j] == linkedPollutedIndustry[i].canImport[j])
                 {
                     stockRessources[j] = linkedPollutedIndustry[i].AddRessource(j, stockRessources[j]);
                 }
             }
+            if (linkedPollutedIndustry[i].CanDepollute()) {
+                linkedPollutedIndustry[i].Depollute();
+                return true;
+            }
         }
+        return false;
+    }
+    public bool CheckFillPolluted(int id)
+    {
+        bool idFilled = true;
+        if (linkedPollutedIndustry.Count == 0)
+            idFilled = false;
+        for(int i = 0; i < linkedPollutedIndustry.Count; i++)
+        {
+            if (!linkedPollutedIndustry[i].FillRessource(id))
+                idFilled = false;
+        }
+        return idFilled;
     }
 }

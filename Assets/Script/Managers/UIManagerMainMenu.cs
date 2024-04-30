@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Localization.Settings;
 
 public class UIManagerMainMenu : MonoBehaviour
 {
@@ -12,16 +13,19 @@ public class UIManagerMainMenu : MonoBehaviour
     [SerializeField] GameObject mainMenu;
 
     [SerializeField] GameObject saveMenu;
-    [SerializeField] TMP_Text saveMenuTitle;
-    [SerializeField] TMP_Text saveMenuActionLabel;
+    [SerializeField] GameObject saveMenuTitle;
+    [SerializeField] GameObject loadMenuTitle;
+    [SerializeField] GameObject saveMenuButton;
+    [SerializeField] GameObject loadMenuButton;
     [SerializeField] TMP_InputField inputField;
     [SerializeField] RectTransform fileList;
     [SerializeField] SaveLoadItem fileItemPrefab;
     bool saveMode;
 
     [SerializeField] GameObject optionMenu;
+    [SerializeField] TMP_Dropdown localizationDropdown;
 
-    const int mapFileVersion = 3;
+    const int mapFileVersion = 4;
     #endregion
 
     public static UIManagerMainMenu Instance { get; private set; }
@@ -29,7 +33,32 @@ public class UIManagerMainMenu : MonoBehaviour
     {
         Instance = this;
     }
+
     
+    IEnumerator Start()
+    {
+        yield return LocalizationSettings.InitializationOperation;
+
+        var options = new List<TMP_Dropdown.OptionData>();
+        int selected = 0;
+        for(int i = 0; i < LocalizationSettings.AvailableLocales.Locales.Count; i++)
+        {
+            var locale = LocalizationSettings.AvailableLocales.Locales[i];
+            if (LocalizationSettings.SelectedLocale == locale)
+                selected = i;
+            options.Add(new TMP_Dropdown.OptionData(locale.name));
+        }
+        localizationDropdown.options = options;
+
+        localizationDropdown.value = selected;
+        localizationDropdown.onValueChanged.AddListener(LocaleSelected);
+    }
+
+    public static void LocaleSelected(int index)
+    {
+        LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];
+    }
+
     public void ButtonNewGame()
     {
         mainMenu.SetActive(false);
@@ -44,13 +73,17 @@ public class UIManagerMainMenu : MonoBehaviour
         this.saveMode = saveMode;
         if (saveMode)
         {
-            saveMenuTitle.text = "Save Map";
-            saveMenuActionLabel.text = "Save";
+            saveMenuTitle.SetActive(true);
+            saveMenuButton.SetActive(true);
+            loadMenuTitle.SetActive(false);
+            loadMenuButton.SetActive(false);
         }
         else
         {
-            saveMenuTitle.text = "Load Map";
-            saveMenuActionLabel.text = "Load";
+            saveMenuTitle.SetActive(false);
+            saveMenuButton.SetActive(false);
+            loadMenuTitle.SetActive(true);
+            loadMenuButton.SetActive(true);
         }
         FillList();
         saveMenu.SetActive(true);
@@ -159,6 +192,12 @@ public class UIManagerMainMenu : MonoBehaviour
     {
         optionMenu.SetActive(true);
         mainMenu.SetActive(false);
+    }
+
+    public void CloseOption()
+    {
+        optionMenu.SetActive(false);
+        mainMenu.SetActive(true);
     }
 
     public void Quit()

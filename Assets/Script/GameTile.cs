@@ -586,9 +586,14 @@ public class GameTile : MonoBehaviour
         if (hasIndustry)
         {
             content = "Industry";
-            //ui.UpdateItemDisplayList(industry.importID, industry.exportID, industry.stockRessources);
             ui.UpdateItemDisplayListNew(industry.canImport, industry.canExport, industry.stockRessources);
         }
+        /*else if (hasPollutedIndustry)
+        {
+            content = "Polluted Industry";
+            IndustryScriptable type = pollutedIndustry.Type.industryScriptable;
+            ui.UpdateItemDisplayListNew(type.input, type.outpout);
+        }*/
         else if (hasStation)
         {
             content = "Station";
@@ -597,8 +602,7 @@ public class GameTile : MonoBehaviour
             {
                 numberRessources.Add(i);
             }
-            //ui.UpdateItemDisplayList(numberRessources, numberRessources, station.stockRessources); //error to check
-            ui.UpdateItemDisplayListNew(station.canImport, station.canExport, station.stockRessources); //error to check
+            ui.UpdateItemDisplayListNew(station.canImport, station.canExport, station.stockRessources); 
         }
         else
         {

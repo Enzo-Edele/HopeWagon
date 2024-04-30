@@ -67,7 +67,8 @@ public class UIManagerInGame : MonoBehaviour
     [SerializeField] TMP_Text pollutionLevelMax;
     [SerializeField] TMP_Text pollutionLevelMin;
     [SerializeField] TMP_Text selectedTileContent;
-    [SerializeField] Transform selectedTileRessourceContent;
+    [SerializeField] Transform selectedTileRessourceInputContent;
+    [SerializeField] Transform selectedTileRessourceOutpoutContent;
     //[SerializeField] List<UIRessourceItem> selectedTileRessourceItem = new List<UIRessourceItem>();
 
     //tuto variable
@@ -530,7 +531,7 @@ public class UIManagerInGame : MonoBehaviour
         newRoutePath.Clear();
         for (int i = routeCreatorDestinations.childCount - 1; i > 1; i--) 
             Destroy(routeCreatorDestinations.GetChild(i).gameObject);
-        for(int i = newRouteDestDropdown.Count - 1; i > 0; i--) 
+        for (int i = newRouteDestDropdown.Count - 1; i > 0; i--) 
             newRouteDestDropdown.RemoveAt(i);
 
         for (int i = 0; i < GridBoard.Instance.stationList.Count; i++)
@@ -722,24 +723,61 @@ public class UIManagerInGame : MonoBehaviour
     }
     public void UpdateItemDisplayListNew(List<bool> imports, List<bool> exports, List<int> stock)
     {
-        for(int j = 0; j < selectedTileRessourceContent.childCount; j++)
+        for(int j = 0; j < selectedTileRessourceInputContent.childCount; j++)
         {
-            Destroy(selectedTileRessourceContent.GetChild(j).gameObject);
+            Destroy(selectedTileRessourceInputContent.GetChild(j).gameObject);
         }
         for (int i = 0; i < imports.Count; i++)
         {
-            if (imports[i] || exports[i])
+            if (imports[i])
             {
-                UIRessourceItem item = Instantiate(ressourceItemPrefab, selectedTileRessourceContent).GetComponent<UIRessourceItem>();
+                UIRessourceItem item = Instantiate(ressourceItemPrefab, selectedTileRessourceInputContent).GetComponent<UIRessourceItem>();
+                item.SetItem(i, stock[i], exports[i], imports[i]);
+            }
+        }
+        for (int j = 0; j < selectedTileRessourceOutpoutContent.childCount; j++)
+        {
+            Destroy(selectedTileRessourceOutpoutContent.GetChild(j).gameObject);
+        }
+        for (int i = 0; i < exports.Count; i++)
+        {
+            if (exports[i])
+            {
+                UIRessourceItem item = Instantiate(ressourceItemPrefab, selectedTileRessourceOutpoutContent).GetComponent<UIRessourceItem>();
                 item.SetItem(i, stock[i], exports[i], imports[i]);
             }
         }
     }
+    public void UpdateItemDisplayListNew(List<RessourceScriptable> imports, List<RessourceScriptable> exports)
+    {
+        for (int j = 0; j < selectedTileRessourceInputContent.childCount; j++)
+        {
+            Destroy(selectedTileRessourceInputContent.GetChild(j).gameObject);
+        }
+        for (int i = 0; i < imports.Count; i++)
+        {
+            UIRessourceItem item = Instantiate(ressourceItemPrefab, selectedTileRessourceInputContent).GetComponent<UIRessourceItem>();
+            item.SetItem(imports[i].id, 0, false, true);
+        }
+        for (int j = 0; j < selectedTileRessourceOutpoutContent.childCount; j++)
+        {
+            Destroy(selectedTileRessourceOutpoutContent.GetChild(j).gameObject);
+        }
+        for (int i = 0; i < exports.Count; i++)
+        {
+            UIRessourceItem item = Instantiate(ressourceItemPrefab, selectedTileRessourceOutpoutContent).GetComponent<UIRessourceItem>();
+            item.SetItem(exports[i].id, 0, true, false);
+        }
+    }
     public void UpdateItemDisplayListNew()
     {
-        for (int j = 0; j < selectedTileRessourceContent.childCount; j++)
+        for (int j = 0; j < selectedTileRessourceInputContent.childCount; j++)
         {
-            Destroy(selectedTileRessourceContent.GetChild(j).gameObject);
+            Destroy(selectedTileRessourceInputContent.GetChild(j).gameObject);
+        }
+        for (int j = 0; j < selectedTileRessourceOutpoutContent.childCount; j++)
+        {
+            Destroy(selectedTileRessourceOutpoutContent.GetChild(j).gameObject);
         }
     }
 

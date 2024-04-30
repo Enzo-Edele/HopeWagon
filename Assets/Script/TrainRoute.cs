@@ -141,15 +141,25 @@ public class TrainRoute : MonoBehaviour
     }
     public void UnloadRessource(GameTileCopy copy)
     {
+        bool stopRoute = false;
+        int pollutedLeftover = 0;
         for (int i = 0; i < RouteRessources.Count; i++)
         {
             if (RouteRessources[i])
             {
                 GameManager.Instance.playerData.AddContratProgress(i, stockRessources[i]);
+                pollutedLeftover = stockRessources[i] = GridBoard.Instance.GetTile(copy.tileCoordinate).station.UnloadRessourcesPolluted(stockRessources[i], i);
+                //Debug.Log("delivery to polluted, leftover is : " + pollutedLeftover);
+                //stopRoute = GridBoard.Instance.GetTile(copy.tileCoordinate).station.BuildIndustry();
+                stopRoute = GridBoard.Instance.GetTile(copy.tileCoordinate).station.BuildIndustry();
+                if(!stopRoute)
+                    stopRoute = GridBoard.Instance.GetTile(copy.tileCoordinate).station.CheckFillPolluted(i);
                 stockRessources[i] = GridBoard.Instance.GetTile(copy.tileCoordinate).station.UnloadRessources(stockRessources[i], i);
                 RouteRessources[i] = false;
             }
         }
+        if (stopRoute || pollutedLeftover != 0)
+            toStop = true;
     }
 
     public void AddWagon(Wagon wagon)
